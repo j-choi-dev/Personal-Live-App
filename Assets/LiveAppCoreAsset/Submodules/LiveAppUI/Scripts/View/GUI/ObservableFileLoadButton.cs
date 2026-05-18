@@ -18,19 +18,19 @@ namespace LiveAppUI.View
         public string Title { get => _title; set => _title = value; }
         public string[] Extensions { get => _extensions; set => _extensions = value; }
 
-        private IFileBrowser m_Browser;
+        private IFileBrowser _browser;
 
         [Inject]
         public void Initialize( IFileBrowser browser )
         {
-            m_Browser = browser;
+            _browser = browser;
         }
 
         private void Awake()
         {
             _button.OnClick.Subscribe( async _ =>
             {
-                var path = await m_Browser.GetLoadPath( _title, "", _extensions );
+                var path = await _browser.GetLoadPath( _title, "", _extensions );
                 if( string.IsNullOrEmpty( path ) == false )
                 {
                     m_OnPathSelected.OnNext( path );

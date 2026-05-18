@@ -9,7 +9,16 @@ namespace LiveAppCore
 
         private void Awake()
         {
-            SceneManager.LoadScene(SCENE_UI, LoadSceneMode.Additive);
+            LoadSceneProcess();
+        }
+
+        private void LoadSceneProcess()
+        {
+#if UNITY_EDITOR
+            SceneManager.LoadScene( SCENE_UI, LoadSceneMode.Additive );
+#else
+            // TODO PC ¹öÀü Scene Load @Choi 26.04.22
+#endif
         }
     }
 }

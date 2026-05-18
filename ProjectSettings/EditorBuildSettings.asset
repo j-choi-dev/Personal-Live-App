@@ -6,8 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Default.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/LiveAppCoreAsset/Core/Scenes/LiveAppCore.unity
+    guid: 1516f8fc769b547fa9d78e7b5d996794
+  - enabled: 1
+    path: Assets/LiveAppCoreAsset/Core/Scenes/LiveAppUI.unity
+    guid: d6eace938b54fe54bb565a5ddca345ab
   m_configObjects:
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 177cfd9ce0ffb40ff91080f94b8ba188, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
