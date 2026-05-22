@@ -1,6 +1,3 @@
-using Cysharp.Threading.Tasks;
-using LiveAppUI.Model;
-using LiveAppUI.Presenter;
 using StudioNetworkSDK.Application;
 using UnityEngine;
 using Zenject;
@@ -20,7 +17,6 @@ namespace LiveAppCore
         private async void Awake()
         {
             await _networkApplication.Initialize();
-            //await _loginModel.Initialize();
         }
     }
 }

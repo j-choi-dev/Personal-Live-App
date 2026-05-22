@@ -24,6 +24,10 @@ namespace LiveAppUI.Model
         public LogInModel( INetworkRequestApplication networkApplication )
         {
             _networkApplication = networkApplication;
+
+            _networkApplication.OnLoginResult
+                .Subscribe( _ => _onLoginSuccess.OnNext( _ ) )
+                .AddTo( _disposable );
         }
 
         public async UniTask<bool> Initialize()
@@ -32,8 +36,6 @@ namespace LiveAppUI.Model
         public async UniTask LoginProcess( string id, string pw, ServerItem item )
         {
             await _networkApplication.SendLoginRequest_Test( id, pw );
-            await UniTask.WaitForSeconds( 0.5f );
-            _onLoginSuccess.OnNext( true );
         }
 
         public async UniTask RoomEnterProcess( int index, string name )

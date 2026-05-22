@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using LiveAppUI.Model;
 using LiveAppUI.Presenter;
 using System.Collections.Generic;
 using UniRx;
@@ -8,10 +7,13 @@ using Zenject;
 
 namespace LiveAppUI.View
 {
-    public class SceneMenuView : MonoBehaviour
+    public class LiveAppMainMenuView : MonoBehaviour
     {
         [SerializeField] private List<ButtonViewPair> _viewPairs = null;
         [SerializeField] private ObservableButton _loginButton = null;
+
+        [SerializeField] private ObservableButton _resourceButton = null;
+        [SerializeField] private GameObject _resourceView = null;
 
         private IServerModalView _loginView;
         private IRoomModalView _roomView;
@@ -26,18 +28,32 @@ namespace LiveAppUI.View
 
         private void Awake()
         {
-            for( int i = 0; i < _viewPairs.Count; i++ )
-            {
-                var viewPair = _viewPairs[i];
-                viewPair.view.SetActive( false );
-                viewPair.button.OnClick
-                    .Subscribe( isOn =>
-                    {
-                        CloaseAllTab();
-                        viewPair.view.SetActive( true );
-                    } )
-                    .AddTo( this );
-            }
+            _resourceButton.OnClick
+                .Subscribe( _ =>
+                {
+                    CloaseAllTab();
+                    _resourceView.SetActive( !_resourceView.activeSelf );
+                } )
+                .AddTo( this );
+            //for( int i = 0; i < _viewPairs.Count; i++ )
+            //{
+            //    var viewPair = _viewPairs[i];
+            //    viewPair.view.SetActive( false );
+            //    viewPair.button.OnClick
+            //        .Subscribe( isOn =>
+            //        {
+            //            CloaseAllTab();
+            //            if( viewPair.view.activeSelf )
+            //            {
+            //                viewPair.view.SetActive( false );
+            //            }
+            //            else
+            //            {
+            //                viewPair.view.SetActive( true );
+            //            }
+            //        } )
+            //        .AddTo( this );
+            //}
             CloaseAllTab();
 
             _loginButton.OnClick
@@ -49,12 +65,14 @@ namespace LiveAppUI.View
                 .AddTo( this );
         }
 
+        private void Start()
+        {
+            _resourceView.SetActive( false );
+        }
+
         private void CloaseAllTab()
         {
-            for( int i = 0; i < _viewPairs.Count; i++ )
-            {
-                _viewPairs[i].view.SetActive( false );
-            }
+            _resourceView.SetActive( false );
         }
     }
 }
