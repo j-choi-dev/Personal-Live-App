@@ -22,6 +22,8 @@ namespace LiveApp.UI
 
         public string ID { get; private set; } = string.Empty;
 
+        public GameObject Object => gameObject;
+
         /// <summary>
         /// 초기화 등 특수한 경우에만 한정해서 ID 적용
         /// </summary>
@@ -58,6 +60,12 @@ namespace LiveApp.UI
                     }
                 } )
                 .AddTo( this );
+        }
+
+        private void OnDestroy()
+        {
+            _onSelected.OnCompleted();
+            _onSelected.Dispose();
         }
     }
 }

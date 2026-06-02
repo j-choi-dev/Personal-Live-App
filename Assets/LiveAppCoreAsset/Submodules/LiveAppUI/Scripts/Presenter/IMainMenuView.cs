@@ -1,12 +1,10 @@
 using System;
 using UniRx;
 
-
 namespace LiveAppUI.Presenter
 {
-    public interface IMainMenuView
+    public interface IMainMenuView : IViewBase
     {
-        IObservable<Unit> OnClickEmergency { get; }
-        IObservable<bool> OnRecordingChanged { get; }
+        IObservable<Unit> OnResourceButtonCLick { get; }        
     }
 }
