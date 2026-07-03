@@ -12,28 +12,37 @@ namespace LiveAppUI.Presenter
         private IRoomModalView _roomView;
 
         private ILogInModel _loginModel;
+        private IOAuthTokenModel _authTokenModel;
 
 
         [Inject]
         public void Initialize( IServerModalView loginView,
             IRoomModalView roomView,
-            ILogInModel loginModel )
+            ILogInModel loginModel,
+            IOAuthTokenModel authTokenModel )
         {
             _loginView = loginView;
             _roomView = roomView;
             _loginModel = loginModel;
+            _authTokenModel = authTokenModel;
         }
 
-        private async void Awake()
+        private void Awake()
         {
             InitView();
             InitModel();
         }
 
-        private void Start()
+        private async void Start()
         {
-            _loginView.SetActive( true );
+            _loginView.SetActive( false );
             _roomView.SetActive( false );
+
+            var result = await _authTokenModel.InitilizeAuthProcess();
+            if( result == false )
+            {
+                return;
+            }
         }
 
         private void InitView()
@@ -46,8 +55,8 @@ namespace LiveAppUI.Presenter
                 } )
                 .AddTo( this );
             _loginView.OnClicLogin
-                .Subscribe( x => _loginModel.LoginProcess( _loginView.CurrentID, 
-                    _loginView.CurrentPassword, 
+                .Subscribe( x => _loginModel.LoginProcess( _loginView.CurrentID,
+                    _loginView.CurrentPassword,
                     ( ServerItem )( _loginView.CurrentIndex+1 ) ).Forget()
                 )
                 .AddTo( this );
@@ -58,11 +67,11 @@ namespace LiveAppUI.Presenter
                 .AddTo( this );
 
             _roomView.OnClickExit
-                .Merge(_roomView.OnClose )
+                .Merge( _roomView.OnClose )
                 .Subscribe( _ =>
                 {
                     _roomView.SetActive( false );
-                    _loginView.SetActive ( true );
+                    _loginView.SetActive( true );
                 } )
                 .AddTo( this );
 
@@ -87,6 +96,33 @@ namespace LiveAppUI.Presenter
                     _loginView.SetActive( false );
                 } )
                 .AddTo( this );
+
+            _loginModel.OnRoomEnterSuccess
+                .Subscribe( _ =>
+                {
+                    _roomView.SetActive( false );
+                    _loginView.SetActive( false );
+                } )
+                .AddTo( this );
+
+            _authTokenModel.OnCompleteTokenProcess
+                .Subscribe( isResullt => TokenResultProcess(isResullt) )
+                .AddTo( this );
+        }
+
+        private void TokenResultProcess(bool isResult)
+        {
+            Debug.Log( $"Token Complete :: {isResult}" );
+            if( isResult )
+            {
+                _loginView.SetActive( true );
+                _roomView.SetActive( false );
+            }
+            else
+            {
+                Debug.Log( $"Application Quit" );
+                Application.Quit( 1 );
+            }
         }
     }
 }

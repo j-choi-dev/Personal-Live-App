@@ -45,6 +45,11 @@ namespace LiveAppUI.Installer
                 .Bind<ILogInModel>()
                 .To<LogInModel>()
                 .AsSingle();
+
+            Container
+                .Bind<IOAuthTokenModel>()
+                .To<OAuthTokenModel>()
+                .AsSingle();
         }
     }
 }

@@ -5,6 +5,6 @@ namespace StudioSystemSDK.Domain
     public interface IFileSerializeDomain
     {
         string SerializeToBinary( string rawMessage );
-        string DeserializeToString( string rawMessage );
+        T DeserializeFromJson<T>( string rawMessage );
     }
 }

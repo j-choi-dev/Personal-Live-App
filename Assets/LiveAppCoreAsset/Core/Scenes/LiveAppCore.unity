@@ -173,6 +173,7 @@ GameObject:
   m_Component:
   - component: {fileID: 772678941}
   - component: {fileID: 772678942}
+  - component: {fileID: 772678943}
   m_Layer: 0
   m_Name: StudioSystemSDKInstaller
   m_TagString: Untagged
@@ -207,6 +208,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 606737cf114682d419f355abc64908db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppCore.Installer.StudioSystemInstaller
+--- !u!114 &772678943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772678940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9b21ec14bfaf784bbcf5df248fdaf43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppCore.GoogleAuthroizeController
 --- !u!1 &1340007241
 GameObject:
   m_ObjectHideFlags: 0

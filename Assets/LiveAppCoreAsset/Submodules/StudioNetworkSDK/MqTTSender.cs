@@ -18,11 +18,7 @@ namespace StudioNetworkSDK.Infrastructure
         {
             _config = config;
             _client = new MqttClient( ServerValue.Address );
-
-            // Sender가 대표로 서버에 연결을 수행해
             _client.Connect( config.guid );
-
-            Debug.Log( "MqTTSender: 서버 접속 완료" );
             return true;
         }
 
@@ -38,7 +34,6 @@ namespace StudioNetworkSDK.Infrastructure
             var json = JsonUtility.ToJson(req);
 
             _client.Publish( "login/request", Encoding.UTF8.GetBytes( json ), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false );
-            Debug.Log( $"로그인 데이터 전송함 (클라이언트 ID: {_config.guid})" );
             return true;
         }
     }

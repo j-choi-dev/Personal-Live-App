@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace StudioNetworkSDK.Application
 {
-    public class NetworkRequestApplication : INetworkRequestApplication
+    public class NetworkSendContext : INetworkSendContext
     {
         private IServerConfigDomain _serverConfigDomain;
         private ISenderDomain _sender;
@@ -18,7 +18,7 @@ namespace StudioNetworkSDK.Application
         private readonly Subject<bool> _onLoginResult = new Subject<bool>();
         public IObservable<bool> OnLoginResult => _onLoginResult;
 
-        public NetworkRequestApplication( IServerConfigDomain serverConfigDomain,
+        public NetworkSendContext( IServerConfigDomain serverConfigDomain,
             ISenderDomain sender,
             IReceiverDomain receiver )
         {

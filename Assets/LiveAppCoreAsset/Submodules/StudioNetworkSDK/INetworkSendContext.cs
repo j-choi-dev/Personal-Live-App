@@ -6,7 +6,7 @@ namespace StudioNetworkSDK.Application
     /// <summary>
     /// 네트워크 통신 중 Send를 담당하는 구현클래스를 위한 Interface
     /// </summary>
-    public interface INetworkRequestApplication
+    public interface INetworkSendContext
     {
         IObservable<bool> OnLoginResult { get; }
 

@@ -4,12 +4,12 @@ using Zenject;
 
 namespace LiveAppCore
 {
-    public class NetworkManager : MonoBehaviour
+    public class NetworkController : MonoBehaviour
     {
-        private INetworkRequestApplication _networkApplication;
+        private INetworkSendContext _networkApplication;
 
         [Inject]
-        public void Initialize( INetworkRequestApplication networkApplication )
+        public void Initialize( INetworkSendContext networkApplication )
         {
             _networkApplication = networkApplication;
         }

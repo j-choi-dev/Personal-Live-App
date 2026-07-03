@@ -9,7 +9,7 @@ namespace LiveAppUI.Model
 {
     public class LogInModel : ILogInModel, IDisposable
     {
-        private INetworkRequestApplication _networkApplication;
+        private INetworkSendContext _networkApplication;
         private CompositeDisposable _disposable = new CompositeDisposable();
         public IReadOnlyList<string> ServerList => Enum.GetNames( typeof( ServerItem ) );
         public IReadOnlyList<string> RoomList => new List<string>() { "Room_001", "Room_002", "Room_003" }; // TODO 임시 데이터 @Choi 26.05.01
@@ -21,7 +21,7 @@ namespace LiveAppUI.Model
         private Subject<bool> _onRoomEnterSuccess  = new Subject<bool>();
         public IObservable<bool> OnRoomEnterSuccess => _onRoomEnterSuccess;
 
-        public LogInModel( INetworkRequestApplication networkApplication )
+        public LogInModel( INetworkSendContext networkApplication )
         {
             _networkApplication = networkApplication;
 

@@ -8,5 +8,6 @@ namespace StudioSystemSDK.Domain
         bool CreateFile( string dirName );
         bool SaveBinaryFile( string filePath, byte[] message );
         byte[] LoadBinaryFile( string filePath );
+        string LoadTextFile( string filePath );
     }
 }

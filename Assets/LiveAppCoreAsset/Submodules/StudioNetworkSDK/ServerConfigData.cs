@@ -22,7 +22,6 @@ namespace StudioNetworkSDK.Infrastructure
                 PlayerPrefs.SetString( ServerConfigKey.Platform, platform );
             }
             config.platform = PlayerPrefs.GetString( ServerConfigKey.Platform );
-            Debug.Log( $"config = {config.guid}" );
             return config;
         }
     }

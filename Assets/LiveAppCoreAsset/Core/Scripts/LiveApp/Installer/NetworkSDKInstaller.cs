@@ -10,8 +10,8 @@ namespace LiveAppCore.Installer
         public override void InstallBindings()
         {
             Container
-                .Bind<INetworkRequestApplication>()
-                .To<NetworkRequestApplication>()
+                .Bind<INetworkSendContext>()
+                .To<NetworkSendContext>()
                 .AsSingle();
 
             Container

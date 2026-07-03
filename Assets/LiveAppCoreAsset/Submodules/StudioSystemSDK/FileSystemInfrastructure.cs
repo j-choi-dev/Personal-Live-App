@@ -40,7 +40,7 @@ namespace StudioSystemSDK.Infrastructure
         {
             var message = string.Empty;
             using( var fs = new FileStream( filePath, FileMode.OpenOrCreate ) )
-            using( var sr = new StreamReader( filePath, false ) )
+            using( var sr = new StreamReader( fs, false ) )
             {
                 message = sr.ReadToEnd();
             }
@@ -69,6 +69,17 @@ namespace StudioSystemSDK.Infrastructure
         public bool CreateFile( string dirName )
         {
             throw new System.NotImplementedException();
+        }
+
+        public string LoadTextFile( string filePath )
+        {
+            var message = string.Empty;
+            using( var fs = new FileStream( filePath, FileMode.Open ) )
+            using( var sr = new StreamReader( fs, false ) )
+            {
+                message = sr.ReadToEnd();
+            }
+            return message;
         }
     }
 }

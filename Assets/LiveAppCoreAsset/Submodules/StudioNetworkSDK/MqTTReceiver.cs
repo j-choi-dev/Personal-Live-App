@@ -25,7 +25,7 @@ namespace StudioNetworkSDK.Infrastructure
                 // 1. 이벤트 바인딩
                 _client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
 
-                // 2. 응답받을 토픽 구독 (이게 빠져서 그동안 못 받은 거야!)
+                // 2. 응답받을 토픽 구독
                 string myResponseTopic = $"login/response/{config.guid}";
                 _client.Subscribe( new string[] { myResponseTopic }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE } );
 
