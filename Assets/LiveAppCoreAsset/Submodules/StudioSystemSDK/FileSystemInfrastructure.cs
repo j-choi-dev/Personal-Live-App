@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Microsoft.Cci;
 using StudioSystemSDK.Domain;
 using System.IO;
@@ -71,13 +72,13 @@ namespace StudioSystemSDK.Infrastructure
             throw new System.NotImplementedException();
         }
 
-        public string LoadTextFile( string filePath )
+        public async UniTask<string> LoadTextFile( string filePath )
         {
             var message = string.Empty;
             using( var fs = new FileStream( filePath, FileMode.Open ) )
             using( var sr = new StreamReader( fs, false ) )
             {
-                message = sr.ReadToEnd();
+                message = await sr.ReadToEndAsync();
             }
             return message;
         }

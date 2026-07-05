@@ -1,3 +1,4 @@
+using StudioResourceSDK.Domain;
 using System;
 using UnityEngine;
 
@@ -43,5 +44,21 @@ namespace StudioNetworkSDK.Domain
     {
         public static string GUID = "Client_Guid";
         public static string Platform = "Platform";
+    }
+
+    public enum ServerType
+    {
+        None = 0,
+        Develop,
+        Staging,
+        Master,
+    }
+
+    public class ResourceServerData
+    {
+        public ResourceType _resourceType = ResourceType.None;
+        public ServerType _serverType = ServerType.None;
+        public string _tableUrl = string.Empty;
+        public string _tableGid = string.Empty;
     }
 }

@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using LiveAppCore.Google.Application;
 using LiveAppCore.Google.Domain;
 using StudioSystemSDK.Domain;
 using System;
@@ -11,7 +10,7 @@ namespace LiveAppCore.Google.Application
 {
     public class AuthInfoContext : IAuthInfoContext
     {
-        private const string TempFileName = "auth.bin";
+        private const string TempFileName = "auth.bin"; // TODO 리팩터링 대상 @Choi 26.07.04
 
         private IFileSystemDomain _fileSystemDomain;
         private IFileSerializeDomain _fileSerializeDomain;
@@ -43,7 +42,7 @@ namespace LiveAppCore.Google.Application
                 {
                     throw new FileNotFoundException( "File Not Exist :: ", authInfoPath );
                 }
-                var rawData = _fileSystemDomain.LoadTextFile( authInfoPath );
+                var rawData = await _fileSystemDomain.LoadTextFile( authInfoPath );
                 var oauthSettings = _fileSerializeDomain.DeserializeFromJson<GoogleOAuthSettings>( rawData );
                 _googleAuthInfoStorage.SetOAuthSettings( oauthSettings );
                 _googleAuthDomain.SetAuthValue( oauthSettings );

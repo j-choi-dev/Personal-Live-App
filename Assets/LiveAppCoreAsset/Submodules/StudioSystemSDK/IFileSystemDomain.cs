@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+
 namespace StudioSystemSDK.Domain
 {
     public interface IFileSystemDomain
@@ -8,6 +10,6 @@ namespace StudioSystemSDK.Domain
         bool CreateFile( string dirName );
         bool SaveBinaryFile( string filePath, byte[] message );
         byte[] LoadBinaryFile( string filePath );
-        string LoadTextFile( string filePath );
+        UniTask<string> LoadTextFile( string filePath );
     }
 }
