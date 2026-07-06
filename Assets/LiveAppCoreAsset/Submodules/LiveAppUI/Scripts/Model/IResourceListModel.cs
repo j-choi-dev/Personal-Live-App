@@ -1,10 +1,15 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 
 namespace LiveAppUI.Model
 {
     public interface IResourceListModel
     {
-        UniTask<IReadOnlyList<string>> GetCharacterList();
+        IObservable <IReadOnlyList<string>> OnCharacterListChanged { get; }
+
+        UniTask InitializeServerConfig();
+        UniTask GetResourceList( ResourceType resourceType, ServerType serverType );
+        ServerType GetCurrentServerType( ResourceType resourceType );
     }
 }

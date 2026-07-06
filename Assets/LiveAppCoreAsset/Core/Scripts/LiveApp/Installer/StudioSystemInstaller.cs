@@ -1,6 +1,7 @@
 using LiveAppCore.Google.Application;
 using LiveAppCore.Google.Domain;
 using LiveAppCore.Google.Infrastructure;
+using StudioSystemSDK.Application;
 using StudioSystemSDK.Domain;
 using StudioSystemSDK.Infrastructure;
 using Zenject;
@@ -11,6 +12,10 @@ namespace LiveAppCore.Installer
     {
         public override void InstallBindings()
         {
+            Container
+                .Bind<IFileSystemContext>()
+                .To<FileSystemContext>()
+                .AsSingle();
             Container
                 .Bind<IAuthInfoContext>()
                 .To<AuthInfoContext>()

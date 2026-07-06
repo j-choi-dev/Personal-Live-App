@@ -3127,6 +3127,7 @@ MonoBehaviour:
   _scriptableObjectInstallers: []
   _monoInstallers:
   - {fileID: 601516612}
+  - {fileID: 1953218513}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -3159,6 +3160,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 601516613}
+  - {fileID: 1953218512}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &575728890
@@ -9723,6 +9725,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1937090032}
   m_CullTransparentMesh: 1
+--- !u!1 &1953218511
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1953218512}
+  - component: {fileID: 1953218513}
+  m_Layer: 0
+  m_Name: SystemResourceSDKInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1953218512
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1953218511}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 563598789}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1953218513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1953218511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13437c98bb8b3e6478612547dcc9fd15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Application.SystemResourceSDKInstaller
 --- !u!1 &1964895817
 GameObject:
   m_ObjectHideFlags: 0
@@ -10334,7 +10380,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2734362508437910817, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00017339386
+      value: 0.00042489075
       objectReference: {fileID: 0}
     - target: {fileID: 2761245106118724078, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_Name

@@ -13,12 +13,17 @@ namespace LiveAppUI.View
         [SerializeField] private TMP_Text _title = null;
         [SerializeField] private ObservableButton _cancleButton = null;
         [SerializeField] private ObservableButton _closeButton = null;
+        [SerializeField] private ObservableDropdown _server = null;
         [SerializeField] private ListView _listView = null;
         public bool IsActive => gameObject.activeSelf;
+
+        public IObservable<int> OnServerChange => _server.OnValueChanged;
 
         public IObservable<Unit> OnClickClose => _closeButton.OnClick;
 
         public IObservable<Unit> OnClickCancle => _cancleButton.OnClick;
+
+        public int CurrentServerIndex => _server.Value;
 
         private void Awake()
         {
@@ -61,5 +66,11 @@ namespace LiveAppUI.View
         {
             _title.text = title;
         }
+
+        public void SetServerList( IReadOnlyList<string> servers )
+            => _server.SetOptions( servers );
+
+        public void SetServerItem( int index )
+            => _server.SetValueWithoutNotify( index );
     }
 }

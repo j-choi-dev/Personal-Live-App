@@ -56,9 +56,20 @@ namespace StudioNetworkSDK.Domain
 
     public class ResourceServerData
     {
-        public ResourceType _resourceType = ResourceType.None;
-        public ServerType _serverType = ServerType.None;
-        public string _tableUrl = string.Empty;
-        public string _tableGid = string.Empty;
+        public readonly ResourceType resourceType = ResourceType.None;
+        public readonly ServerType serverType = ServerType.None;
+        public readonly string tableUrl = string.Empty;
+        public readonly string tableGid = string.Empty;
+
+        public ResourceServerData( ResourceType resourceType,
+            ServerType serverType,
+            string tableUrl,
+            string tableGid )
+        {
+            this.resourceType = resourceType;
+            this.serverType = serverType;
+            this.tableUrl = tableUrl;
+            this.tableGid = tableGid;
+        }
     }
 }

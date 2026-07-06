@@ -8,6 +8,11 @@ namespace StudioResourceSDK.Application
     {
         private IResourceConfigParseDomain _domain;
 
+        public ResourceConfigContext(IResourceConfigParseDomain domain )
+        {
+            _domain=domain;
+        }
+
         public IReadOnlyCollection<ResourceServerData> ParseServerConfigData( string rawData )
         {
             return _domain.ParseServerConfigData(rawData );

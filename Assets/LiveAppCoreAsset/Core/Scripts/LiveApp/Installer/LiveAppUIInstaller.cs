@@ -1,6 +1,7 @@
 using LiveAppUI.Model;
 using LiveAppUI.Presenter;
 using LiveAppUI.View;
+using StudioResourceSDK.Application;
 using UnityEngine;
 using Zenject;
 
@@ -49,6 +50,11 @@ namespace LiveAppUI.Installer
             Container
                 .Bind<IOAuthTokenModel>()
                 .To<OAuthTokenModel>()
+                .AsSingle();
+
+            Container
+                .Bind<IResourceListModel>()
+                .To<ResourceListModel>()
                 .AsSingle();
         }
     }

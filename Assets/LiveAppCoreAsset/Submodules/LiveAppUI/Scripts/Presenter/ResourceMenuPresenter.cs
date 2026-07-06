@@ -1,3 +1,5 @@
+using LiveAppUI.Model;
+using LiveAppUI.View;
 using System;
 using UniRx;
 using UnityEngine;
@@ -9,16 +11,19 @@ namespace LiveAppUI.Presenter
     {
         private IResourceMenuView _resourceMenuView;
         private IResourceListView _resourceListView;
+        private IResourceListModel _resourceListModel;
 
         private ResourceType _currentResourceType = ResourceType.None;
 
         [Inject]
         public void Initialize(
             IResourceMenuView resourceMenuView,
-            IResourceListView resourceListView )
+            IResourceListView resourceListView,
+            IResourceListModel resourceListModel)
         {
             _resourceMenuView = resourceMenuView;
             _resourceListView = resourceListView;
+            _resourceListModel = resourceListModel;
         }
 
         private void Awake()
@@ -28,15 +33,22 @@ namespace LiveAppUI.Presenter
             _resourceListView.OnClickClose
                 .Subscribe( _ => CloseResourceList() )
                 .AddTo( this );
+            _resourceListView.OnServerChange("")
 
             BindResourceButton( _resourceMenuView.OnClickAvatar, ResourceType.Character );
             BindResourceButton( _resourceMenuView.OnClickStage, ResourceType.Stage );
             BindResourceButton( _resourceMenuView.OnClickProp, ResourceType.Prop );
+
         }
 
-        private void BindResourceButton(
-            IObservable<Unit> onClick,
-            ResourceType resourceType )
+        private async void Start()
+        {
+            _currentResourceType = ResourceType.Character;
+
+            await _resourceListModel.InitializeServerConfig();
+        }
+
+        private void BindResourceButton( IObservable<Unit> onClick, ResourceType resourceType )
         {
             onClick
                 .Subscribe( _ => ToggleResourceList( resourceType ) )
@@ -52,6 +64,9 @@ namespace LiveAppUI.Presenter
                 CloseResourceList();
                 return;
             }
+            var currentServer = _resourceListModel.GetCurrentServerType( resourceType );
+            var type = GetServerType( _resourceListView.CurrentServerIndex );
+            _resourceListView.SetServerItem( (int)currentServer-1 );
 
             ShowResourceList( resourceType );
         }
@@ -117,5 +132,10 @@ namespace LiveAppUI.Presenter
         {
             _resourceListView.SetActive( false );
         }
+
+        private int GetServerIndex( ServerType type ) 
+            => ( int )type - 1;
+        private ServerType GetServerType( int index )
+            => ( ServerType )( index + 1 );
     }
 }

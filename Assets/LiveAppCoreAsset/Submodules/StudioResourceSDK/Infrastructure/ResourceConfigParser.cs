@@ -1,6 +1,7 @@
 using StudioNetworkSDK.Domain;
 using StudioResourceSDK.Domain;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace StudioResourceSDK.Infrastructure
 {
@@ -14,12 +15,16 @@ namespace StudioResourceSDK.Infrastructure
             var row = rawData.Split('\n');
             for(var i = 0; i < row.Length; i++ )
             {
+                if( string.IsNullOrWhiteSpace( row[i] ) )
+                {
+                    break;
+                }
                 var colDatas = row[i].Split( ',' );
-                var data = new ResourceServerData();
-                data._resourceType = ( ResourceType )System.Enum.Parse(typeof(ResourceType), colDatas[0]);
-                data._serverType = ( ServerType )System.Enum.Parse( typeof( ServerType ), colDatas[1] );
-                data._tableUrl = colDatas[2];
-                data._tableGid = colDatas[3];
+                var data = new ResourceServerData(
+                    ( ResourceType )System.Enum.Parse(typeof(ResourceType), colDatas[0]),
+                    ( ServerType )System.Enum.Parse( typeof( ServerType ), colDatas[1] ),
+                    colDatas[2],
+                    colDatas[3]);
                 list.Add(data );
             }
             return list;

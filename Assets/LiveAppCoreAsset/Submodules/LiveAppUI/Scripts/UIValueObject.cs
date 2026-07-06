@@ -7,4 +7,12 @@ namespace LiveAppUI
         Stage,
         Prop,
     }
+
+    public enum ServerType
+    {
+        None = 0,
+        Develop,
+        Staging,
+        Master,
+    }
 }
