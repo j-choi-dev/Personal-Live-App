@@ -22,4 +22,52 @@ namespace StudioResourceSDK.Domain
             ResourceType = resourceType;
         }
     }
+
+    public enum CharacterGeneration
+    {
+        Gen_1 = 0,
+        Gen_2,
+    }
+
+    public enum Type
+    {
+        Prod = 0,
+        Test,
+    }
+
+    public class ResourceItemBase
+    {
+        public string ID { get; private set; }
+        public string DisplayName{ get; private set; }
+        public ResourceItemBase( string id, string displayName )
+        {
+            ID = id;
+            DisplayName = displayName;
+        }
+    }
+
+    public class CharacterResourceItem : ResourceItemBase
+    {
+        public CharacterGeneration Generation;
+        public Type Type;
+
+        public CharacterResourceItem(string  id, 
+            string displayName, 
+            CharacterGeneration generation, 
+            Type type ) : base(id, displayName)
+        {
+            Generation = generation;
+            Type = type;
+        }
+    }
+
+    public class StageResourceItem
+    {
+
+    }
+
+    public class PropResourceItem
+    {
+
+    }
 }

@@ -28,7 +28,7 @@ namespace StudioResourceSDK.Infrastructure
             string token,
             string spreadsheetUrlOrId,
             string tabName,
-            string columnDelimiter = "\t",
+            string columnDelimiter = ",",
             string rowDelimiter = "\n",
             bool escapeCellLineBreaks = true,
             CancellationToken cancellationToken = default

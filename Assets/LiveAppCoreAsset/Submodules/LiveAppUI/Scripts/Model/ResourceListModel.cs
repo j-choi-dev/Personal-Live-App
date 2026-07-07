@@ -4,9 +4,11 @@ using StudioResourceSDK.Application;
 using StudioSystemSDK.Application;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UniRx;
+using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace LiveAppUI.Model
 {
@@ -19,6 +21,7 @@ namespace LiveAppUI.Model
 
         private ResourceType _currentResourceType = ResourceType.None;
         private Dictionary<ResourceType, ServerType> _serverTypeDic = new Dictionary<ResourceType, ServerType>();
+        private IList<ResourceServerData> _serverConfigs = new List<ResourceServerData>();
 
         private Subject<IReadOnlyList<string>> _onCharacterListChanged = new Subject<IReadOnlyList<string>>();
         public IObservable<IReadOnlyList<string>> OnCharacterListChanged => _onCharacterListChanged;
@@ -43,14 +46,12 @@ namespace LiveAppUI.Model
                 }
                 _serverTypeDic.Add( resourceTypeList[i], ServerType.None );
             }
-            _currentResourceType = ResourceType.Character;
         }
 
         public async UniTask InitializeServerConfig()
         {
             var rawData = await _fileSystemContext.ReadBinaryFile( TempFileName );
-            var serverConfigs =  _resourceConfigContext.ParseServerConfigData(rawData);
-            var tempList = serverConfigs.Select( arg => arg ).ToList();
+            _serverConfigs =  _resourceConfigContext.ParseServerConfigData(rawData).ToList();
             // 리소스 & 구글 시트 링크 보존 -> Context 통해서 DataClass로 ...? @Choi
         }
 
@@ -60,12 +61,44 @@ namespace LiveAppUI.Model
             {
                 return;
             }
-            _serverTypeDic[resourceType] = serverType;
+            var resource = ConvertResourceType(resourceType);
+            var server = ConvertServerType(serverType);
+            var config = _serverConfigs
+                .FirstOrDefault(arg => arg.resourceType == resource &&
+                arg.serverType == server);
+
+            var loadResult = await _resourceTableContext.LoadResourceTableProcess( 
+                config.resourceType, 
+                server.ToString(), 
+                config.tableUrl 
+                );
 
             throw new NotImplementedException();
         }
 
         public ServerType GetCurrentServerType( ResourceType resourceType )
             => _serverTypeDic[resourceType];
+
+        public void SetCurrentServerType( ResourceType resourceType, ServerType serverType )
+            => _serverTypeDic[resourceType] = serverType;
+
+
+        private StudioResourceSDK.Domain.ResourceType ConvertResourceType( ResourceType type )
+        {
+            StudioResourceSDK.Domain.ResourceType retVal
+                = (StudioResourceSDK.Domain.ResourceType)Enum.Parse(
+                    typeof(StudioResourceSDK.Domain.ResourceType), type.ToString()
+                    );
+            return retVal;
+        }
+
+        private StudioNetworkSDK.Domain.ServerType ConvertServerType(ServerType type)
+        {
+            StudioNetworkSDK.Domain.ServerType retVal 
+                = (StudioNetworkSDK.Domain.ServerType)Enum.Parse(
+                    typeof(StudioNetworkSDK.Domain.ServerType), type.ToString()
+                    );
+            return retVal;
+        }
     }
 }

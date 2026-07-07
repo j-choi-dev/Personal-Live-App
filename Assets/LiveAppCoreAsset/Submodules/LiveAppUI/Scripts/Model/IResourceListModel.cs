@@ -7,9 +7,10 @@ namespace LiveAppUI.Model
     public interface IResourceListModel
     {
         IObservable <IReadOnlyList<string>> OnCharacterListChanged { get; }
+        ServerType GetCurrentServerType( ResourceType resourceType );
 
         UniTask InitializeServerConfig();
         UniTask GetResourceList( ResourceType resourceType, ServerType serverType );
-        ServerType GetCurrentServerType( ResourceType resourceType );
+        void SetCurrentServerType( ResourceType resourceType, ServerType serverType );
     }
 }

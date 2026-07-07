@@ -1,21 +1,17 @@
-using Cysharp.Threading.Tasks;
 using StudioResourceSDK.Domain;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-namespace StudioResourceSDK.Application
+namespace StudioSystemSDK.Domain
 {
-    public interface IResourceTableContext
+    public interface IResourceDataParseDomain
     {
-        // Google Sheet 접속
-        // 파싱
-        // 리소스 리스트로 반환
         IObservable<IReadOnlyCollection<CharacterResourceItem>> OnCharacterListChanged { get; }
         IObservable<IReadOnlyCollection<StageResourceItem>> OnStageListChanged { get; }
         IObservable<IReadOnlyCollection<PropResourceItem>> OnPropListChanged { get; }
 
-        UniTask<bool> InitProcess();
-        UniTask<bool> LoadResourceTableProcess( ResourceType tyoe, string serverType, string tableUrl );
+        IReadOnlyCollection<CharacterResourceItem> ParseCharacterData( string rawData );
+        IReadOnlyCollection<StageResourceItem> ParseStageData( string rawData );
+        IReadOnlyCollection<PropResourceItem> ParsePropData( string rawData );
     }
 }

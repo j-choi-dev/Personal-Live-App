@@ -1,26 +1,68 @@
 using Cysharp.Threading.Tasks;
+using LiveAppCore.Google.Domain;
 using StudioResourceSDK.Domain;
+using StudioSystemSDK.Domain;
 using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 using UnityEngine;
 
 namespace StudioResourceSDK.Application
 {
     public class ResourceTableContext : IResourceTableContext
     {
-        public IObservable<ResourceTableData> OnCharacterListChanged => throw new NotImplementedException();
+        private IResourceTableLoadDomain _resourceTableLoadDomain;
+        private IGoogleAuthTokenDomain _tokenDomain;
+        private IResourceDataParseDomain _resourceDataParseDomain;
 
-        public IObservable<ResourceTableData> OnStageListChanged => throw new NotImplementedException();
+        public IObservable<IReadOnlyCollection<CharacterResourceItem>> OnCharacterListChanged 
+            => _resourceDataParseDomain.OnCharacterListChanged;
 
-        public IObservable<ResourceTableData> OnPropListChanged => throw new NotImplementedException();
+        public IObservable<IReadOnlyCollection<StageResourceItem>> OnStageListChanged
+            => _resourceDataParseDomain.OnStageListChanged;
 
-        public UniTask<bool> InitProcess()
+        public IObservable<IReadOnlyCollection<PropResourceItem>> OnPropListChanged
+            => _resourceDataParseDomain.OnPropListChanged;
+
+        public ResourceTableContext( IResourceTableLoadDomain resourceTableLoadDomain,
+            IGoogleAuthTokenDomain tokenDomain,
+            IResourceDataParseDomain resourceDataParseDomain )
         {
-            throw new NotImplementedException();
+            _resourceTableLoadDomain = resourceTableLoadDomain;
+            _tokenDomain = tokenDomain;
+            _resourceDataParseDomain = resourceDataParseDomain;
         }
 
-        public UniTask<bool> LoadResourceTableProcess( ResourceType tyoe )
+        public async UniTask<bool> LoadResourceTableProcess( ResourceType type, string serverType, string tableUrl )
         {
-            throw new NotImplementedException();
+            bool exists = await _resourceTableLoadDomain.ExistsSheetAndTabAsync(
+                tableUrl,
+                serverType,
+                _tokenDomain.Token
+            );
+            if( !exists )
+            {
+                Debug.LogError(
+                    $"Google Sheet or tab not found, or permission denied. Sheet: {tableUrl}, Tab: {serverType}"
+                );
+                return false;
+            }
+            string tableText = await _resourceTableLoadDomain.LoadVariableRangeAsStringAsync(
+                _tokenDomain.Token,
+                tableUrl,
+                serverType,
+                columnDelimiter: ",",
+                rowDelimiter: "\n",
+                escapeCellLineBreaks: true
+            );
+            Debug.Log( $"LoadResourceTableProcess :: {type} / {serverType}" );
+            _resourceDataParseDomain.ParseCharacterData( tableText );
+            return true;
+        }
+
+        public async UniTask<bool> InitProcess()
+        {
+            return true;
         }
     }
 }
