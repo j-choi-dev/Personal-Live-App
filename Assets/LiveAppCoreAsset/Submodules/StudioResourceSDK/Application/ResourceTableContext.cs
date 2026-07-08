@@ -56,7 +56,7 @@ namespace StudioResourceSDK.Application
                 escapeCellLineBreaks: true
             );
             Debug.Log( $"LoadResourceTableProcess :: {type} / {serverType}" );
-            _resourceDataParseDomain.ParseCharacterData( tableText );
+            var result = _resourceDataParseDomain.ParseCharacterData( tableText );
             return true;
         }
 

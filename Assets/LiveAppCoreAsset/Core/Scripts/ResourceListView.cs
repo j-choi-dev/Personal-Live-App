@@ -2,6 +2,7 @@ using LiveApp.UI;
 using LiveAppUI.Presenter;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -25,6 +26,8 @@ namespace LiveAppUI.View
 
         public int CurrentServerIndex => _server.Value;
 
+        private List<(string id, string name)> _currentItemList = new List<(string id, string name)>();
+
         private void Awake()
         {
             _closeButton.OnClick
@@ -38,14 +41,16 @@ namespace LiveAppUI.View
             gameObject.SetActive( isActive );
         }
 
-        public void SetItem( string id, string name )
+        public void AddListItem( string id, string name )
         {
             _listView.AddItem( id, name );
         }
 
-        public void RemoveItem( string id )
+        public void RemoveListItem( string id )
         {
-            _listView.AddItem( id, name );
+            var item = _currentItemList.FirstOrDefault( arg => arg.id == id );
+            _currentItemList.Remove( item );
+            _listView.RemoveItem( id );
         }
 
         public void SetList( IReadOnlyList<(string id, string name)> list )
@@ -54,11 +59,14 @@ namespace LiveAppUI.View
             {
                 var item = list[i];
                 _listView.AddItem( item.id, item.name );
+
+                _currentItemList.Add((item.id, item.name) );
             }
         }
 
         public void ResetList()
         {
+            _currentItemList.Clear();
             _listView.Clear();
         }
 

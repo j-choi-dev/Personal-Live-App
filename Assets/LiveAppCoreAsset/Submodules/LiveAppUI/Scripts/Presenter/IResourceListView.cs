@@ -16,6 +16,8 @@ namespace LiveAppUI.Presenter
         void SetServerList( IReadOnlyList<string> servers );
         void SetServerItem( int index );
         void SetList( IReadOnlyList<(string id, string name)> list );
+        void AddListItem( string id, string name );
+        void RemoveListItem( string id );
         void ResetList();
     }
 }

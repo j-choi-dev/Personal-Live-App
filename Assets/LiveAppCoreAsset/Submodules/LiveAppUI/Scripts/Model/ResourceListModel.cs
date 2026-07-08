@@ -4,27 +4,25 @@ using StudioResourceSDK.Application;
 using StudioSystemSDK.Application;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using UniRx;
-using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace LiveAppUI.Model
 {
-    public class ResourceListModel : IResourceListModel
+    public class ResourceListModel : IResourceListModel, IDisposable
     {
         private const string TempFileName = "ResourceInfo.bin"; // TODO 리팩터링 대상 @Choi 26.07.04
         private IResourceConfigContext _resourceConfigContext;
         private IResourceTableContext _resourceTableContext;
         private IFileSystemContext _fileSystemContext;
+        private CompositeDisposable _disposable = new CompositeDisposable();
 
-        private ResourceType _currentResourceType = ResourceType.None;
         private Dictionary<ResourceType, ServerType> _serverTypeDic = new Dictionary<ResourceType, ServerType>();
         private IList<ResourceServerData> _serverConfigs = new List<ResourceServerData>();
 
-        private Subject<IReadOnlyList<string>> _onCharacterListChanged = new Subject<IReadOnlyList<string>>();
-        public IObservable<IReadOnlyList<string>> OnCharacterListChanged => _onCharacterListChanged;
+        private Subject<IReadOnlyList<(string id, string displayName)>> _onCharacterListChanged = new Subject<IReadOnlyList<(string id, string displayName)>>();
+        public IObservable<IReadOnlyList<(string id, string displayName)>> OnCharacterListChanged => _onCharacterListChanged;
 
         public ResourceListModel( IResourceConfigContext resourceConfigContext,
             IResourceTableContext resourceTableContext,
@@ -34,7 +32,16 @@ namespace LiveAppUI.Model
             _resourceTableContext = resourceTableContext;
             _fileSystemContext = fileSystemContext;
 
-            // TODO Refactor 대상 @Choi 26.07.06
+            _resourceTableContext.OnCharacterListChanged
+                .Subscribe(list =>
+                { 
+                    var result = list.Select( arg => (arg.ID, arg.DisplayName) )
+                        .ToList();
+                    _onCharacterListChanged.OnNext( result );
+                } )
+                .AddTo( _disposable );
+
+            // TODO Refactor 대상(별도 유틸 스크립트화) @Choi 26.07.06
             var resourceTypeList = Enum.GetValues(typeof(ResourceType))
                 .Cast<ResourceType>()
                 .ToList();
@@ -72,8 +79,6 @@ namespace LiveAppUI.Model
                 server.ToString(), 
                 config.tableUrl 
                 );
-
-            throw new NotImplementedException();
         }
 
         public ServerType GetCurrentServerType( ResourceType resourceType )
@@ -99,6 +104,12 @@ namespace LiveAppUI.Model
                     typeof(StudioNetworkSDK.Domain.ServerType), type.ToString()
                     );
             return retVal;
+        }
+
+        public void Dispose()
+        {
+            _disposable.Dispose();
+            _disposable = null;
         }
     }
 }

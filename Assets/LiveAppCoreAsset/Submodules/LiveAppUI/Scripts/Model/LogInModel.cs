@@ -46,7 +46,8 @@ namespace LiveAppUI.Model
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _disposable.Dispose();
+            _disposable = null;
         }
 
     }

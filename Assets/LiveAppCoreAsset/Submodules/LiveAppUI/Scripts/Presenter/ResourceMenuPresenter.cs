@@ -31,15 +31,20 @@ namespace LiveAppUI.Presenter
         private void Awake()
         {
             _resourceListView.SetActive( false );
+            SubscribeView();
+            SubscribeModel();
+        }
 
+        private void SubscribeView()
+        {
             _resourceListView.OnClickClose
-                .Subscribe( _ => CloseResourceList() )
+                .Subscribe( _ => CloseResourceListView() )
                 .AddTo( this );
 
             _resourceMenuView.OnClickAvatar
-                .Subscribe( _ => UpdateResourceList( 
-                    ResourceType.Character, 
-                    _resourceListModel.GetCurrentServerType( ResourceType.Character ) ) 
+                .Subscribe( _ => UpdateResourceList(
+                    ResourceType.Character,
+                    _resourceListModel.GetCurrentServerType( ResourceType.Character ) )
                 )
                 .AddTo( this );
             _resourceMenuView.OnClickStage
@@ -62,11 +67,20 @@ namespace LiveAppUI.Presenter
                     UpdateResourceList( _currentResourceType, GetServerType( server ) );
                 } )
                 .AddTo( this );
+        }
 
-            // 리소스 타입 변경 시 이벤트 통지 
-            // 서버 변경시 이벤트 통지
-            // 
-
+        private void SubscribeModel()
+        {
+            _resourceListModel.OnCharacterListChanged
+                .Subscribe(list =>
+                {
+                    _resourceListView.ResetList();
+                    for( var i = 0; i < list.Count; i++ ) 
+                    {
+                        _resourceListView.AddListItem( list[i].id, list[i].displayName );
+                    }
+                } )
+                .AddTo( this );
         }
 
         private async void Start()
@@ -84,7 +98,7 @@ namespace LiveAppUI.Presenter
             var isSameResourceType = _currentResourceType == resourceType;
             if( isSameResourceType && _resourceListView.IsActive )
             {
-                CloseResourceList();
+                CloseResourceListView();
                 return;
             }
             var currentServer = _resourceListModel.GetCurrentServerType( resourceType );
@@ -105,7 +119,7 @@ namespace LiveAppUI.Presenter
                     break;
 
                 default:
-                    CloseResourceList();
+                    CloseResourceListView();
                     break;
             }
         }
@@ -144,7 +158,7 @@ namespace LiveAppUI.Presenter
             _resourceListView.SetActive( true );
         }
 
-        private void CloseResourceList()
+        private void CloseResourceListView()
         {
             _resourceListView.SetActive( false );
         }

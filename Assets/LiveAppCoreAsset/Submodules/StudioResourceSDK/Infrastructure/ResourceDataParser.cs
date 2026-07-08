@@ -2,6 +2,7 @@ using StudioResourceSDK.Domain;
 using StudioSystemSDK.Domain;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UniRx;
 
 namespace StudioSystemSDK.Infrastructure
@@ -37,9 +38,10 @@ namespace StudioSystemSDK.Infrastructure
                 var id = cols[0];
                 var displayName = cols[1];
                 // TODO enum을 Flag 타입으로 수정 후 전용 파싱 로직 구현 필요 @Choi 26.07.07
-                var item = new CharacterResourceItem(id, displayName, CharacterGeneration.Gen_1, Type.Test);
+                var item = new CharacterResourceItem(id, displayName, CharacterGeneration.Gen_1, UsingType.Test);
                 list.Add( item );
             }
+            _onCharacterListChanged.OnNext( list );
             return list;
         }
 

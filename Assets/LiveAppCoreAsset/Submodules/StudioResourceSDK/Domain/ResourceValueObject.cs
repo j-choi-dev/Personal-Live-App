@@ -29,7 +29,7 @@ namespace StudioResourceSDK.Domain
         Gen_2,
     }
 
-    public enum Type
+    public enum UsingType
     {
         Prod = 0,
         Test,
@@ -49,12 +49,12 @@ namespace StudioResourceSDK.Domain
     public class CharacterResourceItem : ResourceItemBase
     {
         public CharacterGeneration Generation;
-        public Type Type;
+        public UsingType Type;
 
         public CharacterResourceItem(string  id, 
             string displayName, 
             CharacterGeneration generation, 
-            Type type ) : base(id, displayName)
+            UsingType type ) : base(id, displayName)
         {
             Generation = generation;
             Type = type;
