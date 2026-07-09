@@ -1,23 +1,15 @@
 using Cysharp.Threading.Tasks;
-using LiveAppCore.Google.Domain;
 using LiveAppCore.Google.Infrastructure;
 using StudioResourceSDK.Domain;
 using System.Threading;
-using Unity.VisualScripting.Antlr3.Runtime;
 
 namespace StudioResourceSDK.Infrastructure
 {
-    public class iOSGoogleSheetLoader : IResourceTableLoadDomain
+    /// <summary>
+    /// 리소스 테이블을 읽어들이는 처리 관련 iOS 구현체 클래스
+    /// </summary>
+    public class IOSGoogleSheetLoader : IResourceTableLoadDomain
     {
-        //private readonly IGoogleOAuthAccessTokenProvider _tokenProvider;
-
-        public iOSGoogleSheetLoader(
-            //IGoogleOAuthAccessTokenProvider tokenProvider
-        )
-        {
-            //_tokenProvider = tokenProvider;
-        }
-
         public UniTask<bool> ExistsSheetAndTabAsync(
             string spreadsheetUrlOrId,
             string tabName,
@@ -29,7 +21,6 @@ namespace StudioResourceSDK.Infrastructure
                 spreadsheetUrlOrId,
                 tabName,
                 token,
-                //tokenProvider: _tokenProvider,
                 cancellationToken
             );
         }
@@ -38,7 +29,7 @@ namespace StudioResourceSDK.Infrastructure
             string token,
             string spreadsheetUrlOrId,
             string tabName,
-            string columnDelimiter = "\t",
+            string columnDelimiter = ",",
             string rowDelimiter = "\n",
             bool escapeCellLineBreaks = true,
             CancellationToken cancellationToken = default
@@ -48,7 +39,6 @@ namespace StudioResourceSDK.Infrastructure
                 spreadsheetUrlOrId,
                 tabName,
                 token,
-                //tokenProvider: _tokenProvider,
                 columnDelimiter,
                 rowDelimiter,
                 escapeCellLineBreaks,

@@ -8,6 +8,9 @@ using uPLibrary.Networking.M2Mqtt.Messages;
 
 namespace StudioNetworkSDK.Infrastructure
 {
+    /// <summary>
+    /// MqTT 송신 관련 구현체 Class
+    /// </summary>
     public class MqTTSender : ISenderDomain
     {
         private MqttClient _client = null;

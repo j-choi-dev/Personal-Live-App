@@ -14,6 +14,9 @@ using UnityEngine.Networking;
 
 namespace LiveAppCore.Google.Infrastructure
 {
+    /// <summary>
+    /// GoogleOAuthToken 취득을 위한 구현 클래스
+    /// </summary>
     public class GoogleAuthTokenInfrastructure : IGoogleAuthTokenDomain
     {
         private string _clientId;

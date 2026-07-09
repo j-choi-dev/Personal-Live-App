@@ -3,6 +3,9 @@ using uPLibrary.Networking.M2Mqtt;
 
 namespace StudioNetworkSDK.Domain
 {
+    /// <summary>
+    /// MqTT 서버 송신 관련 Interface
+    /// </summary>
     public interface ISenderDomain
     {
         MqttClient GetClient();

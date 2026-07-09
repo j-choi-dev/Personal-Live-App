@@ -25,7 +25,7 @@ namespace LiveAppCore.Installer
                 .AsSingle();
 
             Container
-                .Bind<IServerConfigDomain>()
+                .Bind<IMqTTServerConfigDomain>()
                 .To<ServerConfigData>()
                 .AsSingle();
         }

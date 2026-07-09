@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using Microsoft.Cci;
 using StudioSystemSDK.Domain;
 using System.IO;
 using System.Text;
@@ -7,6 +6,9 @@ using UnityEngine;
 
 namespace StudioSystemSDK.Infrastructure
 {
+    /// <summary>
+    /// 파일 처리 관련 구현체 클래스
+    /// </summary>
     public class FileSystemInfrastructure : IFileSystemDomain
     {
         private readonly string ROOT_PATH = string.Empty;

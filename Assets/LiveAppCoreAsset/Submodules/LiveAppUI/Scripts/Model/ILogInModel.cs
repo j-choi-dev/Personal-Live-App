@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace LiveAppUI.Model
 {
+    /// <summary>
+    /// Login Model
+    /// </summary>
     public interface ILogInModel
     {
         /// <summary>

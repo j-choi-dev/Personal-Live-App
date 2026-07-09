@@ -3,23 +3,15 @@ using uPLibrary.Networking.M2Mqtt;
 
 namespace StudioNetworkSDK.Domain
 {
+    /// <summary>
+    /// MqTT 서버 수신 관련 Interface
+    /// </summary>
     public interface IReceiverDomain
     {
+        /// <summary>
+        /// 서버로부터 메시지 수신 관련 이벤트
+        /// </summary>
         IObservable<MqttMessageData> OnMessageReceived { get; }
         void Initialize( MqttClient client, MqTTServerConfig config );
-    }
-
-    // 수신된 메시지를 담을 DTO (Data Transfer Object)
-    public class MqttMessageData
-    {
-        public string Topic { get; set; }
-        public string Payload { get; set; }
-    }
-
-    public enum NetworkProtocol
-    {
-        Unknown,
-        LoginResponse,
-        // 예: PlayerInfoResponse, RoomJoinResponse 등
     }
 }

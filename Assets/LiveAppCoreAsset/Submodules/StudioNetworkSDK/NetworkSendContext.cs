@@ -9,7 +9,7 @@ namespace StudioNetworkSDK.Application
 {
     public class NetworkSendContext : INetworkSendContext
     {
-        private IServerConfigDomain _serverConfigDomain;
+        private IMqTTServerConfigDomain _serverConfigDomain;
         private ISenderDomain _sender;
         private IReceiverDomain _receiver; 
         
@@ -18,7 +18,7 @@ namespace StudioNetworkSDK.Application
         private readonly Subject<bool> _onLoginResult = new Subject<bool>();
         public IObservable<bool> OnLoginResult => _onLoginResult;
 
-        public NetworkSendContext( IServerConfigDomain serverConfigDomain,
+        public NetworkSendContext( IMqTTServerConfigDomain serverConfigDomain,
             ISenderDomain sender,
             IReceiverDomain receiver )
         {

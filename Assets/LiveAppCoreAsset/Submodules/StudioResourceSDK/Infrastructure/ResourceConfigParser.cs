@@ -1,14 +1,14 @@
 using StudioNetworkSDK.Domain;
 using StudioResourceSDK.Domain;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace StudioResourceSDK.Infrastructure
 {
+    /// <summary>
+    /// Resource Config 정보 데이터를 파싱하는 Interface
+    /// </summary>
     public class ResourceConfigParser : IResourceConfigParseDomain
     {
-        public IReadOnlyCollection<ResourceServerData> ResourceServerDatas => throw new System.NotImplementedException();
-
         public IReadOnlyCollection<ResourceServerData> ParseServerConfigData( string rawData )
         {
             var list = new List<ResourceServerData>();

@@ -54,6 +54,25 @@ namespace StudioNetworkSDK.Domain
         Master,
     }
 
+    /// <summary>
+    /// MqTT Message Data Class
+    /// </summary>
+    public class MqttMessageData
+    {
+        public string Topic { get; set; }
+        public string Payload { get; set; }
+    }
+
+    /// <summary>
+    /// Protocol 정의
+    /// </summary>
+    public enum NetworkProtocol
+    {
+        Unknown,
+        LoginResponse,
+        RoomJoinResponse,
+    }
+
     public class ResourceServerData
     {
         public readonly ResourceType resourceType = ResourceType.None;

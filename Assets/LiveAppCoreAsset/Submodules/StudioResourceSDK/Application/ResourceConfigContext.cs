@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace StudioResourceSDK.Application
 {
-    public class ResourceConfigContext : IResourceConfigContext
+    public class ResourceConfigContext : IResourceServerConfigContext
     {
         private IResourceConfigParseDomain _domain;
 

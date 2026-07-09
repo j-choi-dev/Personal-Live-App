@@ -6,6 +6,9 @@ using Zenject;
 
 namespace LiveAppUI.Presenter
 {
+    /// <summary>
+    /// 서버 로그인 관련 View-Model의 Presenter
+    /// </summary>
     public class ServerLoginPresenter : MonoBehaviour
     {
         private IServerModalView _loginView;

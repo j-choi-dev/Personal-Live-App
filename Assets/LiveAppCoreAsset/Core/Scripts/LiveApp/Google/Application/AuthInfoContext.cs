@@ -10,8 +10,6 @@ namespace LiveAppCore.Google.Application
 {
     public class AuthInfoContext : IAuthInfoContext
     {
-        private const string TempFileName = "auth.bin"; // TODO 리팩터링 대상 @Choi 26.07.04
-
         private IFileSystemDomain _fileSystemDomain;
         private IFileSerializeDomain _fileSerializeDomain;
         private IGoogleAuthInfoStorage _googleAuthInfoStorage;
@@ -37,7 +35,7 @@ namespace LiveAppCore.Google.Application
         {
             try
             {
-                var authInfoPath = Path.Combine(UnityEngine.Application.streamingAssetsPath, TempFileName);
+                var authInfoPath = Path.Combine(UnityEngine.Application.streamingAssetsPath, OAuthConstValue.BinFileName);
                 if( _fileSystemDomain.IsFileExist( authInfoPath ) == false )
                 {
                     throw new FileNotFoundException( "File Not Exist :: ", authInfoPath );

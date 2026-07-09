@@ -53,7 +53,7 @@ namespace LiveAppUI.View
             _listView.RemoveItem( id );
         }
 
-        public void SetList( IReadOnlyList<(string id, string name)> list )
+        public void SetResourceItemList( IReadOnlyList<(string id, string name)> list )
         {
             for( var i = 0; i < list.Count; i++ )
             {
@@ -64,7 +64,7 @@ namespace LiveAppUI.View
             }
         }
 
-        public void ResetList()
+        public void ClearList()
         {
             _currentItemList.Clear();
             _listView.Clear();

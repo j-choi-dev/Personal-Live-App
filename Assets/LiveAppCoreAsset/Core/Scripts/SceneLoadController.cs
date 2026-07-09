@@ -3,6 +3,9 @@ using UnityEngine.SceneManagement;
 
 namespace LiveAppCore
 {
+    /// <summary>
+    /// Scene ·Î´õ Class
+    /// </summary>
     public class SceneLoadController : MonoBehaviour
     {
         private const string SCENE_UI = "LiveAppUI";

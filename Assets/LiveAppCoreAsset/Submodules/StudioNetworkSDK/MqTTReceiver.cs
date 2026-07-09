@@ -8,7 +8,9 @@ using uPLibrary.Networking.M2Mqtt.Messages;
 
 namespace StudioNetworkSDK.Infrastructure
 {
-
+    /// <summary>
+    /// MqTT 서버 수신 관련 Interface
+    /// </summary>
     public class MqTTReceiver : IReceiverDomain, IDisposable
     {
         private readonly Subject<MqttMessageData> _onMessageReceived = new Subject<MqttMessageData>();

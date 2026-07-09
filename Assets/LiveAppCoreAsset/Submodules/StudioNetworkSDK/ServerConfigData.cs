@@ -4,7 +4,10 @@ using UnityEngine;
 
 namespace StudioNetworkSDK.Infrastructure
 {
-    public class ServerConfigData : IServerConfigDomain
+    /// <summary>
+    /// MqTT 서버 Config 정보 관련 구현체 Class
+    /// </summary>
+    public class ServerConfigData : IMqTTServerConfigDomain
     {
         public MqTTServerConfig GetConfigData()
         {

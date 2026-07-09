@@ -13,7 +13,7 @@ namespace StudioResourceSDK.Application
         public override void InstallBindings()
         {
             Container
-                .Bind<IResourceConfigContext>()
+                .Bind<IResourceServerConfigContext>()
                 .To<ResourceConfigContext>()
                 .AsSingle();
 

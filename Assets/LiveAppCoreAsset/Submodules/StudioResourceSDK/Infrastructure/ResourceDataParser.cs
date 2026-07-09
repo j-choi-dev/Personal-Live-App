@@ -7,6 +7,9 @@ using UniRx;
 
 namespace StudioSystemSDK.Infrastructure
 {
+    /// <summary>
+    /// 리소스 데이터 파싱 관련 구현체
+    /// </summary>
     public class ResourceDataParser : IResourceDataParseDomain
     {
         private const int HeaderCount = 2;

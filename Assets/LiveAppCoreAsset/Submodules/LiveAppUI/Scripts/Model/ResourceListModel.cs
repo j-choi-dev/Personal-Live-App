@@ -1,10 +1,10 @@
 using Cysharp.Threading.Tasks;
 using StudioNetworkSDK.Domain;
 using StudioResourceSDK.Application;
+using StudioResourceSDK.Domain;
 using StudioSystemSDK.Application;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using UniRx;
 
@@ -12,8 +12,7 @@ namespace LiveAppUI.Model
 {
     public class ResourceListModel : IResourceListModel, IDisposable
     {
-        private const string TempFileName = "ResourceInfo.bin"; // TODO 리팩터링 대상 @Choi 26.07.04
-        private IResourceConfigContext _resourceConfigContext;
+        private IResourceServerConfigContext _resourceConfigContext;
         private IResourceTableContext _resourceTableContext;
         private IFileSystemContext _fileSystemContext;
         private CompositeDisposable _disposable = new CompositeDisposable();
@@ -24,7 +23,7 @@ namespace LiveAppUI.Model
         private Subject<IReadOnlyList<(string id, string displayName)>> _onCharacterListChanged = new Subject<IReadOnlyList<(string id, string displayName)>>();
         public IObservable<IReadOnlyList<(string id, string displayName)>> OnCharacterListChanged => _onCharacterListChanged;
 
-        public ResourceListModel( IResourceConfigContext resourceConfigContext,
+        public ResourceListModel( IResourceServerConfigContext resourceConfigContext,
             IResourceTableContext resourceTableContext,
             IFileSystemContext fileSystemContext )
         {
@@ -57,17 +56,13 @@ namespace LiveAppUI.Model
 
         public async UniTask InitializeServerConfig()
         {
-            var rawData = await _fileSystemContext.ReadBinaryFile( TempFileName );
+            var rawData = await _fileSystemContext.ReadBinaryFile( ResourceConstValue.BinFileName );
             _serverConfigs =  _resourceConfigContext.ParseServerConfigData(rawData).ToList();
             // 리소스 & 구글 시트 링크 보존 -> Context 통해서 DataClass로 ...? @Choi
         }
 
         public async UniTask GetResourceList( ResourceType resourceType, ServerType serverType )
         {
-            if( _serverTypeDic[resourceType] == serverType )
-            {
-                return;
-            }
             var resource = ConvertResourceType(resourceType);
             var server = ConvertServerType(serverType);
             var config = _serverConfigs

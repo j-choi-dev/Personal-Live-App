@@ -1,6 +1,10 @@
 namespace StudioResourceSDK.Domain
 {
-    public enum ResourceType
+    public class ResourceConstValue
+    {
+        public static readonly string BinFileName = "ResourceInfo.bin"; // TODO 리팩터링 대상 @Choi 26.07.04
+    }
+        public enum ResourceType
     {
         None = 0,
         Character,

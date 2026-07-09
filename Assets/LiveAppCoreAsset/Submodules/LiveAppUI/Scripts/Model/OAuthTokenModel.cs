@@ -7,7 +7,6 @@ namespace LiveAppUI.Model
     public class OAuthTokenModel : IOAuthTokenModel
     {
         private IAuthInfoContext _context;
-        public string Token => _context.Token;
 
         public IObservable<bool> OnCompleteTokenProcess => _context.OnCompleteTokenProcess;
 
