@@ -82,6 +82,17 @@ namespace LiveAppUI.Model
         public void SetCurrentServerType( ResourceType resourceType, ServerType serverType )
             => _serverTypeDic[resourceType] = serverType;
 
+        public async UniTask<bool> LoadResourceProcess( ResourceType resourceType, 
+            ServerType serverType, 
+            IReadOnlyList<string> resourceId )
+        {
+            UnityEngine.Debug.Log( $"_resourceListView.OnClickLoad : {resourceId}" );
+            for( var i = 0; i < resourceId.Count; i++ )
+            {
+                UnityEngine.Debug.Log( $"{resourceId[i]}" );
+            }
+            return false;
+        }
 
         private StudioResourceSDK.Domain.ResourceType ConvertResourceType( ResourceType type )
         {

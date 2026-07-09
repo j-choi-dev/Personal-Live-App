@@ -16,6 +16,7 @@ namespace LiveAppUI.View
         [SerializeField] private ObservableButton _closeButton = null;
         [SerializeField] private ObservableDropdown _server = null;
         [SerializeField] private ListView _listView = null;
+        [SerializeField] private ObservableButton _loadButton = null;
         public bool IsActive => gameObject.activeSelf;
 
         public IObservable<int> OnServerChange => _server.OnValueChanged;
@@ -23,8 +24,11 @@ namespace LiveAppUI.View
         public IObservable<Unit> OnClickClose => _closeButton.OnClick;
 
         public IObservable<Unit> OnClickCancle => _cancleButton.OnClick;
+        public IObservable<Unit> OnClickLoad => _loadButton.OnClick;
 
+        public IReadOnlyList<string> CurrentSelectedItemList => _listView.CurrentSelectedItemList;
         public int CurrentServerIndex => _server.Value;
+
 
         private List<(string id, string name)> _currentItemList = new List<(string id, string name)>();
 

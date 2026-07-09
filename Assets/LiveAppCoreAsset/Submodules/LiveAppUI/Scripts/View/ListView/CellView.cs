@@ -21,8 +21,10 @@ namespace LiveApp.UI
         public bool IsUsable { get; private set; } = false;
 
         public string ID { get; private set; } = string.Empty;
+        public bool IsSelected => _isSelected;
 
         public GameObject Object => gameObject;
+
 
         /// <summary>
         /// 초기화 등 특수한 경우에만 한정해서 ID 적용

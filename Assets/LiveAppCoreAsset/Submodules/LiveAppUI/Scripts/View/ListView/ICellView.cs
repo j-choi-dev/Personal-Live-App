@@ -9,6 +9,7 @@ namespace LiveApp.UI
         GameObject Object { get; }
         IObservable<Unit> OnSelected { get; }
         bool IsUsable { get; }
+        bool IsSelected { get; }
         string ID { get; }
         void SetIsUsable( bool isVal );
         void SetItem( string text, string id );

@@ -21,7 +21,16 @@ namespace LiveAppUI.Presenter
         /// 취소 버튼 클릭
         /// </summary>
         IObservable<Unit> OnClickCancle { get; }
-        
+        /// <summary>
+        /// Load Button Click
+        /// </summary>
+        IObservable<Unit> OnClickLoad { get; }
+
+        /// <summary>
+        /// 현재 선택한 리소스 ID값
+        /// </summary>
+        IReadOnlyList<string> CurrentSelectedItemList { get; }
+
         /// <summary>
         /// 현재 선택한 서버의 Dropdown Index
         /// </summary>

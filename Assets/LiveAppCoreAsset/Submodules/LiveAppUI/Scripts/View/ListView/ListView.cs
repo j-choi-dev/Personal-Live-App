@@ -26,6 +26,8 @@ namespace LiveApp.UI
 
         public IObservable<string> OnSelectedDisplayName => throw new NotImplementedException();
 
+        public IReadOnlyList<string> CurrentSelectedItemList => _cells.Where(arg => arg.IsSelected).Select(arg => arg.ID).ToList();
+
         private void Awake()
         {
             _cells = new List<ICellView>();

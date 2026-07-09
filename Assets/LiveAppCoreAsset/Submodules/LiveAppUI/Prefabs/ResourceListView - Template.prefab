@@ -624,6 +624,7 @@ MonoBehaviour:
   _closeButton: {fileID: 1662057895540676280}
   _server: {fileID: 4818404523122179448}
   _listView: {fileID: 7846080204569820727}
+  _loadButton: {fileID: 5970483796736906682}
 --- !u!1 &2567743209538195056
 GameObject:
   m_ObjectHideFlags: 0
@@ -2930,7 +2931,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5798857613200188301, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 4.680266
+      value: -0.00006108159
       objectReference: {fileID: 0}
     - target: {fileID: 6296131257481431442, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_AnchorMax.x
@@ -2950,7 +2951,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9113460719809231668, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_Size
-      value: 0.9960324
+      value: 0.99996537
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -1,5 +1,7 @@
 using Cysharp.Threading.Tasks;
 using LiveAppUI.Model;
+using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -17,6 +19,8 @@ namespace LiveAppUI.Presenter
 
         private ResourceType _currentResourceType;
         private ServerType _currentResourceServerType;
+
+        private List<string> _resources = new List<string>();
 
         [Inject]
         public void Initialize(
@@ -92,6 +96,14 @@ namespace LiveAppUI.Presenter
                     UpdateResourceList( _currentResourceType, GetServerType( server ) );
                 } )
                 .AddTo( this );
+
+            _resourceListView.OnClickLoad
+                .Subscribe(arg => _resourceListModel.LoadResourceProcess( _currentResourceType, 
+                    _currentResourceServerType, 
+                    _resourceListView.CurrentSelectedItemList.ToList() 
+                )
+                .Forget() )
+                .AddTo ( this );
         }
 
         private void SubscribeModel()

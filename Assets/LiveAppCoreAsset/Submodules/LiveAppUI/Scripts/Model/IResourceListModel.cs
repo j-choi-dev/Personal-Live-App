@@ -38,5 +38,16 @@ namespace LiveAppUI.Model
         /// <param name="resourceType">대상 리소스 타입</param>
         /// <param name="serverType">변경할 서버 타입</param>
         void SetCurrentServerType( ResourceType resourceType, ServerType serverType );
+
+        /// <summary>
+        /// 리소스 로딩 프로세스
+        /// </summary>
+        /// <param name="resourceType">대상 리소스 타입</param>
+        /// <param name="serverType">변경할 서버 타입</param>
+        /// <param name="list">리소스 ID</param>
+        /// <returns></returns>
+        UniTask<bool> LoadResourceProcess( ResourceType resourceType, 
+            ServerType serverType, 
+            IReadOnlyList<string> list );
     }
 }
