@@ -8,7 +8,7 @@ using System.IO;
 using System;
 using StudioCharacterSDK.Domain;
 
-namespace LiveAppCore.Editor.View
+namespace LiveAppCore.Editor.Infrastructure
 {
     public class StanaloneAssetBundleBuilder : IAssetBundleBuildDomain
     {

@@ -8,47 +8,42 @@ using UnityEngine;
 
 namespace LiveAppCore.Editor.View
 {
-    public static class AssetBundleBuildView
+    public static class RomBuildView
     {
-        public static async UniTask<bool> ExecuteAssetBundleBuild( string platform )
+        public static async UniTask<bool> ExecuteRomBuild( string platform )
         {
             var isSuccessParse = Enum.TryParse<BuildTarget>(platform, out var target);
-            if(!isSuccessParse || !Enum.IsDefined( typeof( BuildTarget ), target ))
+            if( !isSuccessParse || !Enum.IsDefined( typeof( BuildTarget ), target ) )
             {
                 throw new Exception( $"Invalid Platform :: {target}" );
             }
 
             var targetGroup = default(BuildTargetGroup);
-            IAssetBundleBuildDomain domain = null;
-            switch(target)
+            IRomBuildDomain domain = null;
+            switch( target )
             {
-
                 case BuildTarget.StandaloneWindows64:
                 case BuildTarget.StandaloneWindows:
-                    targetGroup = BuildTargetGroup.Standalone;
-                    domain = new StanaloneAssetBundleBuilder();
-                    break;
-
                 case BuildTarget.Android:
-                    targetGroup = BuildTargetGroup.Android;
+                    throw new Exception( $"Not Supported Platform :: {target}" );
                     break;
 
                 case BuildTarget.iOS:
                     targetGroup = BuildTargetGroup.iOS;
-                    domain = new IOSAssetBundleBuilder();
+                    domain = new iOSRomBuilder();
                     break;
 
                 default:
                     throw new Exception( $"Invalid Platform :: {target}" );
             }
 
-            var application = new AssetBundleBuildApplication(domain);
-            var result = await application.ExecuteAssetBundleBuild(targetGroup);
-            if(result == false)
+            var application = new RomBuildApplication(domain);
+            var result = await application.ExecuteRomBuild(targetGroup);
+            if( result == false )
             {
-                throw new Exception( "AssetBundle Build Failed" );
+                throw new Exception( "ROM Build Failed" );
             }
-            Debug.Log( "AssetBundle Build Success" );
+            Debug.Log( "ROM Build Success" );
             return true;
         }
     }

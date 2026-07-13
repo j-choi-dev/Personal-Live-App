@@ -1,11 +1,10 @@
 using Cysharp.Threading.Tasks;
 using LiveAppCore.Editor.View;
 using UnityEditor;
-using UnityEngine;
 
 namespace LiveAppCore.Editor
 {
-    public class AssetBundleBuildMenuItem : MonoBehaviour
+    public class AssetBundleBuildMenuItem
     {
         private const string MENU_NAME_ASSETBUNDLE_ONLY = "LiveAppTool/AssetBundleBuild";
         [MenuItem( MENU_NAME_ASSETBUNDLE_ONLY, priority = 0 )]
