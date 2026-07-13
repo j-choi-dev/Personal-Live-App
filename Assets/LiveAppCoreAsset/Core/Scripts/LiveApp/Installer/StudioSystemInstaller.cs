@@ -1,15 +1,18 @@
 using LiveAppCore.Google.Application;
 using LiveAppCore.Google.Domain;
 using LiveAppCore.Google.Infrastructure;
+using LiveAppUI.View;
 using StudioSystemSDK.Application;
 using StudioSystemSDK.Domain;
 using StudioSystemSDK.Infrastructure;
+using UnityEngine;
 using Zenject;
 
 namespace LiveAppCore.Installer
 {
     public class StudioSystemInstaller : MonoInstaller
     {
+        [SerializeField] private iOSSigninInfrastructure _signInInfrastructure;
         public override void InstallBindings()
         {
             Container
@@ -35,7 +38,16 @@ namespace LiveAppCore.Installer
                 .AsSingle();
             Container
                 .Bind<IGoogleAuthTokenDomain>()
-                .To<GoogleAuthTokenInfrastructure>()
+#if UNITY_IOS && !UNITY_EDITOR
+                .To<iOSAuthTokenInfrastructure>()
+#else
+                .To<StandaloneAuthTokenInfrastructure>()
+#endif
+                .AsSingle();
+
+            Container
+                .Bind<INativeSigninDomain>()
+                .FromInstance( _signInInfrastructure )
                 .AsSingle();
         }
     }
