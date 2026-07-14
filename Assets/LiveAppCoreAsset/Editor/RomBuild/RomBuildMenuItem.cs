@@ -1,9 +1,13 @@
 using Cysharp.Threading.Tasks;
+#if UNITY_EDITOR
 using LiveAppCore.Editor.View;
 using UnityEditor;
 
 namespace LiveAppCore.Editor
 {
+    /// <summary>
+    /// Rom BUild 관련 Unity Custom Menu
+    /// </summary>
     public class RomBuildMenuItem
     {
         private const string MENU_NAME_iOS_BUILD_ONLY = "LiveAppTool/ROM(iOS) Build";
@@ -15,3 +19,4 @@ namespace LiveAppCore.Editor
         }
     }
 }
+#endif
