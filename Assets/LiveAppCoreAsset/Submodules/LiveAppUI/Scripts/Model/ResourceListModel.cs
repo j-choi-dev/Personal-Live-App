@@ -32,8 +32,8 @@ namespace LiveAppUI.Model
             _fileSystemContext = fileSystemContext;
 
             _resourceTableContext.OnCharacterListChanged
-                .Subscribe(list =>
-                { 
+                .Subscribe( list =>
+                {
                     var result = list.Select( arg => (arg.ID, arg.DisplayName) )
                         .ToList();
                     _onCharacterListChanged.OnNext( result );
@@ -56,8 +56,9 @@ namespace LiveAppUI.Model
 
         public async UniTask InitializeServerConfig()
         {
+            var path = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, ResourceConstValue.BinFileName);
             var rawData = await _fileSystemContext.ReadBinaryFile( ResourceConstValue.BinFileName );
-            _serverConfigs =  _resourceConfigContext.ParseServerConfigData(rawData).ToList();
+            _serverConfigs =  _resourceConfigContext.ParseServerConfigData( rawData ).ToList();
             // 리소스 & 구글 시트 링크 보존 -> Context 통해서 DataClass로 ...? @Choi
         }
 
@@ -69,10 +70,10 @@ namespace LiveAppUI.Model
                 .FirstOrDefault(arg => arg.resourceType == resource &&
                 arg.serverType == server);
 
-            var loadResult = await _resourceTableContext.LoadResourceTableProcess( 
-                config.resourceType, 
-                server.ToString(), 
-                config.tableUrl 
+            var loadResult = await _resourceTableContext.LoadResourceTableProcess(
+                config.resourceType,
+                server.ToString(),
+                config.tableUrl
                 );
         }
 
@@ -82,8 +83,8 @@ namespace LiveAppUI.Model
         public void SetCurrentServerType( ResourceType resourceType, ServerType serverType )
             => _serverTypeDic[resourceType] = serverType;
 
-        public async UniTask<bool> LoadResourceProcess( ResourceType resourceType, 
-            ServerType serverType, 
+        public async UniTask<bool> LoadResourceProcess( ResourceType resourceType,
+            ServerType serverType,
             IReadOnlyList<string> resourceId )
         {
             UnityEngine.Debug.Log( $"_resourceListView.OnClickLoad : {resourceId}" );
@@ -103,9 +104,9 @@ namespace LiveAppUI.Model
             return retVal;
         }
 
-        private StudioNetworkSDK.Domain.ServerType ConvertServerType(ServerType type)
+        private StudioNetworkSDK.Domain.ServerType ConvertServerType( ServerType type )
         {
-            StudioNetworkSDK.Domain.ServerType retVal 
+            StudioNetworkSDK.Domain.ServerType retVal
                 = (StudioNetworkSDK.Domain.ServerType)Enum.Parse(
                     typeof(StudioNetworkSDK.Domain.ServerType), type.ToString()
                     );

@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
 using UnityEngine;
-//#if UNITY_EDITOR
 using UnityEditor;
 using LiveAppCore.Editor.Application;
 using LiveAppCore.Editor.Domain;
@@ -62,4 +61,3 @@ namespace LiveAppCore.Editor.View
         }
     }
 }
-//#endif

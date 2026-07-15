@@ -36,13 +36,20 @@ namespace StudioSystemSDK.Domain
         /// <param name="filePath">파일명</param>
         /// <param name="message">Binary로 저장할 문자열 데이터</param>
         /// <returns>저장 성공/실패</returns>
-        bool SaveBinaryFile( string filePath, byte[] message );
+        UniTask<bool> SaveBinaryFile( string filePath, byte[] message );
+        /// <summary>
+        /// 파일 경로를 기준으로 BIanry 파일 생성
+        /// </summary>
+        /// <param name="filePath">파일명</param>
+        /// <param name="message">Binary로 저장할 문자열 데이터</param>
+        /// <returns>저장 성공/실패</returns>
+        UniTask<bool> SaveTextFile( string filePath, string message );
         /// <summary>
         /// 파일 경로를 기준으로 Binary 파일 로드
         /// </summary>
         /// <param name="filePath">파일명/파일 경로</param>
         /// <returns>binary 데이터</returns>
-        byte[] LoadBinaryFile( string filePath );
+        UniTask<byte[]> LoadBinaryFile( string filePath );
         /// <summary>
         /// 파일 경로를 기준으로 Binary 파일 로드
         /// </summary>

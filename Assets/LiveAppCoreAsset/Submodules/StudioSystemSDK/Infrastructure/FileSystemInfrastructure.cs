@@ -38,8 +38,19 @@ namespace StudioSystemSDK.Infrastructure
         {
             return File.Exists( filePath );
         }
+        
+        public async UniTask<string> LoadTextFile( string filePath )
+        {
+            var message = string.Empty;
+            using( var fs = new FileStream( filePath, FileMode.Open ) )
+            using( var sr = new StreamReader( fs, false ) )
+            {
+                message = await sr.ReadToEndAsync();
+            }
+            return message;
+        }
 
-        public byte[] LoadBinaryFile( string filePath )
+        public async UniTask<byte[]> LoadBinaryFile( string filePath )
         {
             var message = string.Empty;
             using( var fs = new FileStream( filePath, FileMode.OpenOrCreate ) )
@@ -51,7 +62,25 @@ namespace StudioSystemSDK.Infrastructure
             return bytes;
         }
 
-        public bool SaveBinaryFile( string filePath, byte[] message )
+        public async UniTask<bool> SaveBinaryFile( string filePath, byte[] message )
+        {
+            using( var fs = new FileStream( filePath, FileMode.OpenOrCreate ) )
+            using( var sw = new StreamWriter( fs, System.Text.Encoding.UTF8 ) )
+            {
+                try
+                {
+                    sw.WriteLine( message );
+                }
+                catch( System.Exception e )
+                {
+                    Debug.LogError( e.Message );
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public async UniTask<bool> SaveTextFile( string filePath, string message )
         {
             using( var fs = new FileStream( filePath, FileMode.OpenOrCreate ) )
             using( var sw = new StreamWriter( fs, System.Text.Encoding.UTF8 ) )
@@ -72,17 +101,6 @@ namespace StudioSystemSDK.Infrastructure
         public bool CreateFile( string dirName )
         {
             throw new System.NotImplementedException();
-        }
-
-        public async UniTask<string> LoadTextFile( string filePath )
-        {
-            var message = string.Empty;
-            using( var fs = new FileStream( filePath, FileMode.Open ) )
-            using( var sr = new StreamReader( fs, false ) )
-            {
-                message = await sr.ReadToEndAsync();
-            }
-            return message;
         }
     }
 }
