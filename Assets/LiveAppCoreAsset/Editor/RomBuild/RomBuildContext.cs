@@ -29,7 +29,6 @@ namespace LiveAppCore.Editor.Application
         public async UniTask<bool> ExecuteRomBuild( BuildTargetGroup platform )
         {
             var result = await _domain.PreProcess( platform );
-
             Debug.Log( $"[iOSRomBuilder] PreProcess {result}." );
             if( result == false )
             {

@@ -1,3 +1,4 @@
+using Codice.Utils;
 using Cysharp.Threading.Tasks;
 using LiveAppCore.Editor.Domain;
 using System;
@@ -5,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.iOS.Xcode;
 using UnityEngine;
@@ -22,10 +24,13 @@ namespace LiveAppCore.Editor.Infrastructure
 
         // TODO 이하의 내용들은 Build Data 등으로 별도 관리 필요.(Scriptable Object나 Text File) @Choi 26.07.14
         private const string BundleIdentifier = "com.weavr.liveappcore";
+        private const string CompanyName = "WeaVR";
         private const string ProductName = "Personal Live App";
-
+#if UNITY_EDITOR_WIN
+        private const string BuildRootDirectory =  @"C:\Build\iOS";
+#else
         private const string BuildRootDirectory = "Builds/iOS";
-        private const string XcodeProjectDirectoryName = "PersonalLiveApp_iOS";
+#endif
 
         private const string GoogleServicePlistSourcePath = "Assets/Plugins/iOS/GoogleService-Info.plist";
 
@@ -41,8 +46,18 @@ namespace LiveAppCore.Editor.Infrastructure
             "Assets/LiveAppCoreAsset/Core/Scenes/LiveAppUI.unity"
         };
 
-        private string XcodeProjectPath => Path.Combine( BuildRootDirectory, XcodeProjectDirectoryName );
+        private string _projectDirectoryName;
+        private string _buildNumber;
 
+        private string XcodeProjectPath => Path.Combine( BuildRootDirectory, _projectDirectoryName );
+
+        private bool _isResult = false;
+
+        public iOSRomBuilder()
+        {
+            _buildNumber= DateTime.Now.ToString( "yyyyMMddHHmmss" );
+            _projectDirectoryName = $"PLA_{_buildNumber}";
+        }
         public async UniTask<bool> PreProcess( BuildTargetGroup platform )
         {
             try
@@ -67,15 +82,15 @@ namespace LiveAppCore.Editor.Infrastructure
                     return false;
                 }
 
+                PlayerSettings.companyName = CompanyName;
                 PlayerSettings.productName = ProductName;
-                PlayerSettings.SetApplicationIdentifier( TargetGroup, BundleIdentifier );
+                PlayerSettings.SetApplicationIdentifier( NamedBuildTarget.iOS, BundleIdentifier );
                 PlayerSettings.bundleVersion = AppVersion;
                 PlayerSettings.iOS.targetOSVersionString = TargetOSVersion;
                 // PlayerSettings.iOS.appleDeveloperTeamID = "YOUR_TEAM_ID";
                 // PlayerSettings.iOS.appleEnableAutomaticSigning = true;
 
-                string buildNumber = DateTime.Now.ToString("yyyyMMddHHmm");
-                PlayerSettings.iOS.buildNumber = buildNumber;
+                PlayerSettings.iOS.buildNumber = _buildNumber;
 
                 SetAppIconsIfExists( AppIconPath, platform );
 
@@ -98,14 +113,15 @@ namespace LiveAppCore.Editor.Infrastructure
 
                 Debug.Log( "[iOSRomBuilder] PreProcess completed." );
 
-                await UniTask.Yield();
-                return true;
+                _isResult = true;
             }
             catch( Exception e )
             {
                 Debug.LogException( e );
-                return false;
+                ResetBuildSettings();
+                _isResult = false;
             }
+            return _isResult;
         }
 
         public async UniTask<bool> BuildProcess( BuildTargetGroup platform )
@@ -132,7 +148,7 @@ namespace LiveAppCore.Editor.Infrastructure
                 };
 
                 Debug.Log( $"[iOSRomBuilder] Build started. Path: {XcodeProjectPath}" );
-
+                
                 var report = BuildPipeline.BuildPlayer(options);
                 var summary = report.summary;
                 // TODO Build Log 남기는 것도 좋을 듯 @Choi 26.07.14
@@ -143,15 +159,16 @@ namespace LiveAppCore.Editor.Infrastructure
                 {
                     throw new Exception( $"iOS Xcode project build failed. Result: {summary.result}" );
                 }
-
-                await UniTask.Yield();
-                return true;
+                _isResult = true;
+                return _isResult;
             }
             catch( Exception e )
             {
                 Debug.LogException( e );
-                return false;
+                ResetBuildSettings();
+                _isResult = false;
             }
+            return _isResult;
         }
 
         public async UniTask<bool> PostProcess( BuildTargetGroup platform )
@@ -166,19 +183,21 @@ namespace LiveAppCore.Editor.Infrastructure
                 File.Copy( GoogleServicePlistSourcePath, destinationPath, overwrite: true );
 
                 ApplyInfoPlistSettings();
-
                 ApplyPbxProjectSettings();
 
                 Debug.Log( "[iOSRomBuilder] PostProcess completed." );
-
-                await UniTask.Yield();
-                return true;
+                _isResult = true;
             }
             catch( Exception e )
             {
                 Debug.LogException( e );
-                return false;
+                _isResult = false;
             }
+            finally
+            {
+                ResetBuildSettings();
+            }
+            return _isResult;
         }
 
         private static void SetAppIconsIfExists( string path, BuildTargetGroup target )
@@ -196,8 +215,7 @@ namespace LiveAppCore.Editor.Infrastructure
                 return;
             }
 
-            var iconSizes = PlayerSettings.GetIconSizesForTargetGroup(target);
-
+            var iconSizes = PlayerSettings.GetIconSizes(NamedBuildTarget.iOS, IconKind.Application);
             if( iconSizes == null || iconSizes.Length <= 0 )
             {
                 Debug.LogWarning( $"[iOSRomBuilder] No icon sizes found for target: {target}" );
@@ -211,13 +229,14 @@ namespace LiveAppCore.Editor.Infrastructure
             }
 
             Texture2D[] icons = new Texture2D[iconSizes.Length];
+            Debug.Log(icons.Length);
 
             for( int i = 0; i < icons.Length; i++ )
             {
                 icons[i] = sourceIcon;
             }
 
-            PlayerSettings.SetIconsForTargetGroup( target, icons );
+            PlayerSettings.SetIcons( NamedBuildTarget.iOS, icons, IconKind.Application );
 
             EditorUtility.SetDirty( AssetDatabase.LoadAllAssetsAtPath( "ProjectSettings/ProjectSettings.asset" ).FirstOrDefault() );
             AssetDatabase.SaveAssets();
@@ -411,6 +430,19 @@ namespace LiveAppCore.Editor.Infrastructure
             pbx.AddFrameworkToProject( frameworkTargetGuid, "SafariServices.framework", false );
             pbx.AddFrameworkToProject( frameworkTargetGuid, "Security.framework", false );
             pbx.AddFrameworkToProject( frameworkTargetGuid, "SystemConfiguration.framework", false );
+        }
+
+        private static void ResetBuildSettings()
+        {
+            // 수동 빌드가 안 되도록 빌드 설정을 초기화.
+            PlayerSettings.companyName = string.Empty;
+            PlayerSettings.productName = string.Empty;
+            PlayerSettings.SetApplicationIdentifier( NamedBuildTarget.iOS, string.Empty );
+            PlayerSettings.bundleVersion = string.Empty;
+            PlayerSettings.iOS.buildNumber = "0";
+            Texture2D[] emptyIcons = new Texture2D[0];
+            PlayerSettings.SetIcons( NamedBuildTarget.iOS, emptyIcons, IconKind.Application );
+            Debug.Log( "Reset Complete" );
         }
     }
 }

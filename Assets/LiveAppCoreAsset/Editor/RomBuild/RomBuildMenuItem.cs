@@ -9,7 +9,7 @@ namespace LiveAppCore.Editor
     /// </summary>
     public class RomBuildMenuItem
     {
-        private const string MENU_NAME_iOS_BUILD_ONLY = "LiveAppTool/ROM(iOS) Build";
+        private const string MENU_NAME_iOS_BUILD_ONLY = "LiveAppTool/Rom Build/ROM(iOS) Build";
         [MenuItem( MENU_NAME_iOS_BUILD_ONLY, priority = 10 )]
         private static async UniTask<bool> iosRomBuild()
         {
