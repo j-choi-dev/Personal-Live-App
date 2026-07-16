@@ -98,9 +98,20 @@ namespace StudioSystemSDK.Infrastructure
             return true;
         }
 
-        public bool CreateFile( string dirName )
+        public bool CreateFile( string path )
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                using( FileStream fs = File.Create( path ) )
+                {
+                }
+                return true;
+            }
+            catch( System.Exception e )
+            {
+                Debug.LogError( e.Message );
+                return false;
+            }
         }
     }
 }

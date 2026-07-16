@@ -5,6 +5,9 @@ using System.IO;
 
 namespace StudioSystemSDK.Application
 {
+    /// <summary>
+    /// File 처리 관련 Application
+    /// </summary>
     public class FileSystemContext : IFileSystemContext
     {
         private IFileSystemDomain _fileSystemDomain;

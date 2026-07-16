@@ -29,7 +29,7 @@ namespace LiveAppCore.Editor
         private static async UniTask<bool> FileEncrypt()
         {
             var platform = EditorUserBuildSettings.activeBuildTarget.ToString();
-            var result = await FileCryptView.ExecuteFileEncryption();
+            var result = await FileCryptInEditorView.ExecuteFileEncryption();
             if(result == false)
             {
                 UnityEngine.Debug.LogError( "FileEncrypt :: FAILED" );
@@ -41,7 +41,7 @@ namespace LiveAppCore.Editor
         private static async UniTask<bool> FileDecrypt()
         {
             var platform = EditorUserBuildSettings.activeBuildTarget.ToString();
-            var result = await FileCryptView.ExecuteFileDecryption();
+            var result = await FileCryptInEditorView.ExecuteFileDecryption();
             if( result == false )
             {
                 UnityEngine.Debug.LogError( "FileEncrypt :: FAILED" );

@@ -10,6 +10,9 @@ using UniRx;
 
 namespace LiveAppUI.Model
 {
+    /// <summary>
+    /// Resource List Model 구현체
+    /// </summary>
     public class ResourceListModel : IResourceListModel, IDisposable
     {
         private IResourceServerConfigContext _resourceConfigContext;
@@ -57,7 +60,7 @@ namespace LiveAppUI.Model
         public async UniTask InitializeServerConfig()
         {
             var path = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, ResourceConstValue.BinFileName);
-            var rawData = await _fileSystemContext.ReadBinaryFile( ResourceConstValue.BinFileName );
+            var rawData = await _fileSystemContext.ReadBinaryFile( path );
             _serverConfigs =  _resourceConfigContext.ParseServerConfigData( rawData ).ToList();
             // 리소스 & 구글 시트 링크 보존 -> Context 통해서 DataClass로 ...? @Choi
         }

@@ -209,6 +209,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppCore.Installer.StudioSystemInstaller
   _signInInfrastructure: {fileID: 1163187151}
+  _cryptoKeySetting: {fileID: 11400000, guid: 2ccd2f50ea5da83429961a0c67ca6718, type: 2}
 --- !u!1 &1163187150
 GameObject:
   m_ObjectHideFlags: 0

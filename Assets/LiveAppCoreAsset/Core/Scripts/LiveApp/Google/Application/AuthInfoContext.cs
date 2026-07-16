@@ -1,15 +1,16 @@
 using Cysharp.Threading.Tasks;
 using LiveAppCore.Google.Domain;
-using StudioSystemSDK.Application;
 using StudioSystemSDK.Domain;
 using System;
 using System.IO;
 using UniRx;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace LiveAppCore.Google.Application
 {
+    /// <summary>
+    /// Auth 정보 처리 관련 Application층 구현 클래스
+    /// </summary>
     public class AuthInfoContext : IAuthInfoContext
     {
         private IFileSystemDomain _fileSystemDomain;

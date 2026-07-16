@@ -8,9 +8,14 @@ using UnityEditor;
 
 namespace LiveAppCore.Editor.View
 {
-    public class FileCryptView
+    /// <summary>
+    /// 파일 암호화/복호화 처리 관련 View
+    /// </summary>
+    /// <remarks>Editor 메뉴와의 연계를 위한 Editor 한정 View</remarks>
+    public class FileCryptInEditorView
     {
         private const string CryptoKeyAssetPath = "Assets/LiveAppCoreAsset/Submodules/StudioSystemSDK/Infrastructure/CryptoKeySetting.asset";
+        private const string DecryptedFileExtension = "_decrypted.txt";
         private static string[] _extensionList = new string[]{ "bin", "json", "txt"};
         public static async UniTask<bool> ExecuteFileEncryption()
         {
@@ -66,9 +71,11 @@ namespace LiveAppCore.Editor.View
                 var loadPath = sfb.OpenFilePanel( "Select BInary File",
                     string.Empty,
                     ConvertToFilter( _extensionList ),
-                    false )[0];
-                var tempPath = loadPath.Split(".");
-                var savePath = Path.Combine(tempPath[0], "_decrypted.txt");
+                    false )[0]; 
+                var tempPath = Path.Combine(Path.GetDirectoryName(loadPath), 
+                    Path.GetFileNameWithoutExtension(loadPath));
+                var savePath = $"{tempPath}{DecryptedFileExtension}";
+                //var savePath = Path.Combine(tempPath, DecryptedFileExtension);
 
                 var encryptedText = await fileContext.ReadBinaryFile( loadPath );
                 UnityEngine.Debug.Log( $"View(Raw) : {encryptedText}" );

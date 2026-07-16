@@ -25,7 +25,7 @@ namespace StudioSystemSDK.Domain
         /// <param name="dirName">폴더명</param>
         void CreateDirectory(string dirName );
         /// <summary>
-        /// 파일 생성
+        /// 공백 파일 생성
         /// </summary>
         /// <param name="fileName">파일명</param>
         /// <returns></returns>
@@ -38,7 +38,7 @@ namespace StudioSystemSDK.Domain
         /// <returns>저장 성공/실패</returns>
         UniTask<bool> SaveBinaryFile( string filePath, byte[] message );
         /// <summary>
-        /// 파일 경로를 기준으로 BIanry 파일 생성
+        /// 파일 경로를 기준으로 텍스트 베이스 파일 생성
         /// </summary>
         /// <param name="filePath">파일명</param>
         /// <param name="message">Binary로 저장할 문자열 데이터</param>
