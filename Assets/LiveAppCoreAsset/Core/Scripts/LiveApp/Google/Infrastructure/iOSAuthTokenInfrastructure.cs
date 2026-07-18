@@ -39,10 +39,12 @@ namespace LiveAppCore.Google.Infrastructure
                 return _cachedToken.accessToken;
             }
 
-            _cachedToken = await _signInDomain.RequestAccessTokenAsync(
-                _scope,
-                cancellationToken
-            );
+            if( string.IsNullOrWhiteSpace( _clientId ) )
+            {
+                throw new InvalidOperationException( "Google OAuth iOS Client ID is empty." );
+            }
+
+            _cachedToken = await _signInDomain.RequestAccessTokenAsync( _clientId, _scope, cancellationToken );
 
             if( _cachedToken == null )
             {

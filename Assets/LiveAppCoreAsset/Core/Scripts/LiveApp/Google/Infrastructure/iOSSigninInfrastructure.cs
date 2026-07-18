@@ -17,6 +17,7 @@ namespace LiveAppCore.Google.Infrastructure
 #if UNITY_IOS && !UNITY_EDITOR
         [DllImport( "__Internal" )]
         private static extern void GoogleAuth_RequestAccessToken(
+            string clientId,
             string unityGameObjectName,
             string unityCallbackMethodName,
             string scope
@@ -30,15 +31,13 @@ namespace LiveAppCore.Google.Infrastructure
             DontDestroyOnLoad( gameObject );
         }
 
-        public UniTask<GoogleOAuthToken> RequestAccessTokenAsync( string scope, CancellationToken cancellationToken )
+        public UniTask<GoogleOAuthToken> RequestAccessTokenAsync( string clientId, string scope, CancellationToken cancellationToken )
         {
 #if UNITY_IOS && !UNITY_EDITOR
-            return RequestAccessTokenInternalAsync(scope, cancellationToken);
+            return RequestAccessTokenInternalAsync(clientId, scope, cancellationToken);
 #else
             return UniTask.FromException<GoogleOAuthToken>(
-                new PlatformNotSupportedException(
-                    "iOS Google Sign-In is only available on iOS device builds."
-                )
+                new PlatformNotSupportedException( "iOS Google Sign-In is only available on iOS device builds." )
             );
 #endif
         }
@@ -53,7 +52,7 @@ namespace LiveAppCore.Google.Infrastructure
         }
 
 #if UNITY_IOS && !UNITY_EDITOR
-        private UniTask<GoogleOAuthToken> RequestAccessTokenInternalAsync( string scope, CancellationToken cancellationToken )
+        private UniTask<GoogleOAuthToken> RequestAccessTokenInternalAsync( string clientId, string scope, CancellationToken cancellationToken )
         {
             if( _completionSource != null )
             {
@@ -68,10 +67,10 @@ namespace LiveAppCore.Google.Infrastructure
             _cancellationRegistration  = cancellationToken.Register( () =>
             {
                 _completionSource?.TrySetCanceled( cancellationToken );
-                _completionSource = null;
+                //_completionSource = null;
             } );
 
-            GoogleAuth_RequestAccessToken( gameObject.name, nameof( OnNativeGoogleAuthResult ), scope );
+            GoogleAuth_RequestAccessToken( clientId, gameObject.name, nameof( OnNativeGoogleAuthResult ), scope );
             return _completionSource.Task;
         }
 #endif
