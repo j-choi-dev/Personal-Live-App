@@ -18,7 +18,7 @@ namespace LiveAppCore.Google.Infrastructure
         [DllImport( "__Internal" )]
         private static extern void GoogleAuth_RequestAccessToken(
             string clientId,
-            string unityGameObjectName,
+            string objectname,
             string unityCallbackMethodName,
             string scope
         );
@@ -34,8 +34,8 @@ namespace LiveAppCore.Google.Infrastructure
         public UniTask<GoogleOAuthToken> RequestAccessTokenAsync( string clientId, string scope, CancellationToken cancellationToken )
         {
 #if UNITY_IOS && !UNITY_EDITOR
-            Debug.Log($"RequestAccessTokenAsync :: {clientId}, {gameObject.name}, {nameof( OnNativeGoogleAuthResult )}, {scope}");
-            return RequestAccessTokenInternalAsync( clientId, gameObject.name, cancellationToken, scope );
+            Debug.Log($"RequestAccessTokenAsync :: {clientId}, {nameof( OnNativeGoogleAuthResult )}, {scope}");
+            return RequestAccessTokenInternalAsync( clientId, scope, cancellationToken );
 #else
             return UniTask.FromException<GoogleOAuthToken>( new PlatformNotSupportedException( "iOS Google Sign-In is only available on iOS device builds." ) );
 #endif
