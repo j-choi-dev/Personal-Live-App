@@ -34,11 +34,10 @@ namespace LiveAppCore.Google.Infrastructure
         public UniTask<GoogleOAuthToken> RequestAccessTokenAsync( string clientId, string scope, CancellationToken cancellationToken )
         {
 #if UNITY_IOS && !UNITY_EDITOR
-            return RequestAccessTokenInternalAsync(clientId, scope, cancellationToken);
+            Debug.Log($"RequestAccessTokenAsync :: {clientId}, {gameObject.name}, {nameof( OnNativeGoogleAuthResult )}, {scope}");
+            return RequestAccessTokenInternalAsync( clientId, gameObject.name, cancellationToken, scope );
 #else
-            return UniTask.FromException<GoogleOAuthToken>(
-                new PlatformNotSupportedException( "iOS Google Sign-In is only available on iOS device builds." )
-            );
+            return UniTask.FromException<GoogleOAuthToken>( new PlatformNotSupportedException( "iOS Google Sign-In is only available on iOS device builds." ) );
 #endif
         }
 
@@ -70,6 +69,7 @@ namespace LiveAppCore.Google.Infrastructure
                 //_completionSource = null;
             } );
 
+            Debug.Log($"RequestAccessTokenInternalAsync :: {clientId}, {gameObject.name}, {nameof( OnNativeGoogleAuthResult )}, {scope}");
             GoogleAuth_RequestAccessToken( clientId, gameObject.name, nameof( OnNativeGoogleAuthResult ), scope );
             return _completionSource.Task;
         }
