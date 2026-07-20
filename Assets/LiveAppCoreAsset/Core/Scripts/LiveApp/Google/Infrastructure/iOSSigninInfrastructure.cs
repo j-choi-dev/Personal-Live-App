@@ -17,8 +17,8 @@ namespace LiveAppCore.Google.Infrastructure
 #if UNITY_IOS && !UNITY_EDITOR
         [DllImport( "__Internal" )]
         private static extern void GoogleAuth_RequestAccessToken(
-            string clientId,
-            string objectname,
+            string iosClientId,
+            string unityGameObjectName,
             string unityCallbackMethodName,
             string scope
         );
@@ -35,6 +35,7 @@ namespace LiveAppCore.Google.Infrastructure
         {
 #if UNITY_IOS && !UNITY_EDITOR
             Debug.Log($"RequestAccessTokenAsync :: {clientId}, {nameof( OnNativeGoogleAuthResult )}, {scope}");
+            Debug.LogWarning( $"[GoogleAuth:C#4] Calling native bridge. clientIdExists={!string.IsNullOrWhiteSpace(clientId)}, object={gameObject.name}" );
             return RequestAccessTokenInternalAsync( clientId, scope, cancellationToken );
 #else
             return UniTask.FromException<GoogleOAuthToken>( new PlatformNotSupportedException( "iOS Google Sign-In is only available on iOS device builds." ) );
@@ -66,7 +67,7 @@ namespace LiveAppCore.Google.Infrastructure
             _cancellationRegistration  = cancellationToken.Register( () =>
             {
                 _completionSource?.TrySetCanceled( cancellationToken );
-                //_completionSource = null;
+                _completionSource = null;
             } );
 
             Debug.Log($"RequestAccessTokenInternalAsync :: {clientId}, {gameObject.name}, {nameof( OnNativeGoogleAuthResult )}, {scope}");

@@ -30,7 +30,7 @@ static UIViewController* RootViewController()
 {
     UIWindow* keyWindow = nil;
 
-    if (@available(iOS 13.0, *))
+    if (@available(iOS 15.0, *))
     {
         for (UIScene* scene in UIApplication.sharedApplication.connectedScenes)
         {
@@ -179,50 +179,164 @@ presentingViewController:presenter
 }
 
 extern "C" void GoogleAuth_RequestAccessToken(
+    const char* iosClientId,
     const char* unityGameObjectName,
     const char* unityCallbackMethodName,
     const char* scopeText
 )
 {
+    NSLog(@"[GoogleAuth:N1] Native bridge entered.");
+    NSString* clientId = MakeNSString(iosClientId);
     NSString* objectName = MakeNSString(unityGameObjectName);
     NSString* callbackName = MakeNSString(unityCallbackMethodName);
     NSString* scopeString = MakeNSString(scopeText);
+
+    NSLog(
+        @"[GoogleAuth:N2] Arguments received. "
+         "clientIdLength=%lu objectName=%@ callbackName=%@ scope=%@",
+        (unsigned long)clientId.length,
+        objectName,
+        callbackName,
+        scopeString
+    );
+    if (clientId.length <= 0)
+    {
+        NSLog(@"[GoogleAuth:E1] Client ID is empty.");
+
+        SendResult(
+            objectName,
+            callbackName,
+            NO,
+            @"",
+            @"",
+            @"",
+            0,
+            @"Google OAuth iOS client ID is empty."
+        );
+        return;
+    }
+
     NSArray<NSString*>* scopes = ParseScopes(scopeString);
 
     dispatch_async(dispatch_get_main_queue(), ^
     {
+        NSLog(@"[GoogleAuth:N3] Entered main queue.");
+
+        GIDConfiguration* configuration =
+            [[GIDConfiguration alloc] initWithClientID:clientId];
+
+        [GIDSignIn sharedInstance].configuration = configuration;
+
+        NSLog(
+            @"[GoogleAuth:N4] Configuration set. clientIdLength=%lu",
+            (unsigned long)[GIDSignIn sharedInstance]
+                .configuration.clientID.length
+        );
+
         UIViewController* presenter = RootViewController();
 
         if (presenter == nil)
         {
-            SendResult(objectName, callbackName, NO, @"", @"", @"", 0, @"Root view controller not found.");
+            NSLog(@"[GoogleAuth:E2] Root view controller not found.");
+
+            SendResult(
+                objectName,
+                callbackName,
+                NO,
+                @"",
+                @"",
+                @"",
+                0,
+                @"Root view controller not found."
+            );
             return;
         }
 
-        [[GIDSignIn sharedInstance] restorePreviousSignInWithCompletion:^(GIDGoogleUser* restoredUser, NSError* restoreError)
+        NSLog(
+            @"[GoogleAuth:N5] Presenter found: %@",
+            NSStringFromClass(presenter.class)
+        );
+
+        [[GIDSignIn sharedInstance]
+            restorePreviousSignInWithCompletion:
+            ^(GIDGoogleUser* restoredUser, NSError* restoreError)
         {
+            NSLog(
+                @"[GoogleAuth:N6] Restore completed. "
+                 "user=%@ errorDomain=%@ errorCode=%ld error=%@",
+                restoredUser != nil ? @"YES" : @"NO",
+                restoreError.domain,
+                (long)restoreError.code,
+                restoreError.localizedDescription
+            );
+
             if (restoredUser != nil)
             {
-                FinishWithUser(restoredUser, scopes, presenter, objectName, callbackName);
+                NSLog(@"[GoogleAuth:N7] Using restored user.");
+
+                FinishWithUser(
+                    restoredUser,
+                    scopes,
+                    presenter,
+                    objectName,
+                    callbackName
+                );
                 return;
             }
 
-            [[GIDSignIn sharedInstance] signInWithPresentingViewController:presenter
-                                                                completion:^(GIDSignInResult* signInResult, NSError* signInError)
+            NSLog(@"[GoogleAuth:N8] Starting interactive sign-in.");
+
+            [[GIDSignIn sharedInstance]
+                signInWithPresentingViewController:presenter
+                completion:
+                ^(GIDSignInResult* signInResult, NSError* signInError)
             {
+                NSLog(
+                    @"[GoogleAuth:N9] Interactive sign-in completed. "
+                     "user=%@ errorDomain=%@ errorCode=%ld error=%@",
+                    signInResult.user != nil ? @"YES" : @"NO",
+                    signInError.domain,
+                    (long)signInError.code,
+                    signInError.localizedDescription
+                );
+
                 if (signInError != nil)
                 {
-                    SendResult(objectName, callbackName, NO, @"", @"", @"", 0, signInError.localizedDescription);
+                    SendResult(
+                        objectName,
+                        callbackName,
+                        NO,
+                        @"",
+                        @"",
+                        @"",
+                        0,
+                        signInError.localizedDescription
+                    );
                     return;
                 }
 
                 if (signInResult.user == nil)
                 {
-                    SendResult(objectName, callbackName, NO, @"", @"", @"", 0, @"Google user is null.");
+                    SendResult(
+                        objectName,
+                        callbackName,
+                        NO,
+                        @"",
+                        @"",
+                        @"",
+                        0,
+                        @"Google user is null."
+                    );
                     return;
                 }
 
-                FinishWithUser(signInResult.user, scopes, presenter, objectName, callbackName);
+                FinishWithUser(
+                    signInResult.user,
+                    scopes,
+                    presenter,
+                    objectName,
+                    callbackName
+                );
             }];
         }];
     });

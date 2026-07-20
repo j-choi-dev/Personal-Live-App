@@ -38,6 +38,7 @@ namespace LiveAppUI.Presenter
 
         private async void Start()
         {
+            Debug.LogWarning( "[GoogleAuth:C#1] ServerLoginPresenter.Start" );
             _loginView.SetActive( false );
             _roomView.SetActive( false );
             var result = await _authTokenModel.InitilizeAuthProcess();
