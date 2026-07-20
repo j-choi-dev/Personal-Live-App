@@ -42,7 +42,7 @@ namespace StudioSystemSDK.Infrastructure
         public async UniTask<string> LoadTextFile( string filePath )
         {
             var message = string.Empty;
-            using( var fs = new FileStream( filePath, FileMode.Open ) )
+            using( var fs = new FileStream( filePath, FileMode.Open, FileAccess.Read ) )
             using( var sr = new StreamReader( fs, false ) )
             {
                 message = await sr.ReadToEndAsync();
@@ -53,7 +53,7 @@ namespace StudioSystemSDK.Infrastructure
         public async UniTask<byte[]> LoadBinaryFile( string filePath )
         {
             var message = string.Empty;
-            using( var fs = new FileStream( filePath, FileMode.OpenOrCreate ) )
+            using( var fs = new FileStream( filePath, FileMode.Open, FileAccess.Read ) )
             using( var sr = new StreamReader( fs, false ) )
             {
                 message = sr.ReadToEnd();
@@ -64,7 +64,7 @@ namespace StudioSystemSDK.Infrastructure
 
         public async UniTask<bool> SaveBinaryFile( string filePath, byte[] message )
         {
-            using( var fs = new FileStream( filePath, FileMode.OpenOrCreate ) )
+            using( var fs = new FileStream( filePath, FileMode.OpenOrCreate, FileAccess.Write ) )
             using( var sw = new StreamWriter( fs, System.Text.Encoding.UTF8 ) )
             {
                 try
@@ -82,7 +82,7 @@ namespace StudioSystemSDK.Infrastructure
 
         public async UniTask<bool> SaveTextFile( string filePath, string message )
         {
-            using( var fs = new FileStream( filePath, FileMode.OpenOrCreate ) )
+            using( var fs = new FileStream( filePath, FileMode.OpenOrCreate, FileAccess.Write ) )
             using( var sw = new StreamWriter( fs, System.Text.Encoding.UTF8 ) )
             {
                 try
@@ -105,6 +105,26 @@ namespace StudioSystemSDK.Infrastructure
                 using( FileStream fs = File.Create( path ) )
                 {
                 }
+                return true;
+            }
+            catch( System.Exception e )
+            {
+                Debug.LogError( e.Message );
+                return false;
+            }
+        }
+
+        public bool CopyFile( string originPath, string destPath, bool isOverWrite )
+        {
+            try
+            {
+                var dir = Path.GetDirectoryName( destPath );
+                if( Directory.Exists( dir ) == false )
+                {
+                    Directory.CreateDirectory( dir );
+                }
+                File.Copy(originPath, destPath, isOverWrite );
+                UnityEngine.Debug.Log( $"FileSystem :: {originPath} -> {destPath}" );
                 return true;
             }
             catch( System.Exception e )

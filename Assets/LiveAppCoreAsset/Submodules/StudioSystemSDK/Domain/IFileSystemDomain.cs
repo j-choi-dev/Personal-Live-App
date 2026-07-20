@@ -56,5 +56,7 @@ namespace StudioSystemSDK.Domain
         /// <param name="filePath">파일명/파일 경로</param>
         /// <returns>binary 데이터의 문자열</returns>
         UniTask<string> LoadTextFile( string filePath );
+
+        bool CopyFile( string originPath, string destPath, bool isOverWrite );
     }
 }

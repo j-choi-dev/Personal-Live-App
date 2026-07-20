@@ -3,6 +3,8 @@ using LiveAppCore.Google.Domain;
 using StudioSystemSDK.Domain;
 using System;
 using System.IO;
+using System.Linq;
+using System.Text;
 using UniRx;
 using UnityEngine;
 
@@ -46,25 +48,34 @@ namespace LiveAppCore.Google.Application
 
             try
             {
-                var authInfoPath = Path.Combine(UnityEngine.Application.streamingAssetsPath, OAuthConstValue.BinFileName);
+                var authInfoPath = Path.Combine(UnityEngine.Application.streamingAssetsPath, OAuthConstValue.ConfigPath, OAuthConstValue.BinFileName);
+                var authInfoDestPath = Path.Combine(UnityEngine.Application.persistentDataPath, OAuthConstValue.ConfigPath, OAuthConstValue.BinFileName);
                 if( _fileSystemDomain.IsFileExist( authInfoPath ) == false )
                 {
                     throw new FileNotFoundException( "File Not Exist :: ", authInfoPath );
                 }
 
-                Debug.LogWarning( $"[GoogleAuth:C#2] authInfoPath={authInfoPath}" );
-
-                bool exists = _fileSystemDomain.IsFileExist(authInfoPath);
-
-                Debug.LogWarning( $"[GoogleAuth:C#2] auth.bin exists={exists}" );
-
-                if( !exists )
+                var isOriginExists = _fileSystemDomain.IsFileExist(authInfoPath);
+                if( isOriginExists == false )
                 {
                     throw new FileNotFoundException( "Google OAuth auth.bin does not exist.", authInfoPath );
                 }
 
+                var isDestExists = _fileSystemDomain.IsFileExist(authInfoDestPath);
+                if( isDestExists == false )
+                {
+                    _fileSystemDomain.CopyFile( authInfoPath, authInfoDestPath, true );
+                }
+                var sourceBytes = await _fileSystemDomain.LoadBinaryFile( authInfoPath );
+                var destBytes = await _fileSystemDomain.LoadBinaryFile( authInfoDestPath );
+                var isEqulaFile = sourceBytes.SequenceEqual( destBytes );
+                if( isEqulaFile == false )
+                {
+                    _fileSystemDomain.CopyFile( authInfoPath, authInfoDestPath, true );
+                }
+
                 Debug.LogWarning( "[GoogleAuth:C#2] Loading auth.bin." );
-                var rawData = await _fileSystemDomain.LoadTextFile( authInfoPath );
+                var rawData = Encoding.Default.GetString(destBytes);
 
 
                 Debug.LogWarning( $"[GoogleAuth:C#2] auth.bin loaded. length={rawData?.Length ?? 0}" );
@@ -78,7 +89,7 @@ namespace LiveAppCore.Google.Application
                 _googleAuthDomain.SetAuthValue( oauthSettings );
                 Debug.LogWarning( "[GoogleAuth:C#2] GetAccessTokenAsync calling." );
                 var token = await _googleAuthDomain.GetAccessTokenAsync();
-                Debug.LogWarning( $"[GoogleAuth:C#2] Token received. hasToken={!string.IsNullOrWhiteSpace( token )}");
+                Debug.LogWarning( $"[GoogleAuth:C#2] Token received. hasToken={!string.IsNullOrWhiteSpace( token )}" );
                 _googleAuthInfoStorage.SetOAuthToken( token );
                 _onCompleteTokenProcess.OnNext( true );
                 return true;
