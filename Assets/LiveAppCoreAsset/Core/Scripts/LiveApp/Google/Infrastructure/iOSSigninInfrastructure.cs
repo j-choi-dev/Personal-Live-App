@@ -14,7 +14,7 @@ namespace LiveAppCore.Google.Infrastructure
         private CancellationTokenRegistration _cancellationRegistration;
 
 
-#if UNITY_IOS && !UNITY_EDITOR
+#if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
         [DllImport( "__Internal" )]
         private static extern void GoogleAuth_RequestAccessToken(
             string iosClientId,
@@ -33,7 +33,7 @@ namespace LiveAppCore.Google.Infrastructure
 
         public UniTask<GoogleOAuthToken> RequestAccessTokenAsync( string clientId, string scope, CancellationToken cancellationToken )
         {
-#if UNITY_IOS && !UNITY_EDITOR
+#if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
             Debug.Log($"RequestAccessTokenAsync :: {clientId}, {nameof( OnNativeGoogleAuthResult )}, {scope}");
             Debug.LogWarning( $"[GoogleAuth:C#4] Calling native bridge. clientIdExists={!string.IsNullOrWhiteSpace(clientId)}, object={gameObject.name}" );
             return RequestAccessTokenInternalAsync( clientId, scope, cancellationToken );
@@ -44,14 +44,14 @@ namespace LiveAppCore.Google.Infrastructure
 
         public void SignOut()
         {
-#if UNITY_IOS && !UNITY_EDITOR
+#if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
             GoogleAuth_SignOut();
 #else
             Debug.LogWarning( "[GoogleOAuth iOS] SignOut is ignored outside iOS device build." );
 #endif
         }
 
-#if UNITY_IOS && !UNITY_EDITOR
+#if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
         private UniTask<GoogleOAuthToken> RequestAccessTokenInternalAsync( string clientId, string scope, CancellationToken cancellationToken )
         {
             if( _completionSource != null )

@@ -42,7 +42,7 @@ namespace LiveAppCore.Installer
                 .AsSingle();
             Container
                 .Bind<IGoogleAuthTokenDomain>()
-#if UNITY_IOS && !UNITY_EDITOR
+#if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
                 .To<iOSAuthTokenInfrastructure>()
 #else
                 .To<StandaloneAuthTokenInfrastructure>()
