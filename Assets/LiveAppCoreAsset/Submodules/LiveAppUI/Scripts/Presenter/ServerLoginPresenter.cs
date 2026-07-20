@@ -32,24 +32,32 @@ namespace LiveAppUI.Presenter
 
         private void Awake()
         {
+            Debug.LogError(
+                $"[GoogleAuth:C#0] ServerLoginPresenter.Awake. " +
+                $"object={gameObject.name}, " +
+                $"active={gameObject.activeInHierarchy}, " +
+                $"enabled={enabled}"
+            );
             InitView();
+            Debug.LogError( "[GoogleAuth:C#0.2] InitView completed." );
             InitModel();
+            Debug.LogError( "[GoogleAuth:C#0.3] InitModel completed." );
         }
 
         private async void Start()
         {
-            Debug.LogWarning(
+            Debug.LogError(
                 "[GoogleAuth:C#1] ServerLoginPresenter.Start entered."
             );
             _loginView.SetActive( false );
             _roomView.SetActive( false );
 
-            Debug.LogWarning(
+            Debug.LogError(
                 "[GoogleAuth:C#1] InitializeAuthProcess calling."
             );
             var result = await _authTokenModel.InitilizeAuthProcess();
 
-            Debug.LogWarning(
+            Debug.LogError(
                 $"[GoogleAuth:C#1] InitializeAuthProcess result={result}"
             );
             if( result == false )

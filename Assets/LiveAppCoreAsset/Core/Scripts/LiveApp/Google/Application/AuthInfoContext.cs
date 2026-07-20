@@ -42,9 +42,7 @@ namespace LiveAppCore.Google.Application
 
         public async UniTask<bool> InitilizeAuthProcess()
         {
-            Debug.LogWarning(
-                "[GoogleAuth:C#2] InitilizeAuthProcess entered."
-            );
+            Debug.LogWarning( "[GoogleAuth:C#2] InitilizeAuthProcess entered." );
 
             try
             {

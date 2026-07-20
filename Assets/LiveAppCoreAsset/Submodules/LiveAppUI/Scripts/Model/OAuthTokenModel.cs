@@ -17,6 +17,8 @@ namespace LiveAppUI.Model
 
         public async UniTask<bool> InitilizeAuthProcess()
         {
+            UnityEngine.Debug.LogError( $"[GoogleAuth:C#1.5] OAuthTokenModel entered. contextType={_context?.GetType().FullName ?? "null"}" );
+
             return await _context.InitilizeAuthProcess();
         }
     }
