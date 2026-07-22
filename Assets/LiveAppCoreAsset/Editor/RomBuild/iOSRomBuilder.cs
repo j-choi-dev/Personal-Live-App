@@ -34,7 +34,7 @@ namespace LiveAppCore.Editor.Infrastructure
 
         private const string GoogleServicePlistSourcePath = "Assets/Plugins/iOS/GoogleService-Info.plist";
 
-        private const string AppIconPath = "Assets/Icons/AppIcon/icon-1024.png";
+        private const string AppIconPath = "Assets/Icons/AppIcon/AppIcon-1024.png";
         private const string AppVersion = "1.0.0";
         private const string TargetOSVersion = "15.0";
         private const string AppleDeveloperTeamId = "7D34UK765M";
