@@ -1,4 +1,3 @@
-using Codice.Utils;
 using Cysharp.Threading.Tasks;
 using LiveAppCore.Editor.Domain;
 using System;
@@ -8,6 +7,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
+using UnityEditor.iOS;
 using UnityEditor.iOS.Xcode;
 using UnityEngine;
 
@@ -37,6 +37,7 @@ namespace LiveAppCore.Editor.Infrastructure
         private const string AppIconPath = "Assets/Icons/AppIcon/icon-1024.png";
         private const string AppVersion = "1.0.0";
         private const string TargetOSVersion = "15.0";
+        private const string AppleDeveloperTeamId = "7D34UK765M";
 
         private const string GoogleServiceInfoPList = "GoogleService-Info.plist";
 
@@ -87,8 +88,8 @@ namespace LiveAppCore.Editor.Infrastructure
                 PlayerSettings.SetApplicationIdentifier( NamedBuildTarget.iOS, BundleIdentifier );
                 PlayerSettings.bundleVersion = AppVersion;
                 PlayerSettings.iOS.targetOSVersionString = TargetOSVersion;
-                // PlayerSettings.iOS.appleDeveloperTeamID = "YOUR_TEAM_ID";
-                // PlayerSettings.iOS.appleEnableAutomaticSigning = true;
+                PlayerSettings.iOS.appleDeveloperTeamID = AppleDeveloperTeamId;
+                PlayerSettings.iOS.appleEnableAutomaticSigning = true;
 
                 PlayerSettings.iOS.buildNumber = _buildNumber;
 
@@ -148,8 +149,8 @@ namespace LiveAppCore.Editor.Infrastructure
                 };
 
                 Debug.Log( $"[iOSRomBuilder] Build started. Path: {XcodeProjectPath}" );
-                
-                var report = BuildPipeline.BuildPlayer(options);
+
+                var report = UnityEditor.BuildPipeline.BuildPlayer(options);
                 var summary = report.summary;
                 // TODO Build Log 남기는 것도 좋을 듯 @Choi 26.07.14
 
@@ -202,46 +203,79 @@ namespace LiveAppCore.Editor.Infrastructure
 
         private static void SetAppIconsIfExists( string path, BuildTargetGroup target )
         {
-            if( File.Exists( path ) == false )
+            if( string.IsNullOrWhiteSpace( path ) )
             {
-                Debug.LogWarning( $"[iOSRomBuilder] AppIcon file not found. Skip icon setup: {AppIconPath}" );
-                return;
+                throw new ArgumentException( "App icon path is empty.", nameof( path ) );
             }
 
-            var sourceIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(path); 
+            // 최신 파일 상태를 Unity AssetDatabase에 반영
+            AssetDatabase.ImportAsset( path, ImportAssetOptions.ForceUpdate );
+
+            Texture2D sourceIcon = AssetDatabase.LoadAssetAtPath<Texture2D>( path );
+
             if( sourceIcon == null )
             {
-                Debug.LogError( $"[iOSRomBuilder] Failed to load icon as Texture2D: {path}" );
-                return;
+                throw new FileNotFoundException( $"Failed to load app icon: {path}", path );
             }
 
-            var iconSizes = PlayerSettings.GetIconSizes(NamedBuildTarget.iOS, IconKind.Application);
-            if( iconSizes == null || iconSizes.Length <= 0 )
+            if( sourceIcon.width != 1024 ||
+                sourceIcon.height != 1024 )
             {
-                Debug.LogWarning( $"[iOSRomBuilder] No icon sizes found for target: {target}" );
-                return;
+                throw new InvalidOperationException( $"App icon must be 1024x1024. Current={sourceIcon.width}x{sourceIcon.height}, Path={path}" );
             }
 
-            if( sourceIcon.width != 1024 || sourceIcon.height != 1024 )
+            PlatformIcon[] platformIcons = PlayerSettings.GetPlatformIcons( NamedBuildTarget.iOS, iOSPlatformIconKind.Application );
+
+            if( platformIcons == null ||
+                platformIcons.Length == 0 )
             {
-                Debug.LogError( $"[iOSRomBuilder] Recommended source icon size is 1024x1024. Current: {sourceIcon.width}x{sourceIcon.height}, Path: {path}" );
-                return;
+                throw new InvalidOperationException( "No iOS application icon slots were found." );
             }
 
-            Texture2D[] icons = new Texture2D[iconSizes.Length];
-            Debug.Log(icons.Length);
-
-            for( int i = 0; i < icons.Length; i++ )
+            for( int i = 0; i < platformIcons.Length; i++ )
             {
-                icons[i] = sourceIcon;
+                if( platformIcons[i].maxLayerCount <= 0 )
+                {
+                    continue;
+                }
+
+                platformIcons[i].SetTexture( sourceIcon, 0 );
+
+                Debug.Log(
+                    $"[iOSRomBuilder] Icon slot assigned: {platformIcons[i].width} x {platformIcons[i].height}"
+                );
             }
 
-            PlayerSettings.SetIcons( NamedBuildTarget.iOS, icons, IconKind.Application );
+            PlayerSettings.SetPlatformIcons( NamedBuildTarget.iOS, iOSPlatformIconKind.Application, platformIcons );
 
-            EditorUtility.SetDirty( AssetDatabase.LoadAllAssetsAtPath( "ProjectSettings/ProjectSettings.asset" ).FirstOrDefault() );
             AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
-            Debug.Log( $"[iOSRomBuilder] App icons set from single source. Target: {target}, Source: {path}, Slots: {icons.Length}" );
+            // 실제 적용 여부 검증
+            PlatformIcon[] appliedIcons = PlayerSettings.GetPlatformIcons( NamedBuildTarget.iOS, iOSPlatformIconKind.Application );
+
+            bool allAssigned = true;
+
+            foreach( PlatformIcon icon in appliedIcons )
+            {
+                if( icon.maxLayerCount <= 0 )
+                {
+                    continue;
+                }
+                if( icon.GetTexture( 0 ) == null )
+                {
+                    allAssigned = false;
+
+                    Debug.LogError( $"[iOSRomBuilder] Empty icon slot: {icon.width}x{icon.height}" );
+                }
+            }
+
+            if( !allAssigned )
+            {
+                throw new InvalidOperationException( "One or more iOS app icon slots are empty." );
+            }
+
+            Debug.Log( $"[iOSRomBuilder] iOS app icon configured. Source={path}, Slots={appliedIcons.Length}" );
         }
 
         private static void EnsureRequiredScenes()
@@ -395,7 +429,7 @@ namespace LiveAppCore.Editor.Infrastructure
             var mainTargetGuid = pbx.GetUnityMainTargetGuid();
             var frameworkTargetGuid = pbx.GetUnityFrameworkTargetGuid();
 
-            AddGoogleServicePlistToMainTarget( pbx, mainTargetGuid );
+            AddGoogleServicePlistToMainTarget( pbx, mainTargetGuid, frameworkTargetGuid );
             ApplyBuildProperties( pbx, mainTargetGuid, frameworkTargetGuid );
             AddFrameworks( pbx, frameworkTargetGuid );
             pbx.WriteToFile( pbxPath );
@@ -403,7 +437,7 @@ namespace LiveAppCore.Editor.Infrastructure
             Debug.Log( "[iOSRomBuilder] PBXProject updated." );
         }
 
-        private void AddGoogleServicePlistToMainTarget( PBXProject pbx, string mainTargetGuid )
+        private void AddGoogleServicePlistToMainTarget( PBXProject pbx, string mainTargetGuid, string frameworkTargetGuid )
         {
             string fileGuid = pbx.AddFile( GoogleServiceInfoPList, GoogleServiceInfoPList, PBXSourceTree.Source );
             pbx.AddFileToBuild( mainTargetGuid, fileGuid );
@@ -411,15 +445,33 @@ namespace LiveAppCore.Editor.Infrastructure
 
         private static void ApplyBuildProperties( PBXProject pbx, string mainTargetGuid, string frameworkTargetGuid )
         {
-            // GoogleSignIn / Pods 사용 시 필요할 수 있는 기본값들.
+            string[] targetGuids = { mainTargetGuid, frameworkTargetGuid };
+            // Bitcode 비활성화
             pbx.SetBuildProperty( mainTargetGuid, "ENABLE_BITCODE", "NO" );
             pbx.SetBuildProperty( frameworkTargetGuid, "ENABLE_BITCODE", "NO" );
 
-            pbx.SetBuildProperty( mainTargetGuid, "IPHONEOS_DEPLOYMENT_TARGET", "13.0" );
-            pbx.SetBuildProperty( frameworkTargetGuid, "IPHONEOS_DEPLOYMENT_TARGET", "13.0" );
+            // Unity-iPhone과 UnityFramework 모두 OS 버전 지정
+            pbx.SetBuildProperty( mainTargetGuid, "IPHONEOS_DEPLOYMENT_TARGET", TargetOSVersion );
+            pbx.SetBuildProperty( frameworkTargetGuid, "IPHONEOS_DEPLOYMENT_TARGET", TargetOSVersion );
 
-            // Swift Package / CocoaPods 사용 시 Swift runtime 관련 문제를 줄이는 옵션.
+            // 자동 서명
+            pbx.SetBuildProperty( targetGuids, "CODE_SIGN_STYLE", "Automatic" );
+            pbx.SetBuildProperty( targetGuids, "DEVELOPMENT_TEAM", AppleDeveloperTeamId );
+
+            // PBX 프로젝트의 Team 속성도 설정
+            pbx.SetTeamId( mainTargetGuid, AppleDeveloperTeamId );
+            pbx.SetTeamId( frameworkTargetGuid, AppleDeveloperTeamId );
+
+            // 기존 수동 프로비저닝 값 제거
+            pbx.SetBuildProperty( targetGuids, "PROVISIONING_PROFILE_SPECIFIER", string.Empty );
+
+            pbx.SetBuildProperty( targetGuids, "PROVISIONING_PROFILE", string.Empty );
+
+            // Swift 런타임은 메인 앱 타깃에 적용
             pbx.SetBuildProperty( mainTargetGuid, "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "YES" );
+
+            // Xcode가 사용할 기본 AppIcon 세트 이름
+            pbx.SetBuildProperty( mainTargetGuid, "ASSETCATALOG_COMPILER_APPICON_NAME", "AppIcon" );
         }
 
         private static void AddFrameworks( PBXProject pbx, string frameworkTargetGuid )
