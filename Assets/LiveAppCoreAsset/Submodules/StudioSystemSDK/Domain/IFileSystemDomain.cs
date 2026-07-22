@@ -10,9 +10,9 @@ namespace StudioSystemSDK.Domain
         /// <summary>
         /// 디렉토리 존재 여부 확인
         /// </summary>
-        /// <param name="dirName">폴더명</param>
+        /// <param name="path">폴더명</param>
         /// <returns>디렉토리 존재 여부</returns>
-        bool IsDirectoryExist( string dirName );
+        bool IsDirectoryExist( string path );
         /// <summary>
         /// 파일 존재 여부 확인
         /// </summary>
@@ -22,8 +22,8 @@ namespace StudioSystemSDK.Domain
         /// <summary>
         /// 폴더명을 기준으로 디렉토리 생성
         /// </summary>
-        /// <param name="dirName">폴더명</param>
-        void CreateDirectory(string dirName );
+        /// <param name="path">폴더명</param>
+        void CreateDirectory(string path );
         /// <summary>
         /// 공백 파일 생성
         /// </summary>
@@ -57,6 +57,7 @@ namespace StudioSystemSDK.Domain
         /// <returns>binary 데이터의 문자열</returns>
         UniTask<string> LoadTextFile( string filePath );
 
+        UniTask<bool> IsEqual( string originPath, string destPath );
         bool CopyFile( string originPath, string destPath, bool isOverWrite );
     }
 }

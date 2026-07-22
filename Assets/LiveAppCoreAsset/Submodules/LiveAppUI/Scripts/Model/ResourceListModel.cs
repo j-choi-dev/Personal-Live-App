@@ -57,11 +57,19 @@ namespace LiveAppUI.Model
             }
         }
 
-        public async UniTask InitializeServerConfig()
+        public async UniTask<bool> InitializeServerConfig()
         {
-            var path = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, ResourceConstValue.BinFileName);
-            var rawData = await _fileSystemContext.ReadBinaryFile( path );
-            _serverConfigs =  _resourceConfigContext.ParseServerConfigData( rawData ).ToList();
+            try
+            {
+                var task = await _resourceConfigContext.LoadServerConfig();
+                _serverConfigs =  task.ToList();
+                return true;
+            }
+            catch( Exception ex )
+            {
+                UnityEngine.Debug.LogError( ex.Message );
+                return false;
+            }
             // 리소스 & 구글 시트 링크 보존 -> Context 통해서 DataClass로 ...? @Choi
         }
 

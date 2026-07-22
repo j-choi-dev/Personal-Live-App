@@ -48,30 +48,30 @@ namespace LiveAppCore.Google.Application
 
             try
             {
-                var authInfoPath = Path.Combine(UnityEngine.Application.streamingAssetsPath, OAuthConstValue.ConfigPath, OAuthConstValue.BinFileName);
-                var authInfoDestPath = Path.Combine(UnityEngine.Application.persistentDataPath, OAuthConstValue.ConfigPath, OAuthConstValue.BinFileName);
-                if( _fileSystemDomain.IsFileExist( authInfoPath ) == false )
+                var originPath = Path.Combine(SystemPathValue.ConfigOriginRoot, OAuthConstValue.BinFileName);
+                var destPath = Path.Combine(SystemPathValue.ConfigDestinationRoot, OAuthConstValue.BinFileName);
+                if( _fileSystemDomain.IsFileExist( originPath ) == false )
                 {
-                    throw new FileNotFoundException( "File Not Exist :: ", authInfoPath );
+                    throw new FileNotFoundException( "File Not Exist :: ", originPath );
                 }
 
-                var isOriginExists = _fileSystemDomain.IsFileExist(authInfoPath);
+                var isOriginExists = _fileSystemDomain.IsFileExist(originPath);
                 if( isOriginExists == false )
                 {
-                    throw new FileNotFoundException( "Google OAuth auth.bin does not exist.", authInfoPath );
+                    throw new FileNotFoundException( "Google OAuth auth.bin does not exist.", originPath );
                 }
 
-                var isDestExists = _fileSystemDomain.IsFileExist(authInfoDestPath);
+                var isDestExists = _fileSystemDomain.IsFileExist(destPath);
                 if( isDestExists == false )
                 {
-                    _fileSystemDomain.CopyFile( authInfoPath, authInfoDestPath, true );
+                    _fileSystemDomain.CopyFile( originPath, destPath, true );
                 }
-                var sourceBytes = await _fileSystemDomain.LoadBinaryFile( authInfoPath );
-                var destBytes = await _fileSystemDomain.LoadBinaryFile( authInfoDestPath );
+                var sourceBytes = await _fileSystemDomain.LoadBinaryFile( originPath );
+                var destBytes = await _fileSystemDomain.LoadBinaryFile( destPath );
                 var isEqulaFile = sourceBytes.SequenceEqual( destBytes );
                 if( isEqulaFile == false )
                 {
-                    _fileSystemDomain.CopyFile( authInfoPath, authInfoDestPath, true );
+                    _fileSystemDomain.CopyFile( originPath, destPath, true );
                 }
 
                 Debug.LogWarning( "[GoogleAuth:C#2] Loading auth.bin." );
