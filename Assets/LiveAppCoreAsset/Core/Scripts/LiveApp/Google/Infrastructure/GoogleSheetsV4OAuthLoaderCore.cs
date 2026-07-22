@@ -69,6 +69,11 @@ namespace LiveAppCore.Google.Infrastructure
             {
                 throw;
             }
+            catch( UnauthorizedAccessException )
+            {
+                // TODO @Choi 26.07.22
+                throw;
+            }
             catch( Exception e )
             {
                 Debug.LogError( $"[GoogleSheetsV4OAuthLoader] Exists check failed. {e.Message}" );
@@ -157,6 +162,12 @@ namespace LiveAppCore.Google.Infrastructure
             var body = request.downloadHandler != null
                 ? request.downloadHandler.text
                 : string.Empty;
+
+            if( request.responseCode == 401 )
+            {
+                throw new UnauthorizedAccessException( $"Google access token was rejected. HTTP 401. Body: {body}" );
+            }
+
 
             if( request.result != UnityWebRequest.Result.Success )
             {

@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using StudioNetworkSDK.Domain;
 using StudioResourceSDK.Application;
-using StudioResourceSDK.Domain;
 using StudioSystemSDK.Application;
 using System;
 using System.Collections.Generic;
@@ -17,7 +16,6 @@ namespace LiveAppUI.Model
     {
         private IResourceServerConfigContext _resourceConfigContext;
         private IResourceTableContext _resourceTableContext;
-        private IFileSystemContext _fileSystemContext;
         private CompositeDisposable _disposable = new CompositeDisposable();
 
         private Dictionary<ResourceType, ServerType> _serverTypeDic = new Dictionary<ResourceType, ServerType>();
@@ -27,12 +25,10 @@ namespace LiveAppUI.Model
         public IObservable<IReadOnlyList<(string id, string displayName)>> OnCharacterListChanged => _onCharacterListChanged;
 
         public ResourceListModel( IResourceServerConfigContext resourceConfigContext,
-            IResourceTableContext resourceTableContext,
-            IFileSystemContext fileSystemContext )
+            IResourceTableContext resourceTableContext )
         {
             _resourceConfigContext = resourceConfigContext;
             _resourceTableContext = resourceTableContext;
-            _fileSystemContext = fileSystemContext;
 
             _resourceTableContext.OnCharacterListChanged
                 .Subscribe( list =>

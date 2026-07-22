@@ -34,14 +34,14 @@ namespace LiveAppCore.Google.Infrastructure
 
         public async UniTask<string> GetAccessTokenAsync( CancellationToken cancellationToken = default )
         {
-            if( _cachedToken != null && _cachedToken.HasValidAccessToken() )
-            {
-                return _cachedToken.accessToken;
-            }
-
             if( string.IsNullOrWhiteSpace( _clientId ) )
             {
                 throw new InvalidOperationException( "Google OAuth iOS Client ID is empty." );
+            }
+
+            if( string.IsNullOrWhiteSpace( _scope ) )
+            {
+                throw new InvalidOperationException( "Google OAuth scope is empty." );
             }
 
             _cachedToken = await _signInDomain.RequestAccessTokenAsync( _clientId, _scope, cancellationToken );

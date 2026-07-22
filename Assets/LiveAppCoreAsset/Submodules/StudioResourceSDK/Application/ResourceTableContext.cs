@@ -34,16 +34,21 @@ namespace StudioResourceSDK.Application
 
         public async UniTask<bool> LoadResourceTableProcess( ResourceType type, string serverType, string tableUrl )
         {
-            bool exists = await _resourceTableLoadDomain.ExistsSheetAndTabAsync(
+            var accessToken = await _tokenDomain.GetAccessTokenAsync();
+
+            if( string.IsNullOrWhiteSpace( accessToken ) )
+            {
+                Debug.LogError( "[GoogleSheets] Access token is empty." );
+                return false;
+            }
+            var isExists = await _resourceTableLoadDomain.ExistsSheetAndTabAsync(
                 tableUrl,
                 serverType,
-                _tokenDomain.Token
+                accessToken
             );
-            if( !exists )
+            if( isExists == false )
             {
-                Debug.LogError(
-                    $"Google Sheet or tab not found, or permission denied. Sheet: {tableUrl}, Tab: {serverType}"
-                );
+                Debug.LogError( $"Google Sheet or tab not found, or permission denied. Sheet: {tableUrl}, Tab: {serverType}" );
                 return false;
             }
             string tableText = await _resourceTableLoadDomain.LoadVariableRangeAsStringAsync(
