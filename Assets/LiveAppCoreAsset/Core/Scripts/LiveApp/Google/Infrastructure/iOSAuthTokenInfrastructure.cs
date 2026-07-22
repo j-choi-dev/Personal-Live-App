@@ -58,12 +58,6 @@ namespace LiveAppCore.Google.Infrastructure
 
             return _cachedToken.accessToken;
         }
-        
-        private void ClearPrefs()
-        {
-            PlayerPrefs.DeleteKey( _playerPrefsKey );
-            PlayerPrefs.Save();
-        }
 
         public void ClearAllPrefs()
         {

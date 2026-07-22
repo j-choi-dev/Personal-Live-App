@@ -44,8 +44,6 @@ namespace LiveAppCore.Google.Application
 
         public async UniTask<bool> InitilizeAuthProcess()
         {
-            Debug.LogWarning( "[GoogleAuth:C#2] InitilizeAuthProcess entered." );
-
             try
             {
                 var originPath = Path.Combine(SystemPathValue.ConfigOriginRoot, OAuthConstValue.BinFileName);
@@ -74,30 +72,20 @@ namespace LiveAppCore.Google.Application
                     _fileSystemDomain.CopyFile( originPath, destPath, true );
                 }
 
-                Debug.LogWarning( "[GoogleAuth:C#2] Loading auth.bin." );
                 var rawData = Encoding.Default.GetString(destBytes);
-
-
-                Debug.LogWarning( $"[GoogleAuth:C#2] auth.bin loaded. length={rawData?.Length ?? 0}" );
                 var decryptedText = _cryptoDomain.ConvertDecryptedString( rawData, _cryptoKeySetting.CryptoKey );
-
-                Debug.LogWarning( $"[GoogleAuth:C#2] Decrypted. length={decryptedText?.Length ?? 0}" );
                 var oauthSettings = _fileSerializeDomain.DeserializeFromJson<GoogleOAuthSettings>( decryptedText );
 
-                Debug.LogWarning( $"[GoogleAuth:C#2] Settings parsed. iosClientIdExists={!string.IsNullOrWhiteSpace( oauthSettings.IOSClientId )}, scopeExists={!string.IsNullOrWhiteSpace( oauthSettings.SheetsReadonlyScope )}" );
                 _googleAuthInfoStorage.SetOAuthSettings( oauthSettings );
                 _googleAuthDomain.SetAuthValue( oauthSettings );
-                Debug.LogWarning( "[GoogleAuth:C#2] GetAccessTokenAsync calling." );
                 var token = await _googleAuthDomain.GetAccessTokenAsync();
-                Debug.LogWarning( $"[GoogleAuth:C#2] Token received. hasToken={!string.IsNullOrWhiteSpace( token )}" );
                 _googleAuthInfoStorage.SetOAuthToken( token );
                 _onCompleteTokenProcess.OnNext( true );
                 return true;
             }
             catch( Exception e )
             {
-                Debug.LogError( $"[GoogleAuth:C#2] Auth failed. {e.GetType().Name}: {e.Message}" );
-                Debug.LogException( e );
+                Debug.LogError( $"Auth failed. {e.GetType().Name}: {e.Message}" );
                 _onCompleteTokenProcess.OnNext( false );
                 return false;
             }

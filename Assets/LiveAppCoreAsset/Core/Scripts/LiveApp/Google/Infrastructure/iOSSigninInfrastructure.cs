@@ -35,7 +35,6 @@ namespace LiveAppCore.Google.Infrastructure
         {
 #if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
             Debug.Log($"RequestAccessTokenAsync :: {clientId}, {nameof( OnNativeGoogleAuthResult )}, {scope}");
-            Debug.LogWarning( $"[GoogleAuth:C#4] Calling native bridge. clientIdExists={!string.IsNullOrWhiteSpace(clientId)}, object={gameObject.name}" );
             return RequestAccessTokenInternalAsync( clientId, scope, cancellationToken );
 #else
             return UniTask.FromException<GoogleOAuthToken>( new PlatformNotSupportedException( "iOS Google Sign-In is only available on iOS device builds." ) );
@@ -81,19 +80,19 @@ namespace LiveAppCore.Google.Infrastructure
             {
                 JSONNode root = JSON.Parse(json);
 
-                bool success = root["success"].AsBool;
+                bool isSuccess = root["success"].AsBool;
 
-                if( !success )
+                if( isSuccess == false )
                 {
                     string error = root["error"].Value;
                     throw new Exception( $"Google Sign-In failed: {error}" );
                 }
 
-                string accessToken = root["accessToken"].Value;
-                string tokenType = root["tokenType"].Value;
-                string scope = root["scope"].Value;
+                var accessToken = root["accessToken"].Value;
+                var tokenType = root["tokenType"].Value;
+                var scope = root["scope"].Value;
 
-                string expiresAtText = root["expiresAtUnixTime"].Value;
+                var expiresAtText = root["expiresAtUnixTime"].Value;
                 if( !long.TryParse( expiresAtText, out long expiresAtUnixTime ) )
                 {
                     expiresAtUnixTime =
@@ -101,7 +100,9 @@ namespace LiveAppCore.Google.Infrastructure
                 }
 
                 if( string.IsNullOrWhiteSpace( accessToken ) )
+                {
                     throw new Exception( "accessToken is empty." );
+                }
 
                 var token = new GoogleOAuthToken
                 {

@@ -34,7 +34,6 @@ namespace LiveAppUI.Presenter
         {
             InitView();
             InitModel();
-            Debug.Log( "[GoogleAuth:C#0.3] InitModel completed." );
         }
 
         private async void Start()
@@ -43,7 +42,6 @@ namespace LiveAppUI.Presenter
             _roomView.SetActive( false );
             var result = await _authTokenModel.InitilizeAuthProcess();
 
-            Debug.Log( $"[GoogleAuth:C#1] InitializeAuthProcess result={result}");
             if( result == false )
             {
                 return;
