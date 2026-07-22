@@ -124,24 +124,82 @@ static void FinishWithUser(
     NSString* callbackName
 )
 {
-    void (^refreshBlock)(GIDGoogleUser*) = ^(GIDGoogleUser* scopedUser)
+    void (^refreshBlock)(GIDGoogleUser*) =
+    ^(GIDGoogleUser* scopedUser)
     {
-        [scopedUser refreshTokensIfNeededWithCompletion:^(GIDGoogleUser* refreshedUser, NSError* refreshError)
+        NSLog(@"[GoogleAuth:N10] Refreshing token if needed.");
+
+        [scopedUser
+            refreshTokensIfNeededWithCompletion:
+            ^(GIDGoogleUser* refreshedUser, NSError* refreshError)
         {
             if (refreshError != nil)
             {
-                SendResult(objectName, callbackName, NO, @"", @"", @"", 0, refreshError.localizedDescription);
+                NSLog(
+                    @"[GoogleAuth:E4] Token refresh failed. "
+                     "domain=%@ code=%ld error=%@",
+                    refreshError.domain,
+                    (long)refreshError.code,
+                    refreshError.localizedDescription
+                );
+
+                SendResult(
+                    objectName,
+                    callbackName,
+                    NO,
+                    @"",
+                    @"",
+                    @"",
+                    0,
+                    refreshError.localizedDescription
+                );
+
                 return;
             }
 
-            GIDGoogleUser* finalUser = refreshedUser ?: scopedUser;
+            GIDGoogleUser* finalUser =
+                refreshedUser ?: scopedUser;
 
-            NSString* accessToken = finalUser.accessToken.tokenString ?: @"";
-            NSDate* expirationDate = finalUser.accessToken.expirationDate;
+            NSString* accessToken =
+                finalUser.accessToken.tokenString ?: @"";
 
-            long long expiresAt = expirationDate != nil
-                ? (long long)[expirationDate timeIntervalSince1970]
-                : (long long)([[NSDate date] timeIntervalSince1970] + 3600);
+            NSDate* expirationDate =
+                finalUser.accessToken.expirationDate;
+
+            long long expiresAt =
+                expirationDate != nil
+                ? (long long)[expirationDate
+                    timeIntervalSince1970]
+                : (long long)(
+                    [[NSDate date] timeIntervalSince1970]
+                    + 3600
+                );
+
+            if (accessToken.length <= 0)
+            {
+                NSLog(
+                    @"[GoogleAuth:E5] Refreshed access token is empty."
+                );
+
+                SendResult(
+                    objectName,
+                    callbackName,
+                    NO,
+                    @"",
+                    @"",
+                    @"",
+                    0,
+                    @"Google access token is empty."
+                );
+
+                return;
+            }
+
+            NSLog(
+                @"[GoogleAuth:N11] Token refresh succeeded. "
+                 "expiresAt=%lld",
+                expiresAt
+            );
 
             SendResult(
                 objectName,
@@ -156,26 +214,95 @@ static void FinishWithUser(
         }];
     };
 
-    if (scopes.count > 0)
+    NSArray<NSString*>* grantedScopes =
+        user.grantedScopes ?: @[];
+
+    NSMutableArray<NSString*>* missingScopes =
+        [NSMutableArray array];
+
+    for (NSString* requestedScope in scopes)
     {
-        [user addScopes:scopes
-presentingViewController:presenter
-             completion:^(GIDSignInResult* signInResult, NSError* scopeError)
+        if (![grantedScopes containsObject:requestedScope])
         {
-            if (scopeError != nil)
+            [missingScopes addObject:requestedScope];
+        }
+    }
+
+    NSLog(
+        @"[GoogleAuth:N7.1] Scope check. "
+         "requested=%lu granted=%lu missing=%lu",
+        (unsigned long)scopes.count,
+        (unsigned long)grantedScopes.count,
+        (unsigned long)missingScopes.count
+    );
+
+    if (missingScopes.count <= 0)
+    {
+        NSLog(
+            @"[GoogleAuth:N7.2] "
+             "All requested scopes are already granted."
+        );
+
+        refreshBlock(user);
+        return;
+    }
+    NSLog(
+        @"[GoogleAuth:N7.3] Requesting missing scopes. count=%lu",
+        (unsigned long)missingScopes.count
+    );
+
+    [user
+        addScopes:missingScopes
+        presentingViewController:presenter
+        completion:
+        ^(GIDSignInResult* signInResult, NSError* scopeError)
+    {
+        if (scopeError != nil)
+        {
+            if (scopeError.code ==
+                kGIDSignInErrorCodeScopesAlreadyGranted)
             {
-                SendResult(objectName, callbackName, NO, @"", @"", @"", 0, scopeError.localizedDescription);
+                NSLog(
+                    @"[GoogleAuth:N7.4] "
+                     "SDK reported scopes already granted. "
+                     "Continuing with existing user."
+                );
+
+                refreshBlock(user);
                 return;
             }
 
-            GIDGoogleUser* scopedUser = signInResult.user ?: user;
-            refreshBlock(scopedUser);
-        }];
-    }
-    else
-    {
-        refreshBlock(user);
-    }
+            NSLog(
+                @"[GoogleAuth:E3] addScopes failed. "
+                 "domain=%@ code=%ld error=%@",
+                scopeError.domain,
+                (long)scopeError.code,
+                scopeError.localizedDescription
+            );
+
+            SendResult(
+                objectName,
+                callbackName,
+                NO,
+                @"",
+                @"",
+                @"",
+                0,
+                scopeError.localizedDescription
+            );
+
+            return;
+        }
+
+        GIDGoogleUser* scopedUser =
+            signInResult.user ?: user;
+
+        NSLog(
+            @"[GoogleAuth:N7.5] Missing scopes were granted."
+        );
+
+        refreshBlock(scopedUser);
+    }];
 }
 
 extern "C" void GoogleAuth_RequestAccessToken(
@@ -221,7 +348,6 @@ extern "C" void GoogleAuth_RequestAccessToken(
     dispatch_async(dispatch_get_main_queue(), ^
     {
         NSLog(@"[GoogleAuth:N3] Entered main queue.");
-
         GIDConfiguration* configuration =
             [[GIDConfiguration alloc] initWithClientID:clientId];
 
@@ -285,7 +411,6 @@ extern "C" void GoogleAuth_RequestAccessToken(
             }
 
             NSLog(@"[GoogleAuth:N8] Starting interactive sign-in.");
-
             [[GIDSignIn sharedInstance]
                 signInWithPresentingViewController:presenter
                 completion:
