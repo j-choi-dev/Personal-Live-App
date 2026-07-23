@@ -342,30 +342,51 @@ namespace LiveAppCore.Editor.Infrastructure
 
         private void ApplyInfoPlistSettings()
         {
-            var pListPath = Path.Combine(PlugInPath, GoogleServiceInfoPList);
-            var infoPlistPath = Path.Combine(XcodeProjectPath, "Info.plist");
-            if( File.Exists( infoPlistPath ) == false )
+            var googlePlistPath = Path.Combine(PlugInPath, GoogleServiceInfoPList);
+            var mainInfoPlistPath = Path.Combine(XcodeProjectPath, "Info.plist");
+            if( File.Exists( mainInfoPlistPath ) == false )
             {
-                throw new FileNotFoundException( $"Info.plist not found: {infoPlistPath}" );
+                throw new FileNotFoundException( $"Info.plist not found: {mainInfoPlistPath}" );
             }
 
             var googlePlist = new PlistDocument();
-            googlePlist.ReadFromFile( pListPath );
+            googlePlist.ReadFromFile( googlePlistPath );
 
             var clientId = googlePlist.root["CLIENT_ID"].AsString();
             var reversedClientId = googlePlist.root["REVERSED_CLIENT_ID"].AsString();
 
-            var infoPlist = new PlistDocument();
-            infoPlist.ReadFromFile( infoPlistPath );
+            var mainInfoPlist = new PlistDocument();
+            mainInfoPlist.ReadFromFile( mainInfoPlistPath );
 
-            var root = infoPlist.root;
-            root.SetString( "GIDClientID", clientId );
+            var mainRoot = mainInfoPlist.root;
+
+            mainRoot.SetString( "CFBundleShortVersionString", _romConfig.AppVersion );
+            mainRoot.SetString( "CFBundleVersion", _iOSConfig.BuildNumber.ToString() );
+            mainRoot.SetString( "GIDClientID", clientId );
             // TODO 회사 도메인 계정 힌트. 강제 검증은 앱 로직에서 id_token hd claim으로 별도 처리 필요할 듯 @Choi 26.07.14
-            root.SetString( "GIDHostedDomain", "www.weavr-corp.com" );
+            mainRoot.SetString( "GIDHostedDomain", "www.weavr-corp.com" );
 
-            AddUrlSchemeIfNeeded( root, reversedClientId );
-            infoPlist.WriteToFile( infoPlistPath );
-            Debug.Log( "[iOSRomBuilder] Info.plist updated." );
+            AddUrlSchemeIfNeeded( mainRoot, reversedClientId );
+            mainInfoPlist.WriteToFile( mainInfoPlistPath );
+            // UnityFramework Info.plist
+            string frameworkInfoPlistPath = Path.Combine( XcodeProjectPath, "UnityFramework", "Info.plist" );
+
+            if( File.Exists( frameworkInfoPlistPath ) )
+            {
+                var frameworkInfoPlist = new PlistDocument();
+                frameworkInfoPlist.ReadFromFile( frameworkInfoPlistPath );
+                frameworkInfoPlist.root.SetString( "CFBundleShortVersionString", _romConfig.AppVersion );
+                frameworkInfoPlist.root.SetString( "CFBundleVersion", _iOSConfig.BuildNumber.ToString() );
+                frameworkInfoPlist.WriteToFile( frameworkInfoPlistPath );
+
+                Debug.Log( $"[iOSRomBuilder] UnityFramework version updated. Version={_romConfig.AppVersion}, Build={_iOSConfig.BuildNumber}" );
+            }
+            else
+            {
+                Debug.LogWarning( $"[iOSRomBuilder] UnityFramework Info.plist not found: {frameworkInfoPlistPath}" );
+            }
+
+            Debug.Log( $"[iOSRomBuilder] Info.plist updated. Version={_romConfig.AppVersion}, Build={_iOSConfig.BuildNumber}" );
         }
 
         private void AddUrlSchemeIfNeeded( PlistElementDict root, string urlScheme )
@@ -453,6 +474,12 @@ namespace LiveAppCore.Editor.Infrastructure
             // Unity-iPhone과 UnityFramework 모두 OS 버전 지정
             pbx.SetBuildProperty( mainTargetGuid, "IPHONEOS_DEPLOYMENT_TARGET", _iOSConfig.TargetOSVersion );
             pbx.SetBuildProperty( frameworkTargetGuid, "IPHONEOS_DEPLOYMENT_TARGET", _iOSConfig.TargetOSVersion );
+
+            // Unity-iPhone과 UnityFramework의 Version
+            pbx.SetBuildProperty( targetGuids, "MARKETING_VERSION", _romConfig.AppVersion );
+
+            // Unity-iPhone과 UnityFramework의 Build
+            pbx.SetBuildProperty( targetGuids, "CURRENT_PROJECT_VERSION", _iOSConfig.BuildNumber.ToString() );
 
             // 자동 서명
             pbx.SetBuildProperty( targetGuids, "CODE_SIGN_STYLE", "Automatic" );
