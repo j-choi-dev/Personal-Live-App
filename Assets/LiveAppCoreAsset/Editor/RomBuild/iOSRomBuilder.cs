@@ -23,7 +23,7 @@ namespace LiveAppCore.Editor.Infrastructure
         private const BuildTargetGroup TargetGroup = BuildTargetGroup.iOS;
 
         // TODO 이하의 내용들은 Build Data 등으로 별도 관리 필요.(Scriptable Object나 Text File) @Choi 26.07.14
-        private const string BundleIdentifier = "com.weavr.liveappcore";
+        private const string BundleIdentifier = "com.weavr-corp.liveapp";
         private const string CompanyName = "WeaVR";
         private const string ProductName = "Personal Live App";
 #if UNITY_EDITOR_WIN
