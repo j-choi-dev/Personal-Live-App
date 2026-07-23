@@ -19,27 +19,21 @@ namespace LiveAppCore.Editor.Infrastructure
     /// <remarks>일부 API는 지원 중단 예정일 가능성 높음. @Choi 26.07.14</remarks>
     public class iOSRomBuilder : IRomBuildDomain
     {
+        private IRomBuildConfig _romConfig;
+        private IiOSRomBuildConfig _iOSConfig;
+
         private const BuildTarget Target = BuildTarget.iOS;
         private const BuildTargetGroup TargetGroup = BuildTargetGroup.iOS;
 
-        // TODO 이하의 내용들은 Build Data 등으로 별도 관리 필요.(Scriptable Object나 Text File) @Choi 26.07.14
-        private const string BundleIdentifier = "com.weavr-corp.liveapp";
-        private const string CompanyName = "WeaVR";
-        private const string ProductName = "Personal Live App";
 #if UNITY_EDITOR_WIN
         private const string BuildRootDirectory =  @"C:\Build\iOS";
 #else
         private const string BuildRootDirectory = "Builds/iOS";
 #endif
 
-        private const string GoogleServicePlistSourcePath = "Assets/Plugins/iOS/GoogleService-Info.plist";
-
-        private const string AppIconPath = "Assets/Icons/AppIcon/AppIcon-1024.png";
-        private const string AppVersion = "1.0.0";
-        private const string TargetOSVersion = "15.0";
-        private const string AppleDeveloperTeamId = "H95DZH5HFJ";
-
+        private const string PlugInPath = "Assets/Plugins/iOS";
         private const string GoogleServiceInfoPList = "GoogleService-Info.plist";
+        private const string AppIconPath = "Assets/Icons/AppIcon/AppIcon-1024.png";
 
         private static readonly string[] RequiredScenePaths =
         {
@@ -54,8 +48,11 @@ namespace LiveAppCore.Editor.Infrastructure
 
         private bool _isResult = false;
 
-        public iOSRomBuilder()
+        public iOSRomBuilder( IRomBuildConfig romConfig, IiOSRomBuildConfig iOSConfig )
         {
+            _romConfig = romConfig;
+            _iOSConfig = iOSConfig;
+
             _buildNumber= DateTime.Now.ToString( "yyyyMMddHHmmss" );
             _projectDirectoryName = $"PLA_{_buildNumber}";
         }
@@ -83,15 +80,15 @@ namespace LiveAppCore.Editor.Infrastructure
                     return false;
                 }
 
-                PlayerSettings.companyName = CompanyName;
-                PlayerSettings.productName = ProductName;
-                PlayerSettings.SetApplicationIdentifier( NamedBuildTarget.iOS, BundleIdentifier );
-                PlayerSettings.bundleVersion = AppVersion;
-                PlayerSettings.iOS.targetOSVersionString = TargetOSVersion;
-                PlayerSettings.iOS.appleDeveloperTeamID = AppleDeveloperTeamId;
+                PlayerSettings.companyName = _romConfig.CompanyName;
+                PlayerSettings.productName = _romConfig.ProductName;
+                PlayerSettings.SetApplicationIdentifier( NamedBuildTarget.iOS, _romConfig.BundleIdentifier );
+                PlayerSettings.bundleVersion = _romConfig.AppVersion;
+                PlayerSettings.iOS.targetOSVersionString = _iOSConfig.TargetOSVersion;
+                PlayerSettings.iOS.appleDeveloperTeamID = _iOSConfig.TeamID;
                 PlayerSettings.iOS.appleEnableAutomaticSigning = true;
 
-                PlayerSettings.iOS.buildNumber = _buildNumber;
+                PlayerSettings.iOS.buildNumber = _iOSConfig.BuildNumber.ToString();
 
                 SetAppIconsIfExists( AppIconPath, platform );
 
@@ -180,8 +177,9 @@ namespace LiveAppCore.Editor.Infrastructure
                 {
                     throw new DirectoryNotFoundException( $"Xcode project directory not found: {XcodeProjectPath}" );
                 }
+                var pListPath = Path.Combine(PlugInPath, GoogleServiceInfoPList);
                 string destinationPath = Path.Combine( XcodeProjectPath, GoogleServiceInfoPList);
-                File.Copy( GoogleServicePlistSourcePath, destinationPath, overwrite: true );
+                File.Copy( pListPath, destinationPath, overwrite: true );
 
                 ApplyInfoPlistSettings();
                 ApplyPbxProjectSettings();
@@ -319,13 +317,14 @@ namespace LiveAppCore.Editor.Infrastructure
 
         private static void ValidateGoogleServicePlist()
         {
-            if( File.Exists( GoogleServicePlistSourcePath ) == false )
+            var pListPath = Path.Combine(PlugInPath, GoogleServiceInfoPList);
+            if( File.Exists( PlugInPath ) == false )
             {
-                throw new FileNotFoundException( $"GoogleService-Info.plist not found: {GoogleServicePlistSourcePath}" );
+                throw new FileNotFoundException( $"GoogleService-Info.plist not found: {pListPath}" );
             }
 
             var googlePlist = new PlistDocument();
-            googlePlist.ReadFromFile( GoogleServicePlistSourcePath );
+            googlePlist.ReadFromFile( pListPath );
 
             string clientId = googlePlist.root["CLIENT_ID"]?.AsString();
             string reversedClientId = googlePlist.root["REVERSED_CLIENT_ID"]?.AsString();
@@ -343,6 +342,7 @@ namespace LiveAppCore.Editor.Infrastructure
 
         private void ApplyInfoPlistSettings()
         {
+            var pListPath = Path.Combine(PlugInPath, GoogleServiceInfoPList);
             var infoPlistPath = Path.Combine(XcodeProjectPath, "Info.plist");
             if( File.Exists( infoPlistPath ) == false )
             {
@@ -350,7 +350,7 @@ namespace LiveAppCore.Editor.Infrastructure
             }
 
             var googlePlist = new PlistDocument();
-            googlePlist.ReadFromFile( GoogleServicePlistSourcePath );
+            googlePlist.ReadFromFile( pListPath );
 
             var clientId = googlePlist.root["CLIENT_ID"].AsString();
             var reversedClientId = googlePlist.root["REVERSED_CLIENT_ID"].AsString();
@@ -368,7 +368,7 @@ namespace LiveAppCore.Editor.Infrastructure
             Debug.Log( "[iOSRomBuilder] Info.plist updated." );
         }
 
-        private static void AddUrlSchemeIfNeeded( PlistElementDict root, string urlScheme )
+        private void AddUrlSchemeIfNeeded( PlistElementDict root, string urlScheme )
         {
             PlistElementArray urlTypes;
 
@@ -388,13 +388,13 @@ namespace LiveAppCore.Editor.Infrastructure
 
             var urlType = urlTypes.AddDict();
             // Xcode identifier 추가.
-            urlType.SetString( "CFBundleURLName", BundleIdentifier );
+            urlType.SetString( "CFBundleURLName", _romConfig.BundleIdentifier );
 
             var schemes = urlType.CreateArray("CFBundleURLSchemes");
             schemes.AddString( urlScheme );
         }
 
-        private static bool ContainsUrlScheme( PlistElementArray urlTypes, string scheme )
+        private bool ContainsUrlScheme( PlistElementArray urlTypes, string scheme )
         {
             foreach( PlistElement element in urlTypes.values )
             {
@@ -443,7 +443,7 @@ namespace LiveAppCore.Editor.Infrastructure
             pbx.AddFileToBuild( mainTargetGuid, fileGuid );
         }
 
-        private static void ApplyBuildProperties( PBXProject pbx, string mainTargetGuid, string frameworkTargetGuid )
+        private void ApplyBuildProperties( PBXProject pbx, string mainTargetGuid, string frameworkTargetGuid )
         {
             string[] targetGuids = { mainTargetGuid, frameworkTargetGuid };
             // Bitcode 비활성화
@@ -451,16 +451,16 @@ namespace LiveAppCore.Editor.Infrastructure
             pbx.SetBuildProperty( frameworkTargetGuid, "ENABLE_BITCODE", "NO" );
 
             // Unity-iPhone과 UnityFramework 모두 OS 버전 지정
-            pbx.SetBuildProperty( mainTargetGuid, "IPHONEOS_DEPLOYMENT_TARGET", TargetOSVersion );
-            pbx.SetBuildProperty( frameworkTargetGuid, "IPHONEOS_DEPLOYMENT_TARGET", TargetOSVersion );
+            pbx.SetBuildProperty( mainTargetGuid, "IPHONEOS_DEPLOYMENT_TARGET", _iOSConfig.TargetOSVersion );
+            pbx.SetBuildProperty( frameworkTargetGuid, "IPHONEOS_DEPLOYMENT_TARGET", _iOSConfig.TargetOSVersion );
 
             // 자동 서명
             pbx.SetBuildProperty( targetGuids, "CODE_SIGN_STYLE", "Automatic" );
-            pbx.SetBuildProperty( targetGuids, "DEVELOPMENT_TEAM", AppleDeveloperTeamId );
+            pbx.SetBuildProperty( targetGuids, "DEVELOPMENT_TEAM", _iOSConfig.TeamID );
 
             // PBX 프로젝트의 Team 속성도 설정
-            pbx.SetTeamId( mainTargetGuid, AppleDeveloperTeamId );
-            pbx.SetTeamId( frameworkTargetGuid, AppleDeveloperTeamId );
+            pbx.SetTeamId( mainTargetGuid, _iOSConfig.TeamID );
+            pbx.SetTeamId( frameworkTargetGuid, _iOSConfig.TeamID );
 
             // 기존 수동 프로비저닝 값 제거
             pbx.SetBuildProperty( targetGuids, "PROVISIONING_PROFILE_SPECIFIER", string.Empty );
@@ -474,7 +474,7 @@ namespace LiveAppCore.Editor.Infrastructure
             pbx.SetBuildProperty( mainTargetGuid, "ASSETCATALOG_COMPILER_APPICON_NAME", "AppIcon" );
         }
 
-        private static void AddFrameworks( PBXProject pbx, string frameworkTargetGuid )
+        private void AddFrameworks( PBXProject pbx, string frameworkTargetGuid )
         {
             // TODO GoogleSignIn SDK 자체는 CocoaPods/SPM이 링크하는 것이 나을 듯 @Choi 26.07.14
             // TODO framework 후보가 적절한지 MacOS/iPhone에서 검증 필요 @Choi 26.07.14
@@ -484,7 +484,7 @@ namespace LiveAppCore.Editor.Infrastructure
             pbx.AddFrameworkToProject( frameworkTargetGuid, "SystemConfiguration.framework", false );
         }
 
-        private static void ResetBuildSettings()
+        private void ResetBuildSettings()
         {
             // 수동 빌드가 안 되도록 빌드 설정을 초기화.
             PlayerSettings.companyName = string.Empty;
