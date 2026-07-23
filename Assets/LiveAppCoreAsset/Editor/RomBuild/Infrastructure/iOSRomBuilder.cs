@@ -318,7 +318,7 @@ namespace LiveAppCore.Editor.Infrastructure
         private static void ValidateGoogleServicePlist()
         {
             var pListPath = Path.Combine(PlugInPath, GoogleServiceInfoPList);
-            if( File.Exists( PlugInPath ) == false )
+            if( File.Exists( pListPath ) == false )
             {
                 throw new FileNotFoundException( $"GoogleService-Info.plist not found: {pListPath}" );
             }
