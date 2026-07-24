@@ -7,7 +7,9 @@ extern void UnitySendMessage(const char* obj, const char* method, const char* ms
 static NSString* MakeNSString(const char* value)
 {
     if (value == NULL)
+    {
         return @"";
+    }
 
     return [NSString stringWithUTF8String:value] ?: @"";
 }
@@ -15,7 +17,9 @@ static NSString* MakeNSString(const char* value)
 static NSString* EscapeJson(NSString* value)
 {
     if (value == nil)
+    {
         return @"";
+    }
 
     NSString* result = value;
     result = [result stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
@@ -30,18 +34,19 @@ static UIViewController* RootViewController()
 {
     UIWindow* keyWindow = nil;
 
-    if (@available(iOS 13.0, *))
+    if (@available(iOS 15.0, *))
     {
         for (UIScene* scene in UIApplication.sharedApplication.connectedScenes)
         {
             if (scene.activationState != UISceneActivationStateForegroundActive)
+            {
                 continue;
-
+            }
             if (![scene isKindOfClass:UIWindowScene.class])
+            {
                 continue;
-
+            }
             UIWindowScene* windowScene = (UIWindowScene*)scene;
-
             for (UIWindow* window in windowScene.windows)
             {
                 if (window.isKeyWindow)
@@ -52,20 +57,24 @@ static UIViewController* RootViewController()
             }
 
             if (keyWindow != nil)
+            {
                 break;
+            }
         }
     }
-
     if (keyWindow == nil)
+    {
         keyWindow = UIApplication.sharedApplication.keyWindow;
-
+    }
     return keyWindow.rootViewController;
 }
 
 static NSArray<NSString*>* ParseScopes(NSString* scopeText)
 {
     if (scopeText.length <= 0)
+    {
         return @[];
+    }
 
     NSArray<NSString*>* parts = [scopeText componentsSeparatedByString:@" "];
     NSMutableArray<NSString*>* scopes = [NSMutableArray array];
@@ -73,13 +82,12 @@ static NSArray<NSString*>* ParseScopes(NSString* scopeText)
     for (NSString* part in parts)
     {
         NSString* trimmed = [part stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
-
         if (trimmed.length <= 0)
+        {
             continue;
-
+        }
         [scopes addObject:trimmed];
     }
-
     return scopes;
 }
 
@@ -109,11 +117,7 @@ static void SendResult(
         EscapeJson(error)
     ];
 
-    UnitySendMessage(
-        [objectName UTF8String],
-        [callbackName UTF8String],
-        [json UTF8String]
-    );
+    UnitySendMessage( [objectName UTF8String], [callbackName UTF8String], [json UTF8String] );
 }
 
 static void FinishWithUser(
@@ -126,103 +130,112 @@ static void FinishWithUser(
 {
     void (^refreshBlock)(GIDGoogleUser*) = ^(GIDGoogleUser* scopedUser)
     {
-        [scopedUser refreshTokensIfNeededWithCompletion:^(GIDGoogleUser* refreshedUser, NSError* refreshError)
+        [scopedUser refreshTokensIfNeededWithCompletion: ^(GIDGoogleUser* refreshedUser, NSError* refreshError)
         {
             if (refreshError != nil)
             {
-                SendResult(objectName, callbackName, NO, @"", @"", @"", 0, refreshError.localizedDescription);
+                SendResult( objectName, callbackName, NO, @"", @"", @"", 0, refreshError.localizedDescription );
                 return;
             }
-
             GIDGoogleUser* finalUser = refreshedUser ?: scopedUser;
-
             NSString* accessToken = finalUser.accessToken.tokenString ?: @"";
             NSDate* expirationDate = finalUser.accessToken.expirationDate;
-
             long long expiresAt = expirationDate != nil
                 ? (long long)[expirationDate timeIntervalSince1970]
-                : (long long)([[NSDate date] timeIntervalSince1970] + 3600);
+                : (long long)( [[NSDate date] timeIntervalSince1970] + 3600 );
 
-            SendResult(
-                objectName,
-                callbackName,
-                YES,
-                accessToken,
-                @"Bearer",
-                [scopes componentsJoinedByString:@" "],
-                expiresAt,
-                @""
-            );
-        }];
-    };
-
-    if (scopes.count > 0)
-    {
-        [user addScopes:scopes
-presentingViewController:presenter
-             completion:^(GIDSignInResult* signInResult, NSError* scopeError)
-        {
-            if (scopeError != nil)
+            if (accessToken.length <= 0)
             {
-                SendResult(objectName, callbackName, NO, @"", @"", @"", 0, scopeError.localizedDescription);
+                SendResult( objectName, callbackName, NO, @"", @"", @"", 0, @"Google access token is empty." );
                 return;
             }
 
-            GIDGoogleUser* scopedUser = signInResult.user ?: user;
-            refreshBlock(scopedUser);
+            SendResult( objectName, callbackName, YES, accessToken, @"Bearer", [scopes componentsJoinedByString:@" "], expiresAt, @"" );
         }];
+    };
+    NSArray<NSString*>* grantedScopes = user.grantedScopes ?: @[];
+    NSMutableArray<NSString*>* missingScopes = [NSMutableArray array];
+    for (NSString* requestedScope in scopes)
+    {
+        if (![grantedScopes containsObject:requestedScope])
+        {
+            [missingScopes addObject:requestedScope];
+        }
     }
-    else
+
+    if (missingScopes.count <= 0)
     {
         refreshBlock(user);
+        return;
     }
+    
+    [user addScopes:missingScopes presentingViewController:presenter completion: ^(GIDSignInResult* signInResult, NSError* scopeError)
+    {
+        if (scopeError != nil)
+        {
+            if (scopeError.code == kGIDSignInErrorCodeScopesAlreadyGranted)
+            {
+                refreshBlock(user);
+                return;
+            }
+            SendResult( objectName, callbackName, NO, @"", @"", @"", 0, scopeError.localizedDescription );
+            return;
+        }
+        GIDGoogleUser* scopedUser = signInResult.user ?: user;
+        refreshBlock(scopedUser);
+    }];
 }
 
 extern "C" void GoogleAuth_RequestAccessToken(
+    const char* iosClientId,
     const char* unityGameObjectName,
     const char* unityCallbackMethodName,
     const char* scopeText
 )
 {
+    NSString* clientId = MakeNSString(iosClientId);
     NSString* objectName = MakeNSString(unityGameObjectName);
     NSString* callbackName = MakeNSString(unityCallbackMethodName);
     NSString* scopeString = MakeNSString(scopeText);
+    
+    if (clientId.length <= 0)
+    {
+        SendResult( objectName, callbackName, NO, @"", @"", @"", 0, @"Google OAuth iOS client ID is empty." );
+        return;
+    }
     NSArray<NSString*>* scopes = ParseScopes(scopeString);
-
     dispatch_async(dispatch_get_main_queue(), ^
     {
+        GIDConfiguration* configuration = [[GIDConfiguration alloc] initWithClientID:clientId];
+        [GIDSignIn sharedInstance].configuration = configuration;
         UIViewController* presenter = RootViewController();
-
         if (presenter == nil)
         {
-            SendResult(objectName, callbackName, NO, @"", @"", @"", 0, @"Root view controller not found.");
+            SendResult( objectName, callbackName, NO, @"", @"", @"", 0, @"Root view controller not found." );
             return;
         }
 
-        [[GIDSignIn sharedInstance] restorePreviousSignInWithCompletion:^(GIDGoogleUser* restoredUser, NSError* restoreError)
+        [[GIDSignIn sharedInstance] restorePreviousSignInWithCompletion: ^(GIDGoogleUser* restoredUser, NSError* restoreError)
         {
             if (restoredUser != nil)
             {
-                FinishWithUser(restoredUser, scopes, presenter, objectName, callbackName);
+                FinishWithUser( restoredUser, scopes, presenter, objectName, callbackName );
                 return;
             }
 
-            [[GIDSignIn sharedInstance] signInWithPresentingViewController:presenter
-                                                                completion:^(GIDSignInResult* signInResult, NSError* signInError)
+            [[GIDSignIn sharedInstance] signInWithPresentingViewController:presenter completion: ^(GIDSignInResult* signInResult, NSError* signInError)
             {
                 if (signInError != nil)
                 {
-                    SendResult(objectName, callbackName, NO, @"", @"", @"", 0, signInError.localizedDescription);
+                    SendResult( objectName, callbackName, NO, @"", @"", @"", 0, signInError.localizedDescription );
                     return;
                 }
-
                 if (signInResult.user == nil)
                 {
-                    SendResult(objectName, callbackName, NO, @"", @"", @"", 0, @"Google user is null.");
+                    SendResult( objectName, callbackName, NO, @"", @"", @"", 0, @"Google user is null." );
                     return;
                 }
-
-                FinishWithUser(signInResult.user, scopes, presenter, objectName, callbackName);
+                FinishWithUser( signInResult.user, scopes, presenter, objectName, callbackName );
             }];
         }];
     });

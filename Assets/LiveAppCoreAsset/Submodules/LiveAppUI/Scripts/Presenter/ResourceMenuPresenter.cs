@@ -42,7 +42,11 @@ namespace LiveAppUI.Presenter
 
         private async void Start()
         {
-            await _resourceListModel.InitializeServerConfig();
+            var result = await _resourceListModel.InitializeServerConfig();
+            if(result == false)
+            {
+                return;
+            }
             _currentResourceType = ResourceType.None;
             _currentResourceServerType = ServerType.Develop;
 

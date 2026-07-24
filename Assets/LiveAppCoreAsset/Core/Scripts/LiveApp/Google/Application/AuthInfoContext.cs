@@ -3,6 +3,8 @@ using LiveAppCore.Google.Domain;
 using StudioSystemSDK.Domain;
 using System;
 using System.IO;
+using System.Linq;
+using System.Text;
 using UniRx;
 using UnityEngine;
 
@@ -44,14 +46,36 @@ namespace LiveAppCore.Google.Application
         {
             try
             {
-                var authInfoPath = Path.Combine(UnityEngine.Application.streamingAssetsPath, OAuthConstValue.BinFileName);
-                if( _fileSystemDomain.IsFileExist( authInfoPath ) == false )
+                var originPath = Path.Combine(SystemPathValue.ConfigOriginRoot, OAuthConstValue.BinFileName);
+                var destPath = Path.Combine(SystemPathValue.ConfigDestinationRoot, OAuthConstValue.BinFileName);
+                if( _fileSystemDomain.IsFileExist( originPath ) == false )
                 {
-                    throw new FileNotFoundException( "File Not Exist :: ", authInfoPath );
+                    throw new FileNotFoundException( "File Not Exist :: ", originPath );
                 }
-                var rawData = await _fileSystemDomain.LoadTextFile( authInfoPath );
+
+                var isOriginExists = _fileSystemDomain.IsFileExist(originPath);
+                if( isOriginExists == false )
+                {
+                    throw new FileNotFoundException( "Google OAuth auth.bin does not exist.", originPath );
+                }
+
+                var isDestExists = _fileSystemDomain.IsFileExist(destPath);
+                if( isDestExists == false )
+                {
+                    _fileSystemDomain.CopyFile( originPath, destPath, true );
+                }
+                var sourceBytes = await _fileSystemDomain.LoadBinaryFile( originPath );
+                var destBytes = await _fileSystemDomain.LoadBinaryFile( destPath );
+                var isEqulaFile = sourceBytes.SequenceEqual( destBytes );
+                if( isEqulaFile == false )
+                {
+                    _fileSystemDomain.CopyFile( originPath, destPath, true );
+                }
+
+                var rawData = Encoding.Default.GetString(destBytes);
                 var decryptedText = _cryptoDomain.ConvertDecryptedString( rawData, _cryptoKeySetting.CryptoKey );
                 var oauthSettings = _fileSerializeDomain.DeserializeFromJson<GoogleOAuthSettings>( decryptedText );
+
                 _googleAuthInfoStorage.SetOAuthSettings( oauthSettings );
                 _googleAuthDomain.SetAuthValue( oauthSettings );
                 var token = await _googleAuthDomain.GetAccessTokenAsync();
@@ -61,7 +85,7 @@ namespace LiveAppCore.Google.Application
             }
             catch( Exception e )
             {
-                Debug.LogException( e );
+                Debug.LogError( $"Auth failed. {e.GetType().Name}: {e.Message}" );
                 _onCompleteTokenProcess.OnNext( false );
                 return false;
             }

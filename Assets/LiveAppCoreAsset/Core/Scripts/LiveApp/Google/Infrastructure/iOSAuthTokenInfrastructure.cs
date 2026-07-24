@@ -34,15 +34,17 @@ namespace LiveAppCore.Google.Infrastructure
 
         public async UniTask<string> GetAccessTokenAsync( CancellationToken cancellationToken = default )
         {
-            if( _cachedToken != null && _cachedToken.HasValidAccessToken() )
+            if( string.IsNullOrWhiteSpace( _clientId ) )
             {
-                return _cachedToken.accessToken;
+                throw new InvalidOperationException( "Google OAuth iOS Client ID is empty." );
             }
 
-            _cachedToken = await _signInDomain.RequestAccessTokenAsync(
-                _scope,
-                cancellationToken
-            );
+            if( string.IsNullOrWhiteSpace( _scope ) )
+            {
+                throw new InvalidOperationException( "Google OAuth scope is empty." );
+            }
+
+            _cachedToken = await _signInDomain.RequestAccessTokenAsync( _clientId, _scope, cancellationToken );
 
             if( _cachedToken == null )
             {
@@ -55,12 +57,6 @@ namespace LiveAppCore.Google.Infrastructure
             }
 
             return _cachedToken.accessToken;
-        }
-        
-        private void ClearPrefs()
-        {
-            PlayerPrefs.DeleteKey( _playerPrefsKey );
-            PlayerPrefs.Save();
         }
 
         public void ClearAllPrefs()

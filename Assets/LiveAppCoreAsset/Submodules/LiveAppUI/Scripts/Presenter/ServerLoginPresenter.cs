@@ -41,6 +41,7 @@ namespace LiveAppUI.Presenter
             _loginView.SetActive( false );
             _roomView.SetActive( false );
             var result = await _authTokenModel.InitilizeAuthProcess();
+
             if( result == false )
             {
                 return;

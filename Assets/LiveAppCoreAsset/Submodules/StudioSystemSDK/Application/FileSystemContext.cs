@@ -18,13 +18,13 @@ namespace StudioSystemSDK.Application
 
         public async UniTask<string> ReadBinaryFile( string path )
         {
+            UnityEngine.Debug.Log( $"path :: {path}" );
             var rawData = string.Empty;
             try
             {
-
                 if( _fileSystemDomain.IsFileExist( path ) == false )
                 {
-                    throw new FileNotFoundException( "File Not Exist :: ", path );
+                    throw new FileNotFoundException( $"File Not Exist :: {path}", path );
                 }
                 rawData = await _fileSystemDomain.LoadTextFile( path );
                 return rawData;

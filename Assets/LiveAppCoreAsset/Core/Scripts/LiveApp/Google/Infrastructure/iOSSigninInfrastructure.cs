@@ -14,9 +14,10 @@ namespace LiveAppCore.Google.Infrastructure
         private CancellationTokenRegistration _cancellationRegistration;
 
 
-#if UNITY_IOS && !UNITY_EDITOR
+#if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
         [DllImport( "__Internal" )]
         private static extern void GoogleAuth_RequestAccessToken(
+            string iosClientId,
             string unityGameObjectName,
             string unityCallbackMethodName,
             string scope
@@ -30,30 +31,27 @@ namespace LiveAppCore.Google.Infrastructure
             DontDestroyOnLoad( gameObject );
         }
 
-        public UniTask<GoogleOAuthToken> RequestAccessTokenAsync( string scope, CancellationToken cancellationToken )
+        public UniTask<GoogleOAuthToken> RequestAccessTokenAsync( string clientId, string scope, CancellationToken cancellationToken )
         {
-#if UNITY_IOS && !UNITY_EDITOR
-            return RequestAccessTokenInternalAsync(scope, cancellationToken);
+#if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
+            Debug.Log($"RequestAccessTokenAsync :: {clientId}, {nameof( OnNativeGoogleAuthResult )}, {scope}");
+            return RequestAccessTokenInternalAsync( clientId, scope, cancellationToken );
 #else
-            return UniTask.FromException<GoogleOAuthToken>(
-                new PlatformNotSupportedException(
-                    "iOS Google Sign-In is only available on iOS device builds."
-                )
-            );
+            return UniTask.FromException<GoogleOAuthToken>( new PlatformNotSupportedException( "iOS Google Sign-In is only available on iOS device builds." ) );
 #endif
         }
 
         public void SignOut()
         {
-#if UNITY_IOS && !UNITY_EDITOR
+#if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
             GoogleAuth_SignOut();
 #else
-            Debug.LogWarning( "[GoogleOAuth iOS] SignOut is ignored outside iOS device build." );
+            Debug.LogError( "[GoogleOAuth iOS] SignOut is ignored outside iOS device build." );
 #endif
         }
 
-#if UNITY_IOS && !UNITY_EDITOR
-        private UniTask<GoogleOAuthToken> RequestAccessTokenInternalAsync( string scope, CancellationToken cancellationToken )
+#if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
+        private UniTask<GoogleOAuthToken> RequestAccessTokenInternalAsync( string clientId, string scope, CancellationToken cancellationToken )
         {
             if( _completionSource != null )
             {
@@ -71,7 +69,8 @@ namespace LiveAppCore.Google.Infrastructure
                 _completionSource = null;
             } );
 
-            GoogleAuth_RequestAccessToken( gameObject.name, nameof( OnNativeGoogleAuthResult ), scope );
+            Debug.Log($"RequestAccessTokenInternalAsync :: {clientId}, {gameObject.name}, {nameof( OnNativeGoogleAuthResult )}, {scope}");
+            GoogleAuth_RequestAccessToken( clientId, gameObject.name, nameof( OnNativeGoogleAuthResult ), scope );
             return _completionSource.Task;
         }
 #endif
@@ -81,19 +80,19 @@ namespace LiveAppCore.Google.Infrastructure
             {
                 JSONNode root = JSON.Parse(json);
 
-                bool success = root["success"].AsBool;
+                bool isSuccess = root["success"].AsBool;
 
-                if( !success )
+                if( isSuccess == false )
                 {
                     string error = root["error"].Value;
                     throw new Exception( $"Google Sign-In failed: {error}" );
                 }
 
-                string accessToken = root["accessToken"].Value;
-                string tokenType = root["tokenType"].Value;
-                string scope = root["scope"].Value;
+                var accessToken = root["accessToken"].Value;
+                var tokenType = root["tokenType"].Value;
+                var scope = root["scope"].Value;
 
-                string expiresAtText = root["expiresAtUnixTime"].Value;
+                var expiresAtText = root["expiresAtUnixTime"].Value;
                 if( !long.TryParse( expiresAtText, out long expiresAtUnixTime ) )
                 {
                     expiresAtUnixTime =
@@ -101,7 +100,9 @@ namespace LiveAppCore.Google.Infrastructure
                 }
 
                 if( string.IsNullOrWhiteSpace( accessToken ) )
+                {
                     throw new Exception( "accessToken is empty." );
+                }
 
                 var token = new GoogleOAuthToken
                 {

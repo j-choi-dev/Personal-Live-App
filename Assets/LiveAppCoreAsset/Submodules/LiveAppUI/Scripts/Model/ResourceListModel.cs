@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using StudioNetworkSDK.Domain;
 using StudioResourceSDK.Application;
-using StudioResourceSDK.Domain;
 using StudioSystemSDK.Application;
 using System;
 using System.Collections.Generic;
@@ -17,7 +16,6 @@ namespace LiveAppUI.Model
     {
         private IResourceServerConfigContext _resourceConfigContext;
         private IResourceTableContext _resourceTableContext;
-        private IFileSystemContext _fileSystemContext;
         private CompositeDisposable _disposable = new CompositeDisposable();
 
         private Dictionary<ResourceType, ServerType> _serverTypeDic = new Dictionary<ResourceType, ServerType>();
@@ -27,12 +25,10 @@ namespace LiveAppUI.Model
         public IObservable<IReadOnlyList<(string id, string displayName)>> OnCharacterListChanged => _onCharacterListChanged;
 
         public ResourceListModel( IResourceServerConfigContext resourceConfigContext,
-            IResourceTableContext resourceTableContext,
-            IFileSystemContext fileSystemContext )
+            IResourceTableContext resourceTableContext )
         {
             _resourceConfigContext = resourceConfigContext;
             _resourceTableContext = resourceTableContext;
-            _fileSystemContext = fileSystemContext;
 
             _resourceTableContext.OnCharacterListChanged
                 .Subscribe( list =>
@@ -57,11 +53,19 @@ namespace LiveAppUI.Model
             }
         }
 
-        public async UniTask InitializeServerConfig()
+        public async UniTask<bool> InitializeServerConfig()
         {
-            var path = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, ResourceConstValue.BinFileName);
-            var rawData = await _fileSystemContext.ReadBinaryFile( path );
-            _serverConfigs =  _resourceConfigContext.ParseServerConfigData( rawData ).ToList();
+            try
+            {
+                var task = await _resourceConfigContext.LoadServerConfig();
+                _serverConfigs =  task.ToList();
+                return true;
+            }
+            catch( Exception ex )
+            {
+                UnityEngine.Debug.LogError( ex.Message );
+                return false;
+            }
             // 리소스 & 구글 시트 링크 보존 -> Context 통해서 DataClass로 ...? @Choi
         }
 

@@ -28,9 +28,9 @@ namespace StudioResourceSDK.Application
                 .AsSingle();
             Container
                 .Bind<IResourceTableLoadDomain>()
-#if UNITY_EDITOR && UNITY_IOS
+#if !UNITY_EDITOR_WIN && (UNITY_IOS || UNITY_IPHONE) 
                 .To<iOSGoogleSheetLoader>()
-#elif UNITY_EDITOR && !UNITY_IOS
+#elif UNITY_EDITOR_WIN || !(UNITY_IOS || UNITY_IPHONE)
                 .To<StandaloneGoogleSheetLoader>()
 #endif
                 .AsSingle();

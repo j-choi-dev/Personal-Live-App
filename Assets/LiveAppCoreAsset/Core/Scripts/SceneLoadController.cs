@@ -17,10 +17,11 @@ namespace LiveAppCore
 
         private void LoadSceneProcess()
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_IPHONE
             SceneManager.LoadScene( SCENE_UI, LoadSceneMode.Additive );
 #else
-            // TODO PC 버전 Scene Load @Choi 26.04.22
+            
+            Debug.Log("// TODO PC 버전 Scene Load @Choi 26.04.22");
 #endif
         }
     }
