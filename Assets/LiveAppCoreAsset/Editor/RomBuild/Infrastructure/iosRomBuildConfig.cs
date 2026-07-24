@@ -26,12 +26,5 @@ namespace LiveAppCore.Editor.Infrastructure
 
         [SerializeField] private int _buildNumber = 1;
         public int BuildNumber => _buildNumber;
-
-
-
-
-
-
-
     }
 }

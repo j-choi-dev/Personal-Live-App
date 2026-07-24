@@ -46,7 +46,7 @@ namespace LiveAppCore.Google.Infrastructure
 #if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
             GoogleAuth_SignOut();
 #else
-            Debug.LogWarning( "[GoogleOAuth iOS] SignOut is ignored outside iOS device build." );
+            Debug.LogError( "[GoogleOAuth iOS] SignOut is ignored outside iOS device build." );
 #endif
         }
 

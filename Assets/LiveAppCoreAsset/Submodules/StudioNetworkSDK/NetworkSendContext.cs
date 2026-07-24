@@ -67,7 +67,7 @@ namespace StudioNetworkSDK.Application
 
                 case NetworkProtocol.Unknown:
                 default:
-                    Debug.LogWarning( $"[App Layer] 매칭되는 프로토콜이 없어 무시됨. Topic: {msgData.Topic}" );
+                    Debug.LogError( $"[App Layer] 매칭되는 프로토콜이 없어 무시됨. Topic: {msgData.Topic}" );
                     break;
             }
         }

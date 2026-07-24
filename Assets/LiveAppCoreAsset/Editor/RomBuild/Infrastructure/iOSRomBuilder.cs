@@ -383,7 +383,7 @@ namespace LiveAppCore.Editor.Infrastructure
             }
             else
             {
-                Debug.LogWarning( $"[iOSRomBuilder] UnityFramework Info.plist not found: {frameworkInfoPlistPath}" );
+                Debug.LogError( $"[iOSRomBuilder] UnityFramework Info.plist not found: {frameworkInfoPlistPath}" );
             }
 
             Debug.Log( $"[iOSRomBuilder] Info.plist updated. Version={_romConfig.AppVersion}, Build={_iOSConfig.BuildNumber}" );
