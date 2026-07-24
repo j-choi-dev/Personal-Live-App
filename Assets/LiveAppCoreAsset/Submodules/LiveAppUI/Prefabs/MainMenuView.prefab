@@ -1137,7 +1137,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 0}
+  m_SizeDelta: {x: 175, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &4998349769320760962
 CanvasRenderer:
@@ -2560,7 +2560,7 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 1
-  m_CellSize: {x: 180, y: 180}
+  m_CellSize: {x: 160, y: 160}
   m_Spacing: {x: 0, y: 20}
   m_Constraint: 1
   m_ConstraintCount: 1
@@ -3372,7 +3372,7 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 1
-  m_CellSize: {x: 180, y: 180}
+  m_CellSize: {x: 160, y: 160}
   m_Spacing: {x: 0, y: 20}
   m_Constraint: 1
   m_ConstraintCount: 1
@@ -3970,8 +3970,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 95, y: 0}
-  m_SizeDelta: {x: -210, y: 700}
+  m_AnchoredPosition: {x: 82.5, y: 0}
+  m_SizeDelta: {x: -185, y: 700}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &3624057101413805022
 CanvasRenderer:
@@ -16717,7 +16717,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6001617012728296596, guid: 4a1008b2e0d5e9e499c2bb3344a6a762, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000027675298
+      value: -0.0000071525574
       objectReference: {fileID: 0}
     - target: {fileID: 6076467107186056843, guid: 4a1008b2e0d5e9e499c2bb3344a6a762, type: 3}
       propertyPath: m_AnchorMax.x
@@ -16810,10 +16810,6 @@ PrefabInstance:
     - target: {fileID: 7131847211298802527, guid: 4a1008b2e0d5e9e499c2bb3344a6a762, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9028077450721356845, guid: 4a1008b2e0d5e9e499c2bb3344a6a762, type: 3}
-      propertyPath: m_Size
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
