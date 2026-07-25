@@ -16,6 +16,7 @@ namespace LiveAppUI.Model
     {
         private IResourceServerConfigContext _resourceConfigContext;
         private IResourceTableContext _resourceTableContext;
+        private IResourceLoadContext _resourceLoadContext;
         private CompositeDisposable _disposable = new CompositeDisposable();
 
         private Dictionary<ResourceType, ServerType> _serverTypeDic = new Dictionary<ResourceType, ServerType>();
@@ -25,10 +26,12 @@ namespace LiveAppUI.Model
         public IObservable<IReadOnlyList<(string id, string displayName)>> OnCharacterListChanged => _onCharacterListChanged;
 
         public ResourceListModel( IResourceServerConfigContext resourceConfigContext,
-            IResourceTableContext resourceTableContext )
+            IResourceTableContext resourceTableContext,
+            IResourceLoadContext resourceLoadContext )
         {
             _resourceConfigContext = resourceConfigContext;
             _resourceTableContext = resourceTableContext;
+            _resourceLoadContext = resourceLoadContext;
 
             _resourceTableContext.OnCharacterListChanged
                 .Subscribe( list =>
@@ -94,7 +97,6 @@ namespace LiveAppUI.Model
             ServerType serverType,
             IReadOnlyList<string> resourceId )
         {
-            UnityEngine.Debug.Log( $"_resourceListView.OnClickLoad : {resourceId}" );
             for( var i = 0; i < resourceId.Count; i++ )
             {
                 UnityEngine.Debug.Log( $"{resourceId[i]}" );
