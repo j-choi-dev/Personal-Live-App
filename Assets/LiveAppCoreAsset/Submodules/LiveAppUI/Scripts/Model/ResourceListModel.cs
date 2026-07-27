@@ -60,8 +60,9 @@ namespace LiveAppUI.Model
         {
             try
             {
-                var task = await _resourceConfigContext.LoadServerConfig();
-                _serverConfigs =  task.ToList();
+                var cloudConfigTask = await _resourceConfigContext.LoadCloudConfig();
+                var serverConfigTask = await _resourceConfigContext.LoadServerConfig();
+                _serverConfigs =  serverConfigTask.ToList();
                 return true;
             }
             catch( Exception ex )

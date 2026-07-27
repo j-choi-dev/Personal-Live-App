@@ -1,6 +1,10 @@
+using Amazon;
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Cysharp.Threading.Tasks;
+using LiveAppCore.Google.Domain;
+using StudioSystemSDK.Domain;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,16 +12,21 @@ using System.Net;
 using System.Net.Http;
 using UniRx;
 using UnityEngine;
-using Zenject;
 
 namespace StudioResourceSDK.Domain
 {
     public class S3CloudResourceDownloader : IResourceDownloadDomain
     {
         private IAmazonS3 _s3Client = null;
-        private string _bucketName = null;
-        private string _objectPrefix = string.Empty;
-        private string _cloudFrontBaseUrl = null;
+        private IFileSystemDomain _fileSystemDomain = null;
+
+        private string _regionSystemName = "ap-northeast-2";
+        private string _bucketName = "weavr-liveapp-assetbundle";
+
+        private string _targetPath = "iOS/0.0.0.1/character";
+        private string _cloudFrontBaseUrl = "https://d2vg1d2gp7bnqk.cloudfront.net/";
+
+        private CloudConfigData _configData = null;
 
         private readonly Subject<byte[]> _onDownloadComplete = new Subject<byte[]>();
         public IObservable<byte[]> OnDownloadComplete => _onDownloadComplete;
@@ -25,9 +34,10 @@ namespace StudioResourceSDK.Domain
         private readonly List<string> _resourceList = new List<string>();
         public IReadOnlyList<string> CurrentResourceList => _resourceList;
 
-        public S3CloudResourceDownloader( IAmazonS3 s3Client )
+        public S3CloudResourceDownloader( IFileSystemDomain fileSystemDomain)
         {
-            _s3Client = s3Client;
+            _fileSystemDomain = fileSystemDomain;
+
         }
 
         private static readonly HttpClient _httpClient = new HttpClient
@@ -35,34 +45,38 @@ namespace StudioResourceSDK.Domain
             Timeout = TimeSpan.FromSeconds(10)
         };
 
+        public async UniTask<bool> InitProcess( CloudConfigData config)
+        {
+            _configData = config;
+            if( string.IsNullOrWhiteSpace( config.AccessKey ) )
+            {
+                throw new InvalidOperationException( "AWS ACCESS KEY 값이 설정되지 않았습니다." );
+            }
+            if( string.IsNullOrWhiteSpace( config.SecretAccessKey ) )
+            {
+                throw new InvalidOperationException( "AWS SECRET ACCESS KEY 값이 설정되지 않았습니다." );
+            }
+            RegionEndpoint regionEndpoint = RegionEndpoint.GetBySystemName( _regionSystemName );
+            var credentials = new BasicAWSCredentials( _configData.AccessKey, _configData.SecretAccessKey );
+            _s3Client = new AmazonS3Client( credentials, regionEndpoint );
+            Debug.Log( $"Init Complete :: {config.AccessKey.Trim()}, {config.SecretAccessKey}" );
+            return true;
+        }
+
         public async UniTask<byte[]> DownloadProcess( string name )
         {
             if( _s3Client == null )
             {
-                Debug.LogError( "[S3CloudResourceDownloader] IAmazonS3가 주입되지 않았습니다." );
-                return null;
+                throw new NullReferenceException( "IAmazonS3 is NULL" );
             }
-
             if( string.IsNullOrWhiteSpace( _bucketName ) )
             {
-                Debug.LogError( "[S3CloudResourceDownloader] S3 버킷 이름이 설정되지 않았습니다." );
-                return null;
+                throw new InvalidDataException( "Bucket Name is NULL" );
             }
 
-            if( string.IsNullOrWhiteSpace( name ) )
-            {
-                Debug.LogWarning( "[S3CloudResourceDownloader] 다운로드할 오브젝트 이름이 비어 있습니다." );
-                return null;
-            }
-
-            string normalizedName = name.Replace('\\', '/').TrimStart('/');
-            string normalizedPrefix = string.IsNullOrWhiteSpace(_objectPrefix)
-                ? string.Empty
-                : _objectPrefix.Replace('\\', '/').Trim('/');
-
-            string objectKey = string.IsNullOrEmpty(normalizedPrefix)
-                ? normalizedName
-                : normalizedPrefix + "/" + normalizedName;
+            var normalizedName = name.Replace('\\', '/').TrimStart('/');
+            var normalizedPrefix = _targetPath.Replace('\\', '/').Trim('/');
+            var objectKey = normalizedPrefix + "/" + normalizedName;
 
             try
             {
@@ -83,7 +97,6 @@ namespace StudioResourceSDK.Domain
                                : new MemoryStream() )
                     {
                         await response.ResponseStream.CopyToAsync( memoryStream );
-
                         byte[] resourceBytes = memoryStream.ToArray();
                         _onDownloadComplete.OnNext( resourceBytes );
                         return resourceBytes;
@@ -94,14 +107,12 @@ namespace StudioResourceSDK.Domain
                 when( exception.StatusCode == HttpStatusCode.NotFound ||
                       string.Equals( exception.ErrorCode, "NoSuchKey", StringComparison.Ordinal ) )
             {
-                Debug.LogWarning( $"[S3CloudResourceDownloader] S3 오브젝트를 찾을 수 없습니다. " +
-                    $"Bucket={_bucketName}, Key={objectKey}" );
+                Debug.LogWarning( $"Could Not Find S3 Object. Bucket={_bucketName}, Key={objectKey}" );
                 return null;
             }
             catch( Exception exception )
             {
-                Debug.LogError( $"[S3CloudResourceDownloader] 다운로드에 실패했습니다. " +
-                    $"Bucket={_bucketName}, Key={objectKey}\n{exception}" );
+                Debug.LogError( exception.Message );
                 return null;
             }
         }
@@ -110,36 +121,30 @@ namespace StudioResourceSDK.Domain
         {
             if( string.IsNullOrWhiteSpace( _cloudFrontBaseUrl ) )
             {
-                Debug.LogError( "[S3CloudResourceDownloader] CloudFront Base URL이 설정되지 않았습니다." );
-
-                return false;
+                throw new InvalidDataException( "CloudFront Base URL is NULL" );
             }
 
-            if( string.IsNullOrWhiteSpace( name ) )
-            {
-                return false;
-            }
+            var normalizedTargetPath = string.IsNullOrWhiteSpace( _targetPath )
+                ? string.Empty
+                : _targetPath.Replace( '\\', '/' ).Trim( '/' );
 
-            string normalizedName = name .Replace( '\\', '/' ) .TrimStart( '/' );
+            var normalizedName = name.Replace( '\\', '/' ).Trim( '/' );
 
-            string[] pathSegments = normalizedName.Split( '/' );
+            var relativePath = string.IsNullOrEmpty( normalizedTargetPath )
+                ? normalizedName
+                : normalizedTargetPath + "/" + normalizedName;
 
+            var pathSegments = relativePath.Split( new[] { '/' }, StringSplitOptions.RemoveEmptyEntries );
             for( int index = 0; index < pathSegments.Length; index++ )
             {
                 pathSegments[index] = Uri.EscapeDataString( pathSegments[index] );
             }
 
-            string requestUrl = _cloudFrontBaseUrl.TrimEnd( '/' ) + "/" + string.Join( "/", pathSegments );
-
+            var requestUrl = _cloudFrontBaseUrl.TrimEnd( '/' ) + "/" + string.Join( "/", pathSegments );
             try
             {
-                using( var request = new HttpRequestMessage(
-                           HttpMethod.Head,
-                           requestUrl ) )
-                using( HttpResponseMessage response =
-                           await _httpClient.SendAsync(
-                               request,
-                               HttpCompletionOption.ResponseHeadersRead ) )
+                using( var request = new HttpRequestMessage( HttpMethod.Head, requestUrl ) )
+                using( HttpResponseMessage response = await _httpClient.SendAsync( request, HttpCompletionOption.ResponseHeadersRead ) )
                 {
                     if( response.StatusCode == HttpStatusCode.NotFound )
                     {
@@ -148,23 +153,13 @@ namespace StudioResourceSDK.Domain
 
                     if( response.StatusCode == HttpStatusCode.Forbidden )
                     {
-                        Debug.LogWarning(
-                            $"[S3CloudResourceDownloader] CloudFront가 403을 반환했습니다. " +
-                            $"오브젝트 부재 또는 Viewer 접근 권한 설정을 확인하세요. " +
-                            $"URL={requestUrl}" );
-
+                        Debug.LogError( $"CloudFront 403. Not Exist Target Object... URL={requestUrl}" );
                         return false;
                     }
 
-                    if( !response.IsSuccessStatusCode )
+                    if( response.IsSuccessStatusCode == false )
                     {
-                        Debug.LogWarning(
-                            $"[S3CloudResourceDownloader] CloudFront가 정상적이지 않은 " +
-                            $"상태 코드를 반환했습니다. " +
-                            $"StatusCode={( int )response.StatusCode} " +
-                            $"Reason={response.ReasonPhrase} " +
-                            $"URL={requestUrl}" );
-
+                        Debug.LogError( $"CloudFront Return Invalid Code : {( int )response.StatusCode}, Reason={response.ReasonPhrase}, URL={requestUrl}" );
                         return false;
                     }
 
@@ -173,18 +168,12 @@ namespace StudioResourceSDK.Domain
             }
             catch( HttpRequestException exception )
             {
-                Debug.LogWarning(
-                    $"[S3CloudResourceDownloader] CloudFront 요청에 실패했습니다. " +
-                    $"URL={requestUrl}\n{exception}" );
-
+                Debug.LogError( $"CloudFront Faild :: URL={requestUrl}\n{exception}" );
                 return false;
             }
             catch( Exception exception )
             {
-                Debug.LogWarning(
-                    $"[S3CloudResourceDownloader] CloudFront 존재 확인 중 " +
-                    $"예외가 발생했습니다. URL={requestUrl}\n{exception}" );
-
+                Debug.LogError( $"URL={requestUrl}\n{exception}" );
                 return false;
             }
         }
@@ -193,19 +182,18 @@ namespace StudioResourceSDK.Domain
         {
             if( _s3Client == null )
             {
-                Debug.LogError( "[S3CloudResourceDownloader] IAmazonS3가 주입되지 않았습니다." );
+                Debug.LogError( "IAmazonS3가 주입되지 않았습니다." );
                 return false;
             }
 
             if( string.IsNullOrWhiteSpace( _bucketName ) )
             {
-                Debug.LogError( "[S3CloudResourceDownloader] S3 버킷 이름이 설정되지 않았습니다." );
-                return false;
+                throw new InvalidDataException( "Bucket Name is NULL" );
             }
 
-            string normalizedPrefix = string.IsNullOrWhiteSpace(_objectPrefix)
+            var normalizedPrefix = string.IsNullOrWhiteSpace(_targetPath)
                 ? string.Empty
-                : _objectPrefix.Replace('\\', '/').Trim('/') + "/";
+                : _targetPath.Replace('\\', '/').Trim('/') + "/";
 
             var updatedResourceList = new List<string>();
             string continuationToken = null;
@@ -238,30 +226,26 @@ namespace StudioResourceSDK.Domain
                                 continue;
                             }
 
-                            string resourceName = s3Object.Key;
-
+                            var resourceName = s3Object.Key;
                             // 외부에서는 Prefix를 제외한 상대 경로를 사용한다.
-                            if( !string.IsNullOrEmpty( normalizedPrefix ) &&
+                            if( string.IsNullOrEmpty( normalizedPrefix ) == false &&
                                 resourceName.StartsWith( normalizedPrefix, StringComparison.Ordinal ) )
                             {
                                 resourceName = resourceName.Substring( normalizedPrefix.Length );
                             }
-
                             if( !string.IsNullOrEmpty( resourceName ) )
                             {
                                 updatedResourceList.Add( resourceName );
                             }
                         }
                     }
-
                     continuationToken = response.NextContinuationToken;
-
                     if( response.IsTruncated != true )
                     {
                         break;
                     }
                 }
-                while( !string.IsNullOrEmpty( continuationToken ) );
+                while( string.IsNullOrEmpty( continuationToken ) == false);
 
                 updatedResourceList.Sort( StringComparer.Ordinal );
 
@@ -273,8 +257,7 @@ namespace StudioResourceSDK.Domain
             }
             catch( Exception exception )
             {
-                Debug.LogError( "[S3CloudResourceDownloader] S3 오브젝트 목록 갱신에 실패했습니다. " +
-                    $"Bucket={_bucketName}, Prefix={normalizedPrefix}\n{exception}" );
+                Debug.LogError( exception.Message );
                 return false;
             }
         }

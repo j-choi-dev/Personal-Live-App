@@ -9,6 +9,7 @@ namespace StudioResourceSDK.Domain
         IObservable<byte[]> OnDownloadComplete { get; }
         IReadOnlyList<string> CurrentResourceList { get; }
 
+        UniTask<bool> InitProcess( CloudConfigData config );
         UniTask<bool> CheckExistProcess( string name );
 
         /// <remark>완료 시점에 이벤트로 통지</remark>
