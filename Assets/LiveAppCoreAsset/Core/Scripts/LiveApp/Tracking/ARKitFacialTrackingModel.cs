@@ -28,6 +28,7 @@ namespace LiveApp
             _faceTrackingContext = faceTrackingContext;
             _sceneResourceListContext = sceneResourceListContext;
 
+            UnityEngine.Debug.Log( "ARKitFacialTrackingModel.ctor" );
             _sceneResourceListContext.OnCurrentCharacterChanged
                 .Subscribe( arg => _faceTrackingContext.SertCharacterID( arg.ID ) )
                 .AddTo( _disposables );

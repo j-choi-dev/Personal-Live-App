@@ -255,7 +255,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Application.StudioTrackingSDKInstaller
   _faceTracker: {fileID: 6867358909134192767}
-  _eyeTracker: {fileID: 0}
+  _eyeTracker: {fileID: 6867358909134192768}
 --- !u!1 &1163187150
 GameObject:
   m_ObjectHideFlags: 0
@@ -657,6 +657,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 384f56a03755a41d2a2f36c330a6c200, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6867358909134192768 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3061732700728249284, guid: 5df4cb996af9a449aa1605d85c7eb658, type: 3}
+  m_PrefabInstance: {fileID: 6867358909134192765}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d9f253c7d9614b1b8bebc418b9d353d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807

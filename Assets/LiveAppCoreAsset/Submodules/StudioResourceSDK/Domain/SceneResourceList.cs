@@ -19,15 +19,17 @@ namespace StudioResourceSDK.Domain
         private Subject<ICharacter> _onCurrentCharacterChanged = new Subject<ICharacter>();
         public System.IObservable<ICharacter> OnCurrentCharacterChanged => _onCurrentCharacterChanged;
 
+        public SceneResourceList()
+        {
+            UnityEngine.Debug.Log( "SceneResourceList.ctor" );
+        }
+
         public void AddCharacter( ICharacter character )
         {
             _characterList.Add( character );
             _onChangedCharacterList.OnNext( _characterList );
             UnityEngine.Debug.Log( _characterList.Count );
-            CurrentSelectedCharacter = character;
-            _onCurrentCharacterChanged.OnNext( CurrentSelectedCharacter );
-
-            UnityEngine.Debug.Log( $"CurrentSelectedCharacter = {CurrentSelectedCharacter}" );
+            SetCurrentSelectedCharacter( character.ID );
         }
 
         public bool IsExist( ResourceType resourceType, string id )
@@ -47,14 +49,19 @@ namespace StudioResourceSDK.Domain
             var target = _characterList.FirstOrDefault( arg => arg.ID.Equals( id ) );
             if( target == null )
             {
+                ResetCurrentSelectedCharacter();
                 return;
             }
             CurrentSelectedCharacter = target;
+            _onCurrentCharacterChanged.OnNext( CurrentSelectedCharacter );
+            UnityEngine.Debug.Log( $"CurrentSelectedCharacter = {CurrentSelectedCharacter}" );
         }
 
         public void ResetCurrentSelectedCharacter()
         {
             CurrentSelectedCharacter = null;
+            _onCurrentCharacterChanged.OnNext( CurrentSelectedCharacter );
+            UnityEngine.Debug.Log( $"CurrentSelectedCharacter = NULL" );
         }
     }
 }

@@ -43,7 +43,7 @@ namespace LiveAppCore.Google.Infrastructure
                 var url = $"{OAuthConstValue.SheetsApiBaseUrl}/{Uri.EscapeDataString(spreadsheetId)}?fields={fields}";
 
                 string json = await GetTextWithBearerAsync( url, token, cancellationToken );
-                Debug.Log( $"json = {json}" );
+                //Debug.Log( $"json = {json}" );// TODO 지울것 @Choi 26.07.28
 
                 var root = JSON.Parse(json);
                 var sheets = root["sheets"].AsArray;
