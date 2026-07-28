@@ -14,5 +14,6 @@ namespace StudioResourceSDK.Application
         /// </summary>
         /// <returns>Server Config 리스트</returns>
         UniTask<IReadOnlyCollection<ResourceServerData>> LoadServerConfig();
+        UniTask<bool> LoadCloudConfig();
     }
 }

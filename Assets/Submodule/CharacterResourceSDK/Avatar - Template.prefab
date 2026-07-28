@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2803234851649022175}
   - component: {fileID: 2013080194380071952}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AvatarParameters
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -77,7 +77,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5103659068918251572}
   - component: {fileID: 9048167421333838029}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Avatar - Template
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 961643767583781590}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AvatarPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}

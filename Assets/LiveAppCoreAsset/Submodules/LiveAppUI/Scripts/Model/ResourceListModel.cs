@@ -16,6 +16,7 @@ namespace LiveAppUI.Model
     {
         private IResourceServerConfigContext _resourceConfigContext;
         private IResourceTableContext _resourceTableContext;
+        private IResourceLoadContext _resourceLoadContext;
         private CompositeDisposable _disposable = new CompositeDisposable();
 
         private Dictionary<ResourceType, ServerType> _serverTypeDic = new Dictionary<ResourceType, ServerType>();
@@ -25,10 +26,12 @@ namespace LiveAppUI.Model
         public IObservable<IReadOnlyList<(string id, string displayName)>> OnCharacterListChanged => _onCharacterListChanged;
 
         public ResourceListModel( IResourceServerConfigContext resourceConfigContext,
-            IResourceTableContext resourceTableContext )
+            IResourceTableContext resourceTableContext,
+            IResourceLoadContext resourceLoadContext )
         {
             _resourceConfigContext = resourceConfigContext;
             _resourceTableContext = resourceTableContext;
+            _resourceLoadContext = resourceLoadContext;
 
             _resourceTableContext.OnCharacterListChanged
                 .Subscribe( list =>
@@ -57,8 +60,9 @@ namespace LiveAppUI.Model
         {
             try
             {
-                var task = await _resourceConfigContext.LoadServerConfig();
-                _serverConfigs =  task.ToList();
+                var cloudConfigTask = await _resourceConfigContext.LoadCloudConfig();
+                var serverConfigTask = await _resourceConfigContext.LoadServerConfig();
+                _serverConfigs =  serverConfigTask.ToList();
                 return true;
             }
             catch( Exception ex )
@@ -80,8 +84,7 @@ namespace LiveAppUI.Model
             var loadResult = await _resourceTableContext.LoadResourceTableProcess(
                 config.resourceType,
                 server.ToString(),
-                config.tableUrl
-                );
+                config.tableUrl );
         }
 
         public ServerType GetCurrentServerType( ResourceType resourceType )
@@ -94,31 +97,21 @@ namespace LiveAppUI.Model
             ServerType serverType,
             IReadOnlyList<string> resourceId )
         {
-            UnityEngine.Debug.Log( $"_resourceListView.OnClickLoad : {resourceId}" );
-            for( var i = 0; i < resourceId.Count; i++ )
-            {
-                UnityEngine.Debug.Log( $"{resourceId[i]}" );
-            }
-            return false;
+            return await _resourceLoadContext.LoadResource( 
+                ConvertResourceType( resourceType ), 
+                serverType, 
+                resourceId );
         }
 
         private StudioResourceSDK.Domain.ResourceType ConvertResourceType( ResourceType type )
-        {
-            StudioResourceSDK.Domain.ResourceType retVal
-                = (StudioResourceSDK.Domain.ResourceType)Enum.Parse(
-                    typeof(StudioResourceSDK.Domain.ResourceType), type.ToString()
-                    );
-            return retVal;
-        }
+            => ( StudioResourceSDK.Domain.ResourceType )Enum.Parse( 
+                typeof( StudioResourceSDK.Domain.ResourceType ), 
+                type.ToString() );
 
         private StudioNetworkSDK.Domain.ServerType ConvertServerType( ServerType type )
-        {
-            StudioNetworkSDK.Domain.ServerType retVal
-                = (StudioNetworkSDK.Domain.ServerType)Enum.Parse(
-                    typeof(StudioNetworkSDK.Domain.ServerType), type.ToString()
-                    );
-            return retVal;
-        }
+            => ( StudioNetworkSDK.Domain.ServerType )Enum.Parse( 
+                typeof( StudioNetworkSDK.Domain.ServerType ), 
+                type.ToString() );
 
         public void Dispose()
         {

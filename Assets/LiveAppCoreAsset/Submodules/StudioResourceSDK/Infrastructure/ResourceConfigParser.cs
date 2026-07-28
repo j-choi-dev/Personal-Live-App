@@ -1,5 +1,6 @@
 using StudioNetworkSDK.Domain;
 using StudioResourceSDK.Domain;
+using System;
 using System.Collections.Generic;
 
 namespace StudioResourceSDK.Infrastructure
@@ -12,7 +13,7 @@ namespace StudioResourceSDK.Infrastructure
         public IReadOnlyCollection<ResourceServerData> ParseServerConfigData( string rawData )
         {
             var list = new List<ResourceServerData>();
-            var row = rawData.Split('\n');
+            var row = rawData.Split( new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries );
             for(var i = 0; i < row.Length; i++ )
             {
                 if( string.IsNullOrWhiteSpace( row[i] ) )

@@ -1,11 +1,12 @@
+using LiveApp.Util;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
 using UniRx;
-using System;
-using LiveApp.Util;
+using UnityEngine;
+using UnityEngine.UI;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LiveApp.UI
 {
@@ -43,10 +44,10 @@ namespace LiveApp.UI
         public void SetIsUsable( bool isVal )
             => IsUsable = isVal;
 
-        public void SetItem( string text, string id )
+        public void SetItem( string id, string displayName )
         {
-            _text.text = text;
             ID = id;
+            _text.text = displayName;
         }
 
         private void Awake()
