@@ -7,17 +7,17 @@ using StudioTrackingSDK.Domain;
 
 namespace StudioTrackingSDK.Infrastructure
 {
-    public class ARKitFaceTrakingController : MonoBehaviour, IFaceTrackingDomain
+    public class ARKitFaceTraker : MonoBehaviour, IFaceTrackingDomain
     {
         [SerializeField] private ARFaceManager _faceManager;
-        private Subject<float> _onFaceAngleX = new Subject<float>();
-        private Subject<float> _onFaceAngleY = new Subject<float>();
-        private Subject<float> _onFaceAngleZ = new Subject<float>();
 
+        private Subject<float> _onFaceAngleX = new Subject<float>();
         public IObservable<float> OnFaceAngleX => _onFaceAngleX;
 
+        private Subject<float> _onFaceAngleY = new Subject<float>();
         public IObservable<float> OnFaceAngleY => _onFaceAngleY;
 
+        private Subject<float> _onFaceAngleZ = new Subject<float>();
         public IObservable<float> OnFaceAngleZ => _onFaceAngleZ;
 
         public bool IsActive { get; private set; } = false;
@@ -51,11 +51,16 @@ namespace StudioTrackingSDK.Infrastructure
         }
 
         /// <summary>
-        /// 얼굴 방향dmf 변경
+        /// 얼굴 방향을 변경
         /// </summary>
         /// <param name="arFace">ARFace 정보</param>
         private void UpdateFaceTransform( ARFace arFace )
         {
+            if( IsActive == false)
+            {
+                return;
+            }
+
             // 얼굴의 회전 정보 취득
             var faceRotation = arFace.transform.rotation;
 

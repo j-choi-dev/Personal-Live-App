@@ -5,9 +5,7 @@ using StudioCommonSDK.Domain;
 using StudioResourceSDK.Domain;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using UniRx;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace StudioResourceSDK.Application
@@ -16,6 +14,7 @@ namespace StudioResourceSDK.Application
     {
         private IResourceDownloadDomain _resourceLoadDomain;
         private ISpawnPivotTransform _spawnPivot;
+        private ISceneResourceListDomain _sceneResourceListDomain;
 
         private Subject<IReadOnlyList<ICharacter>> _onCharacterListChanged = new Subject<IReadOnlyList<ICharacter>>();
         public IObservable<IReadOnlyList<ICharacter>> OnCharacterListChanged => _onCharacterListChanged;
@@ -24,10 +23,12 @@ namespace StudioResourceSDK.Application
         public IObservable<ICharacter> OnLoadCharacter => _onLoadCharacter;
 
         public ResourceLoadContext( IResourceDownloadDomain resourceLoadDomain,
-            ISpawnPivotTransform spawnPivot)
+            ISpawnPivotTransform spawnPivot,
+            ISceneResourceListDomain sceneResourceListDomain)
         {
             _resourceLoadDomain = resourceLoadDomain;
             _spawnPivot = spawnPivot;
+            _sceneResourceListDomain = sceneResourceListDomain;
         }
 
         public async UniTask<bool> LoadResource( Domain.ResourceType resourceType, 
@@ -51,6 +52,14 @@ namespace StudioResourceSDK.Application
 
                 GameObject instance = UnityEngine.Object.Instantiate( prefab, Vector3.zero, Quaternion.identity, _spawnPivot.Transform );
                 instance.transform.localScale = Vector3.one;
+                switch( resourceType )
+                {
+                    case Domain.ResourceType.Character:
+                        var character = instance.GetComponent<ICharacter>();
+                        character.SetID( resourceId );
+                        _sceneResourceListDomain.AddCharacter( character );
+                        break;
+                }
             }
             await UniTask.NextFrame();
             return isAllSucceeded;

@@ -53,6 +53,7 @@ namespace StudioCharacterSDK.Infrastructure
 
         public bool IsInitialized => _isInitialized;
 
+        public string ID { get; private set; }
 
         private void Awake()
         {
@@ -131,5 +132,8 @@ namespace StudioCharacterSDK.Infrastructure
 
             _mouthOpenY.Value = _updateMouthOpenY;
         }
+
+        public void SetID( string id )
+            => ID = id;
     }
 }

@@ -1,3 +1,4 @@
+using StudioResourceSDK.Application;
 using StudioResourceSDK.Domain;
 using StudioResourceSDK.Infrastructure;
 using StudioSystemSDK.Domain;
@@ -5,7 +6,7 @@ using StudioSystemSDK.Infrastructure;
 using Zenject;
 
 
-namespace StudioResourceSDK.Application
+namespace StudioResourceSDK.Installer
 {
     public class SystemResourceSDKInstaller : MonoInstaller
     {
@@ -25,6 +26,12 @@ namespace StudioResourceSDK.Application
                 .Bind<IResourceLoadContext>()
                 .To<ResourceLoadContext>()
                 .AsSingle();
+
+            Container
+                .Bind<ISceneResourceListContext>()
+                .To<SceneResourceListContext>()
+                .AsSingle();
+
 
             Container
                 .Bind<IResourceConfigParseDomain>()
@@ -49,6 +56,10 @@ namespace StudioResourceSDK.Application
             Container
                 .Bind<ICloudConfigParseDomain>()
                 .To<CloudConfigParser>()
+                .AsSingle();
+            Container
+                .Bind<ISceneResourceListDomain>()
+                .To<SceneResourceList>()
                 .AsSingle();
         }
     }

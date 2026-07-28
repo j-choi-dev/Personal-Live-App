@@ -1,41 +1,50 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.XR.ARFoundation;
+using StudioResourceSDK.Application;
+using StudioTrackingSDK.Application;
+using System;
+using UniRx;
 
 namespace LiveApp
 {
     public interface IARKitFacialTrackingModel
     {
         bool IsAbleTracking { get; }
-        bool IsExistManager { get; }
         float Intensity { get; }
 
-        void SetAbleTracking(bool isOK);
-        void SetARFaceManager(ARFaceManager manager);
+        void SetAbleTracking( bool isOK );
 
-        void SetIntensity(float intensity);
+        void SetIntensity( float intensity );
     }
-    public class ARKitFacialTrackingModel : IARKitFacialTrackingModel
+    public class ARKitFacialTrackingModel : IARKitFacialTrackingModel, IDisposable
     {
-        private ARFaceManager _faceManager; // ???? ????
+        private IFaceTrackingContext _faceTrackingContext;
+        private ISceneResourceListContext _sceneResourceListContext;
 
-        public ARKitFacialTrackingModel( ARFaceManager faceManager )
+        private CompositeDisposable _disposables = new CompositeDisposable();
+
+
+        public ARKitFacialTrackingModel( IFaceTrackingContext faceTrackingContext,
+            ISceneResourceListContext sceneResourceListContext )
         {
-            _faceManager = faceManager;
+            _faceTrackingContext = faceTrackingContext;
+            _sceneResourceListContext = sceneResourceListContext;
+
+            _sceneResourceListContext.OnCurrentCharacterChanged
+                .Subscribe( arg => _faceTrackingContext.SertCharacterID( arg.ID ) )
+                .AddTo( _disposables );
         }
 
-        public bool IsAbleTracking { get; private set; }
-
-        public bool IsExistManager => _faceManager != null;
+        public bool IsAbleTracking => _faceTrackingContext.IsActive;
 
         public float Intensity { get; private set; }
 
-        public void SetAbleTracking( bool isOK )
-            => IsAbleTracking = isOK;
+        public void Dispose()
+        {
+            _disposables.Dispose();
+            _disposables = null;
+        }
 
-        public void SetARFaceManager( ARFaceManager manager )
-            => _faceManager = manager;
+        public void SetAbleTracking( bool isOK )
+            => _faceTrackingContext.SetIsActive(isOK);
 
         public void SetIntensity( float intensity )
             => Intensity = intensity;

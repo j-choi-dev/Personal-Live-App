@@ -9,7 +9,7 @@ using Unity.Collections;
 
 namespace StudioTrackingSDK.Infrastructure
 {
-    public class ARKitEyeTrackingController : MonoBehaviour, IEyeTrackingDomain
+    public class ARKitEyeTracker : MonoBehaviour, IEyeTrackingDomain
     {
         [SerializeField] private ARFaceManager _faceManager;
         private Subject<float> _onEyeBallAngleX = new Subject<float>();

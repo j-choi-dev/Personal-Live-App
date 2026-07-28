@@ -1,3 +1,4 @@
+using LiveApp;
 using LiveAppUI.Model;
 using LiveAppUI.Presenter;
 using LiveAppUI.View;
@@ -55,6 +56,11 @@ namespace LiveAppUI.Installer
             Container
                 .Bind<IResourceListModel>()
                 .To<ResourceListModel>()
+                .AsSingle();
+
+            Container
+                .Bind<IARKitFacialTrackingModel>()
+                .To<ARKitFacialTrackingModel>()
                 .AsSingle();
         }
     }

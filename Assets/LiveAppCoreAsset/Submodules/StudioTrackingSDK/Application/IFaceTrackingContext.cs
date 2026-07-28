@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace StudioTrackingSDK.Application
 {
-    public interface IFaceTrackingControlApplication
+    public interface IFaceTrackingContext
     {
         /// <summary>
         /// Face Angle X
@@ -29,5 +26,6 @@ namespace StudioTrackingSDK.Application
         /// Active ¿©ºÎ
         /// </summary>
         void SetIsActive( bool isValue );
+        void SertCharacterID( string id );
     }
 }
