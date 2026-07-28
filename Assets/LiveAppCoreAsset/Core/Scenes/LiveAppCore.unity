@@ -594,6 +594,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ARKitComponent
       objectReference: {fileID: 0}
+    - target: {fileID: 6867358910089013393, guid: 5df4cb996af9a449aa1605d85c7eb658, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
