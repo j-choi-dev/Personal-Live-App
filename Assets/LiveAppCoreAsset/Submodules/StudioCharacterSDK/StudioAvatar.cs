@@ -1,11 +1,13 @@
-using Live2D.Cubism.Core;
+﻿using Live2D.Cubism.Core;
 using StudioCharacterSDK.Domain;
+using System;
 using System.Linq;
+using UniRx;
 using UnityEngine;
 
 namespace StudioCharacterSDK.Infrastructure
 {
-    public class StudioAvatar : MonoBehaviour, ICharacter
+    public class StudioAvatar : MonoBehaviour, ICharacter, IFacialData
     {
         [SerializeField] private AvatarParameterPair _pair = null;
         [SerializeField] private CubismModel _avatar = null;
@@ -55,6 +57,22 @@ namespace StudioCharacterSDK.Infrastructure
 
         public string ID { get; private set; }
 
+        public float FaceAngleX => _updateFaceAngleX;
+
+        public float FaceAngleY => _updateFaceAngleY;
+
+        public float FaceAngleZ => _updateFaceAngleZ;
+
+        private Subject<float> _onChangeFaceAngleX = new Subject<float>();
+        public IObservable<float> OnChangeFaceAngleX => _onChangeFaceAngleX;
+
+        private Subject<float> _onChangeFaceAngleY = new Subject<float>();
+        public IObservable<float> OnChangeFaceAngleY => _onChangeFaceAngleY;
+
+
+        private Subject<float> _onChangeFaceAngleZ = new Subject<float>();
+        public IObservable<float> OnChangeFaceAngleZ => _onChangeFaceAngleZ;
+
         private void Awake()
         {
             Init();
@@ -73,7 +91,6 @@ namespace StudioCharacterSDK.Infrastructure
         /// <param name="model"></param>
         public void InitCubismParameter()
         {
-            return;
             _faceAngleX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.FaceAngle_X].parameter.Id );
             _faceAngleY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.FaceAngle_Y].parameter.Id );
             _faceAngleZ = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.FaceAngle_Z].parameter.Id );
@@ -91,9 +108,21 @@ namespace StudioCharacterSDK.Infrastructure
             _mouthOpenY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.MouthOpen_Y].parameter.Id );
         }
 
-        public void SetFaceAngleX( float value ) => _updateFaceAngleX = value;
-        public void SetFaceAngleY( float value ) => _updateFaceAngleY = value;
-        public void SetFaceAngleZ( float value ) => _updateFaceAngleZ = value;
+        public void SetFaceAngleX( float value )
+        {
+            _faceAngleX.Value = value;
+            UnityEngine.Debug.Log( $"_faceAngleX = {_faceAngleX.Value}" );
+        }
+        public void SetFaceAngleY( float value )
+        {
+            _faceAngleY.Value = value;
+            UnityEngine.Debug.Log( $"_faceAngleY = {_faceAngleY.Value}" );
+        }
+        public void SetFaceAngleZ( float value )
+        {
+            _faceAngleZ.Value = value;
+            UnityEngine.Debug.Log( $"_faceAngleZ = {_faceAngleZ.Value}" );
+        }
 
         public void SetEyeBlinkLeft( float value ) => _updateLeftEye = value;
         public void SetEyeBlinkRight( float value ) => _updateRightEye = value;
@@ -111,7 +140,6 @@ namespace StudioCharacterSDK.Infrastructure
 
         private void LateUpdate()
         {
-            return;
             if( _isInitialized == false )
             {
                 return;

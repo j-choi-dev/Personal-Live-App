@@ -1,4 +1,4 @@
-namespace StudioCharacterSDK.Domain
+﻿namespace StudioCharacterSDK.Domain
 {
     public interface ICharacter
     {

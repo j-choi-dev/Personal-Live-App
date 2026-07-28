@@ -1,4 +1,4 @@
-using LiveApp;
+﻿using LiveApp;
 using LiveAppUI.Model;
 using LiveAppUI.Presenter;
 using LiveAppUI.View;
@@ -61,7 +61,8 @@ namespace LiveAppUI.Installer
             Container
                 .Bind<IARKitFacialTrackingModel>()
                 .To<ARKitFacialTrackingModel>()
-                .AsSingle();
+                .AsSingle()
+                .NonLazy();
         }
     }
 }

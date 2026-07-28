@@ -1,4 +1,4 @@
-using StudioCharacterSDK.Domain;
+﻿using StudioCharacterSDK.Domain;
 using StudioResourceSDK.Domain;
 using System;
 using System.Collections.Generic;
@@ -25,10 +25,6 @@ namespace StudioResourceSDK.Application
         public SceneResourceListContext( ISceneResourceListDomain listDomain )
         {
             _listDomain = listDomain;
-            UnityEngine.Debug.Log( "SceneResourceListContext.ctor" );
-            _listDomain.OnCurrentCharacterChanged
-                .Subscribe( arg => UnityEngine.Debug.Log( arg.ID ) )
-                .AddTo( _disposables );
         }
 
         public void AddCharacter( ICharacter character )

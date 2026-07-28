@@ -1,6 +1,8 @@
+﻿using StudioCharacterSDK.Domain;
 using StudioResourceSDK.Application;
 using StudioTrackingSDK.Application;
 using System;
+using System.Diagnostics;
 using UniRx;
 
 namespace LiveApp
@@ -18,6 +20,7 @@ namespace LiveApp
     {
         private IFaceTrackingContext _faceTrackingContext;
         private ISceneResourceListContext _sceneResourceListContext;
+        private IFacialData _currentCharacter = null;
 
         private CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -28,9 +31,19 @@ namespace LiveApp
             _faceTrackingContext = faceTrackingContext;
             _sceneResourceListContext = sceneResourceListContext;
 
-            UnityEngine.Debug.Log( "ARKitFacialTrackingModel.ctor" );
+            SubscribeTrackingData();
+
             _sceneResourceListContext.OnCurrentCharacterChanged
-                .Subscribe( arg => _faceTrackingContext.SertCharacterID( arg.ID ) )
+                .Subscribe( arg =>
+                {
+                    var target = arg as IFacialData;
+                    if( target == null )
+                    {
+                        UnityEngine.Debug.LogError( $"Invalid Resource ; Not Exist Ficial Component({arg.ID})" );
+                    }
+                    _faceTrackingContext.SetCharacterID( arg.ID );
+                    _currentCharacter = target;
+                } )
                 .AddTo( _disposables );
         }
 
@@ -49,5 +62,19 @@ namespace LiveApp
 
         public void SetIntensity( float intensity )
             => Intensity = intensity;
+
+        private void SubscribeTrackingData()
+        {
+            UnityEngine.Debug.Log( "SubscribeTrackingData" );
+            _faceTrackingContext.OnFaceAngleX
+                .Subscribe( val => _currentCharacter.SetFaceAngleX( val ) )
+                .AddTo( _disposables );
+            _faceTrackingContext.OnFaceAngleY
+                .Subscribe( val => _currentCharacter.SetFaceAngleY( val ) )
+                .AddTo( _disposables );
+            _faceTrackingContext.OnFaceAngleZ
+                .Subscribe( val => _currentCharacter.SetFaceAngleZ( val ) )
+                .AddTo( _disposables );
+        }
     }
 }

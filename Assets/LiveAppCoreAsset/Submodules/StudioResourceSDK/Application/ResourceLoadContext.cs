@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using LiveAppUI;
 using StudioCharacterSDK.Domain;
 using StudioCommonSDK.Domain;
@@ -29,7 +29,6 @@ namespace StudioResourceSDK.Application
             _resourceLoadDomain = resourceLoadDomain;
             _spawnPivot = spawnPivot;
             _sceneResourceListDomain = sceneResourceListDomain;
-            UnityEngine.Debug.Log( "ResourceLoadContext.ctor" );
         }
 
         public async UniTask<bool> LoadResource( Domain.ResourceType resourceType, 

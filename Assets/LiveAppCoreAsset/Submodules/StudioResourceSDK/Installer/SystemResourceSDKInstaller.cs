@@ -1,4 +1,4 @@
-using StudioResourceSDK.Application;
+﻿using StudioResourceSDK.Application;
 using StudioResourceSDK.Domain;
 using StudioResourceSDK.Infrastructure;
 using StudioSystemSDK.Domain;
@@ -12,11 +12,11 @@ namespace StudioResourceSDK.Installer
     {
         public override void InstallBindings()
         {
-            UnityEngine.Debug.Log( "ISceneResourceListContext Bind" );
             Container
                 .Bind<ISceneResourceListContext>()
                 .To<SceneResourceListContext>()
-                .AsSingle();
+                .AsSingle()
+                .NonLazy();
 
             Container
                 .Bind<IResourceServerConfigContext>()

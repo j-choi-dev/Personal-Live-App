@@ -1,3 +1,4 @@
+Ôªøusing StudioCharacterSDK.Domain;
 using System;
 
 namespace StudioTrackingSDK.Application
@@ -18,14 +19,15 @@ namespace StudioTrackingSDK.Application
         IObservable<float> OnFaceAngleZ { get; }
 
         /// <summary>
-        /// Active ªÛ≈¬
+        /// Active ÏÉÅÌÉú
         /// </summary>
         bool IsActive { get; }
 
         /// <summary>
-        /// Active ø©∫Œ
+        /// Active Ïó¨Î∂Ä
         /// </summary>
         void SetIsActive( bool isValue );
-        void SertCharacterID( string id );
+        void SetCharacterID( string id );
+        void SetFacial( IFacialData data );
     }
 }

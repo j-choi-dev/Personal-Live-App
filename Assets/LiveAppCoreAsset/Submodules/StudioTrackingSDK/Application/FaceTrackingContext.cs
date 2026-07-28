@@ -1,3 +1,4 @@
+﻿using StudioCharacterSDK.Domain;
 using StudioTrackingSDK.Domain;
 using System;
 
@@ -20,15 +21,19 @@ namespace StudioTrackingSDK.Application
             _faceTrackingDomain = faceTrackingDomain;
         }
 
-        public void SertCharacterID( string id )
+        public void SetCharacterID( string id )
         {
             CurrentSelectedCharacter = id;
-            UnityEngine.Debug.Log( $"CurrentSelectedCharacter = {CurrentSelectedCharacter}" );
         }
 
         public void SetIsActive( bool isValue )
         {
             _faceTrackingDomain.SetIsActive( isValue );
+        }
+
+        public void SetFacial( IFacialData data )
+        {
+            throw new NotImplementedException();
         }
     }
 }

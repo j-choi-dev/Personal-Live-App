@@ -1,4 +1,4 @@
-using Amazon;
+﻿using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -50,16 +50,16 @@ namespace StudioResourceSDK.Domain
             _configData = config;
             if( string.IsNullOrWhiteSpace( config.AccessKey ) )
             {
-                throw new InvalidOperationException( "AWS ACCESS KEY 값이 설정되지 않았습니다." );
+                throw new InvalidOperationException( "AWS ACCESS KEY is NULL." );
             }
             if( string.IsNullOrWhiteSpace( config.SecretAccessKey ) )
             {
-                throw new InvalidOperationException( "AWS SECRET ACCESS KEY 값이 설정되지 않았습니다." );
+                throw new InvalidOperationException( "AWS SECRET ACCESS KEY is NULL" );
             }
             RegionEndpoint regionEndpoint = RegionEndpoint.GetBySystemName( _regionSystemName );
             var credentials = new BasicAWSCredentials( _configData.AccessKey, _configData.SecretAccessKey );
             _s3Client = new AmazonS3Client( credentials, regionEndpoint );
-            Debug.Log( $"Init Complete :: {config.AccessKey.Trim()}, {config.SecretAccessKey}" );
+            Debug.Log( $"S3 Init Complete" );
             return true;
         }
 
@@ -212,7 +212,7 @@ namespace StudioResourceSDK.Domain
         {
             if( _s3Client == null )
             {
-                Debug.LogError( "IAmazonS3가 주입되지 않았습니다." );
+                Debug.LogError( "Not Injected : IAmazonS3" );
                 return false;
             }
 

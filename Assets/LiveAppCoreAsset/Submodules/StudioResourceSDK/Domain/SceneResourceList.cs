@@ -1,4 +1,4 @@
-using StudioCharacterSDK.Domain;
+﻿using StudioCharacterSDK.Domain;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
@@ -19,16 +19,10 @@ namespace StudioResourceSDK.Domain
         private Subject<ICharacter> _onCurrentCharacterChanged = new Subject<ICharacter>();
         public System.IObservable<ICharacter> OnCurrentCharacterChanged => _onCurrentCharacterChanged;
 
-        public SceneResourceList()
-        {
-            UnityEngine.Debug.Log( "SceneResourceList.ctor" );
-        }
-
         public void AddCharacter( ICharacter character )
         {
             _characterList.Add( character );
             _onChangedCharacterList.OnNext( _characterList );
-            UnityEngine.Debug.Log( _characterList.Count );
             SetCurrentSelectedCharacter( character.ID );
         }
 
@@ -54,7 +48,6 @@ namespace StudioResourceSDK.Domain
             }
             CurrentSelectedCharacter = target;
             _onCurrentCharacterChanged.OnNext( CurrentSelectedCharacter );
-            UnityEngine.Debug.Log( $"CurrentSelectedCharacter = {CurrentSelectedCharacter}" );
         }
 
         public void ResetCurrentSelectedCharacter()

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using UniRx;
@@ -24,12 +24,13 @@ namespace StudioTrackingSDK.Infrastructure
 
         private void OnEnable()
         {
-            _faceManager.facesChanged += OnFaceChanged;
+            UnityEngine.Debug.Log( "OnEnable" );
+            _faceManager.trackablesChanged.AddListener( OnFaceChanged );
         }
 
         private void OnDisable()
         {
-            _faceManager.facesChanged -= OnFaceChanged;
+            _faceManager.trackablesChanged.RemoveListener( OnFaceChanged );
         }
 
 
@@ -37,17 +38,20 @@ namespace StudioTrackingSDK.Infrastructure
         /// 얼굴 정보 변경 이벤트
         /// </summary>
         /// <param name="eventArgs">발생한 이벤트 값</param>
-        private void OnFaceChanged( ARFacesChangedEventArgs eventArgs )
+        private void OnFaceChanged( ARTrackablesChangedEventArgs<ARFace> eventArgs )
         {
+            UnityEngine.Debug.Log( "OnFaceChanged" );
             if ( eventArgs.updated.Count != 0 )
             {
                 var arFace = eventArgs.updated[ 0 ];
+                UnityEngine.Debug.Log( "OnFaceChanged ready;" );
                 if ( arFace.trackingState == TrackingState.Tracking
                     && ( ARSession.state > ARSessionState.Ready ) )
                 {
                     UpdateFaceTransform( arFace );
                 }
             }
+            UnityEngine.Debug.Log( "OnFaceChanged Break;" );
         }
 
         /// <summary>
@@ -58,8 +62,10 @@ namespace StudioTrackingSDK.Infrastructure
         {
             if( IsActive == false)
             {
+                UnityEngine.Debug.Log( "UpdateFaceTransform Break;" );
                 return;
             }
+            UnityEngine.Debug.Log( "UpdateFaceTransform ...;" );
 
             // 얼굴의 회전 정보 취득
             var faceRotation = arFace.transform.rotation;

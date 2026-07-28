@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+ï»¿using Cysharp.Threading.Tasks;
 using StudioNetworkSDK.Domain;
 using StudioNetworkSDK.Infrastructure;
 using System;
@@ -67,14 +67,14 @@ namespace StudioNetworkSDK.Application
 
                 case NetworkProtocol.Unknown:
                 default:
-                    Debug.LogError( $"[App Layer] ¸ÅÄªµÇ´Â ÇÁ·ÎÅäÄİÀÌ ¾ø¾î ¹«½ÃµÊ. Topic: {msgData.Topic}" );
+                    Debug.LogError( $"[App Layer] ë§¤ì¹­ë˜ëŠ” í”„ë¡œí† ì½œì´ ì—†ì–´ ë¬´ì‹œë¨. Topic: {msgData.Topic}" );
                     break;
             }
         }
 
         private NetworkProtocol ParseProtocol( MqttMessageData msgData )
         {
-            // ÅäÇÈ ±ÔÄ¢ÀÌ ¸íÈ®ÇÏ´Ù¸é Switch¹®ÀÌ³ª Dictionary·Î ¸ÅÇÎÇÏ´Â °ÍÀÌ ´õ ºü¸£°í ±ò²ûÇØ.
+            // í† í”½ ê·œì¹™ì´ ëª…í™•í•˜ë‹¤ë©´ Switchë¬¸ì´ë‚˜ Dictionaryë¡œ ë§¤í•‘í•˜ëŠ” ê²ƒì´ ë” ë¹ ë¥´ê³  ê¹”ë”í•´.
             if( msgData.Topic.Contains( "login/response" ) )
             {
                 return NetworkProtocol.LoginResponse;
@@ -87,25 +87,25 @@ namespace StudioNetworkSDK.Application
         {
             try
             {
-                // JSON ¹®ÀÚ¿­À» DTO °´Ã¼·Î º¯È¯
+                // JSON ë¬¸ìì—´ì„ DTO ê°ì²´ë¡œ ë³€í™˜
                 LoginResponse res = JsonUtility.FromJson<LoginResponse>(payload);
 
                 bool isSuccess = (res.status == "success");
 
                 if( isSuccess )
                 {
-                    Debug.Log( "[App Layer] ·Î±×ÀÎ µ¥ÀÌÅÍ ÆÄ½Ì °á°ú: ¼º°ø" );
+                    Debug.Log( "[App Layer] ë¡œê·¸ì¸ ë°ì´í„° íŒŒì‹± ê²°ê³¼: ì„±ê³µ" );
                 }
                 else
                 {
-                    Debug.LogError( $"[App Layer] ·Î±×ÀÎ µ¥ÀÌÅÍ ÆÄ½Ì °á°ú: ½ÇÆĞ »çÀ¯ - {res.message}" );
+                    Debug.LogError( $"[App Layer] ë¡œê·¸ì¸ ë°ì´í„° íŒŒì‹± ê²°ê³¼: ì‹¤íŒ¨ ì‚¬ìœ  - {res.message}" );
                 }
 
                 _onLoginResult.OnNext( isSuccess );
             }
             catch( Exception ex )
             {
-                Debug.LogError( $"[App Layer] ·Î±×ÀÎ ÆäÀÌ·Îµå ÆÄ½Ì Áß ¿¡·¯ ¹ß»ı: {ex.Message}" );
+                Debug.LogError( $"[App Layer] ë¡œê·¸ì¸ í˜ì´ë¡œë“œ íŒŒì‹± ì¤‘ ì—ëŸ¬ ë°œìƒ: {ex.Message}" );
                 _onLoginResult.OnNext( false );
             }
         }
