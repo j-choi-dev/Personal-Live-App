@@ -84,8 +84,7 @@ namespace LiveAppUI.Model
             var loadResult = await _resourceTableContext.LoadResourceTableProcess(
                 config.resourceType,
                 server.ToString(),
-                config.tableUrl
-                );
+                config.tableUrl );
         }
 
         public ServerType GetCurrentServerType( ResourceType resourceType )
@@ -98,30 +97,21 @@ namespace LiveAppUI.Model
             ServerType serverType,
             IReadOnlyList<string> resourceId )
         {
-            for( var i = 0; i < resourceId.Count; i++ )
-            {
-                UnityEngine.Debug.Log( $"{resourceId[i]}" );
-            }
-            return false;
+            return await _resourceLoadContext.LoadResource( 
+                ConvertResourceType( resourceType ), 
+                serverType, 
+                resourceId );
         }
 
         private StudioResourceSDK.Domain.ResourceType ConvertResourceType( ResourceType type )
-        {
-            StudioResourceSDK.Domain.ResourceType retVal
-                = (StudioResourceSDK.Domain.ResourceType)Enum.Parse(
-                    typeof(StudioResourceSDK.Domain.ResourceType), type.ToString()
-                    );
-            return retVal;
-        }
+            => ( StudioResourceSDK.Domain.ResourceType )Enum.Parse( 
+                typeof( StudioResourceSDK.Domain.ResourceType ), 
+                type.ToString() );
 
         private StudioNetworkSDK.Domain.ServerType ConvertServerType( ServerType type )
-        {
-            StudioNetworkSDK.Domain.ServerType retVal
-                = (StudioNetworkSDK.Domain.ServerType)Enum.Parse(
-                    typeof(StudioNetworkSDK.Domain.ServerType), type.ToString()
-                    );
-            return retVal;
-        }
+            => ( StudioNetworkSDK.Domain.ServerType )Enum.Parse( 
+                typeof( StudioNetworkSDK.Domain.ServerType ), 
+                type.ToString() );
 
         public void Dispose()
         {

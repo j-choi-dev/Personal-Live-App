@@ -12,6 +12,6 @@ namespace StudioResourceSDK.Application
         IObservable<ICharacter> OnLoadCharacter { get; }
         UniTask<bool> LoadResource( Domain.ResourceType resourceType,
             ServerType serverType,
-            IReadOnlyList<string> resourceId );
+            IReadOnlyList<string> resourceIds );
     }
 }

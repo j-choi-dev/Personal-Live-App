@@ -847,7 +847,7 @@ namespace Live2D.Cubism.Rendering.URP
             _mScriptablePass = new CubismRenderPass
             {
                 // Configures where the render pass should be injected.
-                renderPassEvent = RenderPassEvent.BeforeRenderingTransparents
+                renderPassEvent = RenderPassEvent.AfterRenderingTransparents
             };
         }
 

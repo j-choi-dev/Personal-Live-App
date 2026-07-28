@@ -16,6 +16,6 @@ namespace StudioResourceSDK.Domain
         UniTask<bool> UpdateObjectList();
 
         /// <remark>완료 시점에 OnLoadCharacter 이벤트로 통지</remark>
-        UniTask<byte[]> DownloadProcess( string name );
+        UniTask<UnityEngine.Object> DownloadProcess( string name );
     }
 }

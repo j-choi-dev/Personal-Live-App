@@ -1,13 +1,7 @@
-using Amazon;
-using Amazon.Runtime;
-using Amazon.S3;
-using LiveAppCore.Google.Infrastructure;
 using StudioResourceSDK.Domain;
 using StudioResourceSDK.Infrastructure;
 using StudioSystemSDK.Domain;
 using StudioSystemSDK.Infrastructure;
-using System.Net;
-using System.Runtime.CompilerServices;
 using Zenject;
 
 

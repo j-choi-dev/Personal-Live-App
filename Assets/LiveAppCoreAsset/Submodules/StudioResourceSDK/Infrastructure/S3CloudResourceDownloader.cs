@@ -63,7 +63,7 @@ namespace StudioResourceSDK.Domain
             return true;
         }
 
-        public async UniTask<byte[]> DownloadProcess( string name )
+        public async UniTask<UnityEngine.Object> DownloadProcess( string name )
         {
             if( _s3Client == null )
             {
@@ -98,8 +98,38 @@ namespace StudioResourceSDK.Domain
                     {
                         await response.ResponseStream.CopyToAsync( memoryStream );
                         byte[] resourceBytes = memoryStream.ToArray();
+
+                        var bundleCreateRequest = AssetBundle.LoadFromMemoryAsync( resourceBytes );
+                        await bundleCreateRequest;
+                        AssetBundle assetBundle = bundleCreateRequest.assetBundle;
+
+                        UnityEngine.Object loadedObject = new UnityEngine.Object();
+                        try
+                        {
+                            var assetNames = assetBundle.GetAllAssetNames();
+                            if( assetNames == null || assetNames.Length == 0 )
+                            {
+                                throw new Exception( "Asset Name is NULL" );
+                            }
+
+                            string targetAssetName = assetNames[0];
+                            Debug.Log( $"AssetBundle 내부 에셋 로드 시작. :: Bundle={name}, Asset={targetAssetName}" );
+                            AssetBundleRequest assetRequest = assetBundle.LoadAssetAsync<UnityEngine.Object>( targetAssetName );
+                            await assetRequest;
+                            loadedObject = assetRequest.asset;
+                            if( loadedObject == null )
+                            {
+                                throw new Exception( "Asset Load Failed" );
+                            }
+                            Debug.Log( $"UnityEngine.Object 로드 성공 :: Name={loadedObject.name}, Type={loadedObject.GetType().Name}" );
+                            // loadedObject를 이후 Domain 또는 Infrastructure로 전달하거나 타입에 따라 처리한다.
+                        }
+                        finally
+                        {
+                            assetBundle.Unload( false );
+                        }
                         _onDownloadComplete.OnNext( resourceBytes );
-                        return resourceBytes;
+                        return loadedObject;
                     }
                 }
             }
