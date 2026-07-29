@@ -19,16 +19,19 @@ namespace LiveApp
     public class ARKitFacialTrackingModel : IARKitFacialTrackingModel, IDisposable
     {
         private IFaceTrackingContext _faceTrackingContext;
+        private IEyeTrackingContext _eyeTrackingContext;
         private ISceneResourceListContext _sceneResourceListContext;
-        private IFacialData _currentCharacter = null;
 
+        private IFacialData _currentCharacter = null;
         private CompositeDisposable _disposables = new CompositeDisposable();
 
 
         public ARKitFacialTrackingModel( IFaceTrackingContext faceTrackingContext,
+            IEyeTrackingContext eyeTrackingContext,
             ISceneResourceListContext sceneResourceListContext )
         {
             _faceTrackingContext = faceTrackingContext;
+            _eyeTrackingContext = eyeTrackingContext;
             _sceneResourceListContext = sceneResourceListContext;
 
             SubscribeTrackingData();
@@ -48,6 +51,9 @@ namespace LiveApp
                     }
                     _faceTrackingContext.SetCharacterID( arg.ID );
                     _faceTrackingContext.SetIsActive( true );
+
+                    _eyeTrackingContext.SetCharacterID( arg.ID );
+                    _eyeTrackingContext.SetIsActive( true );
                     _currentCharacter = target;
                 } )
                 .AddTo( _disposables );
@@ -80,6 +86,19 @@ namespace LiveApp
                 .AddTo( _disposables );
             _faceTrackingContext.OnFaceAngleZ
                 .Subscribe( val => _currentCharacter.SetFaceAngleZ( val ) )
+                .AddTo( _disposables );
+
+            _eyeTrackingContext.OnEyeBlinkLeft
+                .Subscribe( val => _currentCharacter.SetEyeBlinkLeft( val ) )
+                .AddTo( _disposables );
+            _eyeTrackingContext.OnEyeBlinkRight
+                .Subscribe( val => _currentCharacter.SetEyeBlinkRight( val ) )
+                .AddTo( _disposables );
+            _eyeTrackingContext.OnEyeBallAngleX
+                .Subscribe( val => _currentCharacter.SetEyeBallAngleX( val ) )
+                .AddTo( _disposables );
+            _eyeTrackingContext.OnEyeBallAngleY
+                .Subscribe( val => _currentCharacter.SetEyeBallAngleY( val ) )
                 .AddTo( _disposables );
         }
     }

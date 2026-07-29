@@ -73,6 +73,30 @@ namespace StudioCharacterSDK.Infrastructure
         private Subject<float> _onChangeFaceAngleZ = new Subject<float>();
         public IObservable<float> OnChangeFaceAngleZ => _onChangeFaceAngleZ;
 
+        public float EyeBallAngleX => _updateEyeballX;
+
+        public float EyeBallAngleY => _updateEyeballY;
+
+        public float EyeBlinkLeft => _updateLeftEye;
+
+        public float EyeBlinkRight => _updateRightEye;
+
+
+        private Subject<float> _onChangeEyeBallAngleX = new Subject<float>();
+        public IObservable<float> OnChangeEyeBallAngleX => _onChangeEyeBallAngleX;
+
+
+        private Subject<float> _onChangeEyeBallAngleY = new Subject<float>();
+        public IObservable<float> OnChangeEyeBallAngleY => _onChangeEyeBallAngleY;
+
+
+        private Subject<float> _onChangeEyeBlinkLeft= new Subject<float>();
+        public IObservable<float> OnChangeEyeBlinkLeft => _onChangeEyeBlinkLeft;
+
+
+        private Subject<float> _onChangeEyeBlinkRight = new Subject<float>();
+        public IObservable<float> OnChangeEyeBlinkRight => _onChangeEyeBlinkRight;
+
         private void Awake()
         {
             Init();
@@ -124,10 +148,26 @@ namespace StudioCharacterSDK.Infrastructure
             UnityEngine.Debug.Log( $"SetFaceAngleZ :: _updateFaceAngleZ = {_updateFaceAngleZ}" );
         }
 
-        public void SetEyeBlinkLeft( float value ) => _updateLeftEye = value;
-        public void SetEyeBlinkRight( float value ) => _updateRightEye = value;
-        public void SetEyeLookHorizontal( float value ) => _updateEyeballX = value;
-        public void SetEyeLookVertical( float value ) => _updateEyeballY = value;
+        public void SetEyeBlinkLeft( float value )
+        {
+            _updateLeftEye = value;
+            UnityEngine.Debug.Log( $"SetEyeBlinkLeft :: _updateLeftEye = {_updateLeftEye}" );
+        }
+        public void SetEyeBlinkRight( float value )
+        {
+            _updateRightEye = value;
+            UnityEngine.Debug.Log( $"SetEyeBlinkRight :: _updateRightEye = {_updateRightEye}" );
+        }
+        public void SetEyeBallAngleX( float value )
+        {
+            _updateEyeballX = value;
+            UnityEngine.Debug.Log( $"SetEyeBallAngleX :: _updateEyeballX = {_updateEyeballX}" );
+        }
+        public void SetEyeBallAngleY( float value )
+        {
+            _updateEyeballY = value;
+            UnityEngine.Debug.Log( $"SetEyeBallAngleY :: _updateEyeballY = {_updateEyeballY}" );
+        }
 
         public void SetMouthForm( float value ) => _updateMouthForm = value;
         public void SetMouthOpen( float value ) => _updateMouthOpen = value;
@@ -154,11 +194,11 @@ namespace StudioCharacterSDK.Infrastructure
             _eyeBallX.Value = _updateEyeballX;
             _eyeBallY.Value = _updateEyeballY;
 
-            _bodyAngleX.Value = _updateBodyAngleX;
-            _bodyAngleY.Value = _updateBodyAngleY;
-            _bodyAngleZ.Value = _updateBodyAngleZ;
+            //_bodyAngleX.Value = _updateBodyAngleX;
+            //_bodyAngleY.Value = _updateBodyAngleY;
+            //_bodyAngleZ.Value = _updateBodyAngleZ;
 
-            _mouthOpenY.Value = _updateMouthOpenY;
+            //_mouthOpenY.Value = _updateMouthOpenY;
         }
 
         public void SetID( string id )

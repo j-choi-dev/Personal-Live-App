@@ -2,7 +2,7 @@ using System;
 
 namespace StudioTrackingSDK.Application
 {
-    public interface IEyeTrackingControlApplication
+    public interface IEyeTrackingContext
     {
         /// <summary>
         /// EyeBall Angle X
@@ -15,11 +15,15 @@ namespace StudioTrackingSDK.Application
 
         IObservable<float> OnEyeBlinkLeft { get; }
         IObservable<float> OnEyeBlinkRight { get; }
+        
+        string CurrentSelectedCharacter { get; }
 
         /// <summary>
         /// Active 상태
         /// </summary>
         bool IsActive { get; }
+
+        void SetCharacterID( string id );
 
         /// <summary>
         /// Active 여부

@@ -13,16 +13,15 @@ namespace StudioTrackingSDK.Infrastructure
     {
         [SerializeField] private ARFaceManager _faceManager;
         private Subject<float> _onEyeBallAngleX = new Subject<float>();
-        private Subject<float> _onEyeBallAngleY = new Subject<float>();
-        private Subject<float> _onEyeBlinkLeft = new Subject<float>();
-        private Subject<float> _onEyeBlinkRight = new Subject<float>();
-
         public IObservable<float> OnEyeBallAngleX => _onEyeBallAngleX;
 
+        private Subject<float> _onEyeBallAngleY = new Subject<float>();
         public IObservable<float> OnEyeBallAngleY => _onEyeBallAngleY;
 
+        private Subject<float> _onEyeBlinkLeft = new Subject<float>();
         public IObservable<float> OnEyeBlinkLeft => _onEyeBlinkLeft;
 
+        private Subject<float> _onEyeBlinkRight = new Subject<float>();
         public IObservable<float> OnEyeBlinkRight => _onEyeBlinkRight;
 
         public bool IsActive { get; private set; }
@@ -31,19 +30,19 @@ namespace StudioTrackingSDK.Infrastructure
 
         private void OnEnable()
         {
-            _faceManager.facesChanged += OnFaceChanged;
+            _faceManager.trackablesChanged.AddListener( OnEyeChanged );
         }
 
         private void OnDisable()
         {
-            _faceManager.facesChanged -= OnFaceChanged;
+            _faceManager.trackablesChanged.RemoveListener( OnEyeChanged );
         }
 
         /// <summary>
-        /// 얼굴 정보 변경 이벤트
+        /// 눈동자 정보 변경 이벤트
         /// </summary>
         /// <param name="eventArgs">발생한 이벤트 값</param>
-        private void OnFaceChanged( ARFacesChangedEventArgs eventArgs )
+        private void OnEyeChanged( ARTrackablesChangedEventArgs<ARFace> eventArgs )
         {
             if ( eventArgs.updated.Count != 0 )
             {
@@ -68,9 +67,11 @@ namespace StudioTrackingSDK.Infrastructure
                 {
                     case ARKitBlendShapeLocation.EyeBlinkLeft:
                         var eyeBlinkLeft = 1 - blendShapesARKit[ i ].coefficient;
+                        _onEyeBlinkLeft.OnNext( eyeBlinkLeft );
                         break; ;
                     case ARKitBlendShapeLocation.EyeBlinkRight:
                         var eyeBlinkRight = 1 - blendShapesARKit[ i ].coefficient;
+                        _onEyeBlinkRight.OnNext( eyeBlinkRight );
                         break;
 
                     //case ARKitBlendShapeLocation.EyeLookUpLeft:

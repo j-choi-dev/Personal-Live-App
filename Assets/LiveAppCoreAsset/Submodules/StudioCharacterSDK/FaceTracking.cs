@@ -95,11 +95,11 @@ namespace StudioTrackingSDK.Infrastructure
 
                     case ARKitBlendShapeLocation.EyeLookUpLeft:
                     case ARKitBlendShapeLocation.EyeLookUpRight:
-                        _avatar.SetEyeLookVertical( -blendShapesARKit[i].coefficient );
+                        _avatar.SetEyeBallAngleY( -blendShapesARKit[i].coefficient );
                         break;
                     case ARKitBlendShapeLocation.EyeLookDownLeft:
                     case ARKitBlendShapeLocation.EyeLookDownRight:
-                        _avatar.SetEyeLookVertical( blendShapesARKit[i].coefficient );
+                        _avatar.SetEyeBallAngleX( blendShapesARKit[i].coefficient );
                         break;
                 }
             }
@@ -159,8 +159,8 @@ namespace StudioTrackingSDK.Infrastructure
             var resultX = Mathf.Clamp( eyeBallXValue, -1f, 1f );
             var resultY = Mathf.Clamp( eyeBallXValue, -1f, 1f );
 
-            _avatar.SetEyeLookHorizontal( resultX );
-            _avatar.SetEyeLookVertical( resultY );
+            _avatar.SetEyeBallAngleX( resultX );
+            _avatar.SetEyeBallAngleY( resultY );
         }
 
         /// <summary>

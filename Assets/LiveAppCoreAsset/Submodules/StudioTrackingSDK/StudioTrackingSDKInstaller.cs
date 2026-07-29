@@ -17,6 +17,10 @@ namespace StudioResourceSDK.Application
                 .Bind<IFaceTrackingContext>()
                 .To<FaceTrackingContext>()
                 .AsSingle();
+            Container
+                .Bind<IEyeTrackingContext>()
+                .To<EyeTrackingContext>()
+                .AsSingle();
 
             Container
                 .Bind<IFaceTrackingDomain>()
