@@ -7,12 +7,13 @@ using UnityEngine;
 
 namespace StudioCharacterSDK.Infrastructure
 {
-    public class StudioAvatar : MonoBehaviour, ICharacter, IFacialData
+    public class StudioAvatar : MonoBehaviour, ICharacter, IFacialData, ILipSyncData
     {
         [SerializeField] private AvatarParameterPair _pair = null;
         [SerializeField] private CubismModel _avatar = null;
         [SerializeField] private CubismMoc _moc;
         private bool _isInitialized = false;
+        private LipSyncVowelData _lipSyncValue;
 
         // Live2D 파라미터 멤버변수
         private CubismParameter _faceAngleX = null;
@@ -50,8 +51,6 @@ namespace StudioCharacterSDK.Infrastructure
         private float _updateBodyAngleX;
         private float _updateBodyAngleY;
         private float _updateBodyAngleZ;
-
-        private float _updateMouthOpenY;
 
         public bool IsInitialized => _isInitialized;
 
@@ -97,6 +96,17 @@ namespace StudioCharacterSDK.Infrastructure
         private Subject<float> _onChangeEyeBlinkRight = new Subject<float>();
         public IObservable<float> OnChangeEyeBlinkRight => _onChangeEyeBlinkRight;
 
+        private Subject<LipSyncVowelData> _onChangeLipSync = new Subject<LipSyncVowelData>();
+        public IObservable<LipSyncVowelData> OnChangeLipSync => _onChangeLipSync;
+
+        public LipSyncVowelData LipSyncValue => _lipSyncValue;
+
+
+        private Subject<float> _onChangeMouthForm = new Subject<float>();
+        public IObservable<float> OnChangeMouthForm => _onChangeMouthForm;
+        private Subject<float> _onChangeMouthOpen = new Subject<float>();
+        public IObservable<float> OnChangeMouthOpen => _onChangeMouthOpen;
+
         private void Awake()
         {
             Init();
@@ -129,7 +139,8 @@ namespace StudioCharacterSDK.Infrastructure
             _bodyAngleY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_Y].parameter.Id );
             _bodyAngleZ = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_Z].parameter.Id );
 
-            _mouthOpenY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.MouthOpen_Y].parameter.Id );
+            _mouthForm = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ ( int )AvatarPartsParameter.MouthForm ].parameter.Id );
+            _mouthOpenY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ ( int )AvatarPartsParameter.MouthOpen_Y ].parameter.Id );
         }
 
         public void SetFaceAngleX( float value )
@@ -168,15 +179,51 @@ namespace StudioCharacterSDK.Infrastructure
             _updateEyeballY = value;
             UnityEngine.Debug.Log( $"SetEyeBallAngleY :: _updateEyeballY = {_updateEyeballY}" );
         }
+        public void SetMouthForm( float value )
+        {
+            float clampedValue = Mathf.Clamp(value, -1f, 1f);
 
-        public void SetMouthForm( float value ) => _updateMouthForm = value;
-        public void SetMouthOpen( float value ) => _updateMouthOpen = value;
+            if( Mathf.Abs( _updateMouthForm - clampedValue ) < 0.0001f )
+            {
+                return;
+            }
+
+            _updateMouthForm = clampedValue;
+            _onChangeMouthForm.OnNext( clampedValue );
+        }
+
+        public void SetMouthOpen( float value )
+        {
+            float clampedValue = Mathf.Clamp01(value);
+
+            if( Mathf.Abs( _updateMouthOpen - clampedValue ) < 0.0001f )
+            {
+                return;
+            }
+
+            _updateMouthOpen = clampedValue;
+            _onChangeMouthOpen.OnNext( clampedValue );
+        }
 
         public void SetBodyAngleX( float value ) => _updateBodyAngleX = value;
         public void SetBodyAngleY( float value ) => _updateBodyAngleY = value;
         public void SetBodyAngleZ( float value ) => _updateBodyAngleZ = value;
 
-        public void SetMouthParamY( float value ) => _updateMouthOpenY = value;
+        private void ApplyLipSyncValue( LipSyncVowelData value )
+        {
+            // E, I가 강하면 양수 방향, O, U가 강하면 음수 방향, A는 형태상 중립이므로 포함X
+            float mouthForm = (value.E + value.I) - (value.O + value.U);
+
+            // 정규화된 모음 중 가장 강한 값을 사용. params 배열 할당을 피하기 위해 순차적으로 계산.
+            float mouthOpen = value.A;
+            mouthOpen = Mathf.Max( mouthOpen, value.E );
+            mouthOpen = Mathf.Max( mouthOpen, value.I );
+            mouthOpen = Mathf.Max( mouthOpen, value.O );
+            mouthOpen = Mathf.Max( mouthOpen, value.U );
+
+            SetMouthForm( mouthForm );
+            SetMouthOpen( mouthOpen );
+        }
 
         private void LateUpdate()
         {
@@ -194,6 +241,8 @@ namespace StudioCharacterSDK.Infrastructure
             _eyeBallX.Value = _updateEyeballX;
             _eyeBallY.Value = _updateEyeballY;
 
+            _mouthForm.Value = _updateMouthForm;
+
             //_bodyAngleX.Value = _updateBodyAngleX;
             //_bodyAngleY.Value = _updateBodyAngleY;
             //_bodyAngleZ.Value = _updateBodyAngleZ;
@@ -203,5 +252,13 @@ namespace StudioCharacterSDK.Infrastructure
 
         public void SetID( string id )
             => ID = id;
+
+        public void SetLipSync( LipSyncVowelData value )
+        {
+            _lipSyncValue = value;
+
+            ApplyLipSyncValue( value );
+            _onChangeLipSync.OnNext( value );
+        }
     }
 }

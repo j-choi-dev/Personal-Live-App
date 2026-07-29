@@ -14,6 +14,7 @@ namespace StudioCharacterSDK.Domain
         BodyAngle_X,
         BodyAngle_Y,
         BodyAngle_Z,
+        MouthForm,
         MouthOpen_Y,
     }
 
