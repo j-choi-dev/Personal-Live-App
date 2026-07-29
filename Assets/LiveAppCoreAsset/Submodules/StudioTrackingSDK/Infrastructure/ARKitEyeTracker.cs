@@ -42,18 +42,48 @@ namespace StudioTrackingSDK.Infrastructure
         /// 눈동자 정보 변경 이벤트
         /// </summary>
         /// <param name="eventArgs">발생한 이벤트 값</param>
-        private void OnEyeChanged( ARTrackablesChangedEventArgs<ARFace> eventArgs )
+        private void OnEyeChanged(
+    ARTrackablesChangedEventArgs<ARFace> eventArgs )
         {
-            if ( eventArgs.updated.Count != 0 )
+            if( !IsActive )
             {
-                var arFace = eventArgs.updated[ 0 ];
-                if ( arFace.trackingState == TrackingState.Tracking
-                    && ( ARSession.state > ARSessionState.Ready ) )
+                return;
+            }
+
+            if( ARSession.state != ARSessionState.SessionTracking )
+            {
+                return;
+            }
+
+            foreach( ARFace face in eventArgs.updated )
+            {
+                if( TryUpdateEyes( face ) )
                 {
-                    UpdateEyeBlendShape( arFace );
-                    UpdateEyeBallDirection( arFace );
+                    return;
                 }
             }
+
+            foreach( ARFace face in eventArgs.added )
+            {
+                if( TryUpdateEyes( face ) )
+                {
+                    return;
+                }
+            }
+        }
+
+        private bool TryUpdateEyes( ARFace face )
+        {
+            if( face == null ||
+                face.trackingState != TrackingState.Tracking )
+            {
+                return false;
+            }
+
+            UpdateEyeBlendShape( face );
+            UpdateEyeBallDirection( face );
+
+            return true;
         }
 
         private void UpdateEyeBlendShape( ARFace arFace )

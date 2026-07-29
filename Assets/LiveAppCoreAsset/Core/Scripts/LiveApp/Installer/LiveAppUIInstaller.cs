@@ -63,6 +63,12 @@ namespace LiveAppUI.Installer
                 .To<ARKitFacialTrackingModel>()
                 .AsSingle()
                 .NonLazy();
+
+            Container
+                .Bind<ILipSyncModel>()
+                .To<LipSyncModel>()
+                .AsSingle()
+                .NonLazy();
         }
     }
 }

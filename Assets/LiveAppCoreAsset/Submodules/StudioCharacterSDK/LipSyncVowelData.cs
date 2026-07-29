@@ -13,8 +13,7 @@ namespace StudioCharacterSDK.Domain
         public bool IsSilent =>
             A + E + I + O + U <= 0f;
 
-        private LipSyncVowelData(
-            float a,
+        private LipSyncVowelData( float a,
             float e,
             float i,
             float o,
@@ -27,8 +26,7 @@ namespace StudioCharacterSDK.Domain
             U = u;
         }
 
-        public static LipSyncVowelData Normalize(
-            float a,
+        public static LipSyncVowelData Normalize( float a,
             float e,
             float i,
             float o,
@@ -47,8 +45,7 @@ namespace StudioCharacterSDK.Domain
                 return default;
             }
 
-            return new LipSyncVowelData(
-                a / sum,
+            return new LipSyncVowelData( a / sum,
                 e / sum,
                 i / sum,
                 o / sum,
