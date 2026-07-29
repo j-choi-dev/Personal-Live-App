@@ -11,7 +11,11 @@ namespace StudioResourceSDK.Application
     {
         [SerializeField] private ARKitFaceTraker _faceTracker = null;
         [SerializeField] private ARKitEyeTracker _eyeTracker = null;
+#if UNITY_EDITOR_OSX
+        [SerializeField] private EditorLipSyncVowelSource _ovrLipsync = null;
+#else
         [SerializeField] private OVRLipSyncVowelSource _ovrLipsync = null;
+#endif
         public override void InstallBindings()
         {
             Container
