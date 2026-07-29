@@ -1,15 +1,13 @@
-#if UNITY_EDITOR_OSX
+//#if UNITY_EDITOR_OSX
 
 using System;
 using StudioTrackingSDK.Domain;
 using UniRx;
 using UnityEngine;
 
-namespace StudioTrackingSDK.Infrastructure
+namespace StudioTrackingSDK.Infrastructure.Editor
 {
-    public sealed class EditorLipSyncVowelSource :
-        MonoBehaviour,
-        ILipSyncDomain
+    public class EditorLipSyncVowelSource : MonoBehaviour, ILipSyncDomain
     {
         [SerializeField, Range(0f, 1f)] private float _a;
         [SerializeField, Range(0f, 1f)] private float _e;
@@ -39,7 +37,7 @@ namespace StudioTrackingSDK.Infrastructure
 
         private void OnValidate()
         {
-            if (!Application.isPlaying || !IsActive)
+            if (!UnityEngine.Application.isPlaying || !IsActive)
             {
                 return;
             }
@@ -93,4 +91,4 @@ namespace StudioTrackingSDK.Infrastructure
     }
 }
 
-#endif
+//#endif
