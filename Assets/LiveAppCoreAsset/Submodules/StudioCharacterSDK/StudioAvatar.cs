@@ -110,18 +110,18 @@ namespace StudioCharacterSDK.Infrastructure
 
         public void SetFaceAngleX( float value )
         {
-            _faceAngleX.Value = value;
-            UnityEngine.Debug.Log( $"_faceAngleX = {_faceAngleX.Value}" );
+            _updateFaceAngleX = value;
+            UnityEngine.Debug.Log( $"SetFaceAngleX :: _updateFaceAngleX = {_updateFaceAngleX}" );
         }
         public void SetFaceAngleY( float value )
         {
-            _faceAngleY.Value = value;
-            UnityEngine.Debug.Log( $"_faceAngleY = {_faceAngleY.Value}" );
+            _updateFaceAngleY = value;
+            UnityEngine.Debug.Log( $"SetFaceAngleY :: _updateFaceAngleY = {_updateFaceAngleY}" );
         }
         public void SetFaceAngleZ( float value )
         {
-            _faceAngleZ.Value = value;
-            UnityEngine.Debug.Log( $"_faceAngleZ = {_faceAngleZ.Value}" );
+            _updateFaceAngleZ = value;
+            UnityEngine.Debug.Log( $"SetFaceAngleZ :: _updateFaceAngleZ = {_updateFaceAngleZ}" );
         }
 
         public void SetEyeBlinkLeft( float value ) => _updateLeftEye = value;

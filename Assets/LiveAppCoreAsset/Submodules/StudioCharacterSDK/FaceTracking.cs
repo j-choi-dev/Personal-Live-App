@@ -25,19 +25,19 @@ namespace StudioTrackingSDK.Infrastructure
 
         private void OnEnable()
         {
-            faceManager.facesChanged += OnFaceChanged;
+            faceManager.trackablesChanged.AddListener( OnFaceChanged );
         }
 
         private void OnDisable()
         {
-            faceManager.facesChanged -= OnFaceChanged;
+            faceManager.trackablesChanged.RemoveListener( OnFaceChanged );
         }
 
         /// <summary>
         /// 얼굴 정보 변경 이벤트
         /// </summary>
         /// <param name="eventArgs">발생한 이벤트 값</param>
-        private void OnFaceChanged( ARFacesChangedEventArgs eventArgs )
+        private void OnFaceChanged( ARTrackablesChangedEventArgs<ARFace> eventArgs )
         {
             if( eventArgs.updated.Count != 0 )
             {
