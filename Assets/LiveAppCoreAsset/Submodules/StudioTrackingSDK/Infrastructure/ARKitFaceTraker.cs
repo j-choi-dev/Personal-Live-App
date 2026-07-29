@@ -24,7 +24,6 @@ namespace StudioTrackingSDK.Infrastructure
 
         private void OnEnable()
         {
-            UnityEngine.Debug.Log( "OnEnable" );
             _faceManager.trackablesChanged.AddListener( OnFaceChanged );
         }
 
@@ -44,14 +43,15 @@ namespace StudioTrackingSDK.Infrastructure
             if ( eventArgs.updated.Count != 0 )
             {
                 var arFace = eventArgs.updated[ 0 ];
-                UnityEngine.Debug.Log( "OnFaceChanged ready;" );
+                UnityEngine.Debug.Log( $"OnFaceChanged ready :: {IsActive}, {arFace.trackingState}, {ARSession.state}" );
                 if ( arFace.trackingState == TrackingState.Tracking
                     && ( ARSession.state > ARSessionState.Ready ) )
                 {
                     UpdateFaceTransform( arFace );
+                    return;
                 }
             }
-            UnityEngine.Debug.Log( "OnFaceChanged Break;" );
+            UnityEngine.Debug.Log( "OnFaceChanged Break" );
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace StudioTrackingSDK.Infrastructure
         {
             if( IsActive == false)
             {
-                UnityEngine.Debug.Log( "UpdateFaceTransform Break;" );
+                UnityEngine.Debug.Log( "UpdateFaceTransform Break" );
                 return;
             }
             UnityEngine.Debug.Log( "UpdateFaceTransform ...;" );
