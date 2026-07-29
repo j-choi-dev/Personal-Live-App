@@ -33,6 +33,7 @@ namespace LiveApp
 
             SubscribeTrackingData();
 
+            // TODO 리팩터링 대상!!! @Choi 26.07.29
             _sceneResourceListContext.OnCurrentCharacterChanged
                 .Subscribe( arg =>
                 {
@@ -40,8 +41,13 @@ namespace LiveApp
                     if( target == null )
                     {
                         UnityEngine.Debug.LogError( $"Invalid Resource ; Not Exist Ficial Component({arg.ID})" );
+                        _faceTrackingContext.SetCharacterID( string.Empty );
+                        _faceTrackingContext.SetIsActive( false );
+                        _currentCharacter = null;
+                        return;
                     }
                     _faceTrackingContext.SetCharacterID( arg.ID );
+                    _faceTrackingContext.SetIsActive( true );
                     _currentCharacter = target;
                 } )
                 .AddTo( _disposables );
