@@ -114,9 +114,80 @@ namespace StudioCharacterSDK.Infrastructure
 
         public void Init()
         {
-            //_avatar.SetCubismMoc( _moc ); // TODO 복원 대상 @Choi 26.07.08
-            InitCubismParameter();
-            _isInitialized = true;
+            _isInitialized = false;
+
+            if( _avatar == null )
+            {
+                Debug.LogError(
+                    $"[StudioAvatar] Init failed: _avatar is null. Name={name}",
+                    this );
+
+                return;
+            }
+
+            if( _pair == null )
+            {
+                Debug.LogError(
+                    $"[StudioAvatar] Init failed: _pair is null. Name={name}",
+                    this );
+
+                return;
+            }
+
+            if( _pair.ParameterPairs == null )
+            {
+                Debug.LogError(
+                    $"[StudioAvatar] Init failed: ParameterPairs is null. Name={name}",
+                    this );
+
+                return;
+            }
+
+            try
+            {
+                Debug.Log(
+                    $"[StudioAvatar] Init start. " +
+                    $"Name={name}, " +
+                    $"ParameterPairCount={_pair.ParameterPairs.Count}, " +
+                    $"CubismParameterCount={_avatar.Parameters.Length}",
+                    this );
+
+                InitCubismParameter();
+
+                if( _faceAngleX == null ||
+                    _faceAngleY == null ||
+                    _faceAngleZ == null )
+                {
+                    Debug.LogError(
+                        $"[StudioAvatar] Init failed: " +
+                        $"FaceAngle parameter is null. " +
+                        $"X={_faceAngleX != null}, " +
+                        $"Y={_faceAngleY != null}, " +
+                        $"Z={_faceAngleZ != null}",
+                        this );
+
+                    return;
+                }
+
+                _isInitialized = true;
+
+                Debug.Log(
+                    $"[StudioAvatar] Init completed. " +
+                    $"FaceX={_faceAngleX.Id}, " +
+                    $"FaceY={_faceAngleY.Id}, " +
+                    $"FaceZ={_faceAngleZ.Id}",
+                    this );
+            }
+            catch( Exception exception )
+            {
+                Debug.LogError(
+                    $"[StudioAvatar] Init exception. " +
+                    $"Name={name}, " +
+                    $"ParameterPairCount={_pair.ParameterPairs.Count}",
+                    this );
+
+                Debug.LogException( exception, this );
+            }
         }
 
         /// <summary>
@@ -135,9 +206,9 @@ namespace StudioCharacterSDK.Infrastructure
             _eyeBallX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallX].parameter.Id );
             _eyeBallY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallY].parameter.Id );
 
-            _bodyAngleX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_X].parameter.Id );
-            _bodyAngleY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_Y].parameter.Id );
-            _bodyAngleZ = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_Z].parameter.Id );
+            //_bodyAngleX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_X].parameter.Id );
+            //_bodyAngleY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_Y].parameter.Id );
+            //_bodyAngleZ = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_Z].parameter.Id );
 
             _mouthForm = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ ( int )AvatarPartsParameter.MouthForm ].parameter.Id );
             _mouthOpenY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ ( int )AvatarPartsParameter.MouthOpen_Y ].parameter.Id );
@@ -224,7 +295,7 @@ namespace StudioCharacterSDK.Infrastructure
             SetMouthForm( mouthForm );
             SetMouthOpen( mouthOpen );
         }
-
+        private bool _initializationErrorReported;
         private void LateUpdate()
         {
             if( _isInitialized == false )

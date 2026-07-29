@@ -170,8 +170,8 @@ namespace StudioTrackingSDK.Infrastructure
             var eyeBallXValue = ( eyeLookOutLeft - eyeLookInLeft + eyeLookInRight - eyeLookOutRight ) / 2.0f;
             var eyeBallYValue = ( eyeLookUpLeft - eyeLookDownLeft + eyeLookUpRight - eyeLookDownRight ) / 2.0f;
 
-            var resultX = Mathf.Clamp( eyeBallXValue, -1f, 1f );
-            var resultY = Mathf.Clamp( eyeBallXValue, -1f, 1f );
+            var resultX = Mathf.Clamp(eyeBallXValue, -1f, 1f);
+            var resultY = Mathf.Clamp(eyeBallXValue, -1f, 1f);
 
             _onEyeBallAngleX.OnNext( resultX );
             _onEyeBallAngleY.OnNext( resultY );
