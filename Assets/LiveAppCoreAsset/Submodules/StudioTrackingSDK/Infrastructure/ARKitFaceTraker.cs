@@ -39,19 +39,54 @@ namespace StudioTrackingSDK.Infrastructure
         /// <param name="eventArgs">발생한 이벤트 값</param>
         private void OnFaceChanged( ARTrackablesChangedEventArgs<ARFace> eventArgs )
         {
-            UnityEngine.Debug.Log( "OnFaceChanged" );
-            if ( eventArgs.updated.Count != 0 )
+            if( !IsActive )
             {
-                var arFace = eventArgs.updated[ 0 ];
-                UnityEngine.Debug.Log( $"OnFaceChanged ready :: {IsActive}, {arFace.trackingState}, {ARSession.state}" );
-                if ( arFace.trackingState == TrackingState.Tracking
-                    && ( ARSession.state > ARSessionState.Ready ) )
+                Debug.Log( "OnFaceChanged ignored: Tracker inactive." );
+                return;
+            }
+
+            if( ARSession.state != ARSessionState.SessionTracking )
+            {
+                Debug.Log( $"OnFaceChanged ignored: ARSession={ARSession.state}" );
+                return;
+            }
+
+            // 기존 얼굴의 갱신 데이터를 먼저 처리.
+            foreach( ARFace face in eventArgs.updated )
+            {
+                if( TryUpdateFace( face ) )
                 {
-                    UpdateFaceTransform( arFace );
                     return;
                 }
             }
-            UnityEngine.Debug.Log( "OnFaceChanged Break" );
+
+            // 얼굴이 최초 검출된 프레임도 처리.
+            foreach( ARFace face in eventArgs.added )
+            {
+                if( TryUpdateFace( face ) )
+                {
+                    return;
+                }
+            }
+
+            Debug.Log( "OnFaceChanged ignored: No trackable ARFace found." );
+        }
+
+        private bool TryUpdateFace( ARFace face )
+        {
+            if( face == null )
+            {
+                return false;
+            }
+
+            if( face.trackingState != TrackingState.Tracking )
+            {
+                Debug.Log( $"Face tracking unavailable: {face.trackingState}" );
+                return false;
+            }
+
+            UpdateFaceTransform( face );
+            return true;
         }
 
         /// <summary>
@@ -60,19 +95,18 @@ namespace StudioTrackingSDK.Infrastructure
         /// <param name="arFace">ARFace 정보</param>
         private void UpdateFaceTransform( ARFace arFace )
         {
-            if( IsActive == false)
+            if( IsActive == false )
             {
-                UnityEngine.Debug.Log( "UpdateFaceTransform Break" );
+                Debug.Log( "UpdateFaceTransform Break" );
                 return;
             }
-            UnityEngine.Debug.Log( "UpdateFaceTransform ...;" );
 
-            // 얼굴의 회전 정보 취득
+            Debug.Log( "UpdateFaceTransform ...;" );
+
             var faceRotation = arFace.transform.rotation;
-
-            var x = NormalizeAngle( faceRotation.eulerAngles.x ) * 2f;
-            var y = NormalizeAngle( faceRotation.eulerAngles.y );
-            var z = NormalizeAngle( faceRotation.eulerAngles.z ) * 2f;
+            var x = NormalizeAngle(faceRotation.eulerAngles.x) * 2f;
+            var y = NormalizeAngle(faceRotation.eulerAngles.y);
+            var z = NormalizeAngle(faceRotation.eulerAngles.z) * 2f;
 
             _onFaceAngleX.OnNext( x );
             _onFaceAngleY.OnNext( y );
