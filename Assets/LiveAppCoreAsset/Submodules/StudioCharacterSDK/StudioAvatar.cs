@@ -169,7 +169,7 @@ namespace StudioCharacterSDK.Infrastructure
             _eyeBallY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallY].parameter.Id );
 
             _mouthForm = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ ( int )AvatarPartsParameter.MouthForm ].parameter.Id );
-            _mouthOpenY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ ( int )AvatarPartsParameter.MouthOpen_Y ].parameter.Id );
+            //_mouthOpenY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ ( int )AvatarPartsParameter.MouthOpen_Y ].parameter.Id );
         }
 
         public void SetFaceAngleX( float value )
