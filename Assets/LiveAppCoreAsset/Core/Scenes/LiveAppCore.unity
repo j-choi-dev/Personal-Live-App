@@ -180,7 +180,7 @@ MonoBehaviour:
   showVisemes: 1
   debugVisemesKey: 100
   skipAudioSource: 0
-  gain: 4
+  gain: 1
   debugLaughterKey: 104
   showLaughter: 0
   laughterScore: 0
