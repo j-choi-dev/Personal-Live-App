@@ -7,7 +7,6 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
@@ -16,178 +15,196 @@ using UnityEngine.UI;
 
 namespace ObsAgent
 {
+    /// <summary>
+    /// Windows용 OBS Agent의 최소 UI 컨트롤러.
+    ///
+    /// 필수 UI:
+    /// - OBS 실행 파일 경로
+    /// - OBS WebSocket 비밀번호
+    /// - Agent Token
+    /// - 적용 및 Agent 시작 버튼
+    /// - OBS 실행 버튼
+    /// - OBS 연결 테스트 버튼
+    /// - 상태 텍스트
+    /// </summary>
     public sealed class ObsAgentController : MonoBehaviour
     {
-        [Header("Agent Server")]
-        [SerializeField] private TMP_InputField listenPortInput;
-        [SerializeField] private Toggle allowLanClientsToggle;
-        [SerializeField] private Toggle autoStartServerToggle;
-        [SerializeField] private TMP_InputField agentTokenInput;
+        private const int AgentPort = 7443;
+        private const int ObsWebSocketPort = 4455;
 
-        [Header("OBS Process")]
-        [SerializeField] private TMP_InputField obsExecutablePathInput;
-        [SerializeField] private TMP_InputField profileNameInput;
-        [SerializeField] private TMP_InputField sceneCollectionInput;
-        [SerializeField] private TMP_InputField defaultSceneInput;
-        [SerializeField] private Toggle minimizeToTrayToggle;
+        private const string DefaultObsPath =
+            @"C:\Program Files\obs-studio\bin\64bit\obs64.exe";
 
-        [Header("OBS WebSocket")]
-        [SerializeField] private TMP_InputField obsWebSocketPortInput;
-        [SerializeField] private TMP_InputField obsWebSocketPasswordInput;
+        [Header("Required Input Fields")]
+        [SerializeField]
+        private TMP_InputField obsExecutablePathInput;
 
-        [Header("Launch Options")]
-        [SerializeField] private Toggle setSceneAfterLaunchToggle;
-        [SerializeField] private Toggle startRecordingAfterLaunchToggle;
-        [SerializeField] private Toggle startStreamingAfterLaunchToggle;
+        [SerializeField]
+        private TMP_InputField obsWebSocketPasswordInput;
 
-        [Header("Main Buttons")]
-        [SerializeField] private Button saveButton;
-        [SerializeField] private Button generateTokenButton;
-        [SerializeField] private Button startServerButton;
-        [SerializeField] private Button stopServerButton;
-        [SerializeField] private Button launchObsButton;
-        [SerializeField] private Button testObsButton;
+        [SerializeField]
+        private TMP_InputField agentTokenInput;
 
-        [Header("OBS Command Buttons")]
-        [SerializeField] private Button setSceneButton;
-        [SerializeField] private Button startRecordButton;
-        [SerializeField] private Button stopRecordButton;
-        [SerializeField] private Button startStreamButton;
-        [SerializeField] private Button stopStreamButton;
-        [SerializeField] private Button quitButton;
+        [Header("Required Buttons")]
+        [SerializeField]
+        private Button applyAndStartButton;
 
-        [Header("Status")]
-        [SerializeField] private TMP_Text serverStatusText;
-        [SerializeField] private TMP_Text obsStatusText;
-        [SerializeField] private TMP_Text addressText;
-        [SerializeField] private TMP_Text configPathText;
-        [SerializeField] private TMP_Text logText;
+        [SerializeField]
+        private Button launchObsButton;
+
+        [SerializeField]
+        private Button testObsButton;
+
+        [Header("Required Status")]
+        [SerializeField]
+        private TMP_Text statusText;
 
         private readonly object _configLock = new object();
+
         private readonly ConcurrentQueue<string> _pendingLogs =
             new ConcurrentQueue<string>();
 
-        private readonly StringBuilder _logBuffer =
-            new StringBuilder();
-
         private ObsAgentConfiguration _currentConfig;
         private ObsAgentOperations _operations;
-        private ObsAgentHttpServer _server;
+        private ObsAgentHttpServer _httpServer;
+
         private CancellationTokenSource _lifetimeCancellation;
 
-        private float _nextStatusUpdateTime;
+        private string _lastMessage = "초기화 중";
+        private float _nextStatusRefreshTime;
+        private bool _isCommandRunning;
+        private bool _isShuttingDown;
 
         private void Awake()
         {
             Application.runInBackground = true;
             Application.targetFrameRate = 15;
 
+            if( !ValidateUiReferences() )
+            {
+                enabled = false;
+                return;
+            }
+
             _lifetimeCancellation =
                 new CancellationTokenSource();
 
-            _currentConfig =
-                ObsAgentConfigStore.Load();
+            _currentConfig = CreateCompactConfiguration(
+                ObsAgentConfigStore.Load() );
+
+            if( string.IsNullOrWhiteSpace(
+                    _currentConfig.agentToken ) )
+            {
+                _currentConfig.agentToken =
+                    GenerateSecureToken();
+            }
+
+            ObsAgentConfigStore.Save( _currentConfig );
+
+            ApplyConfigurationToUi( _currentConfig );
 
             _operations = new ObsAgentOperations(
                 GetConfigSnapshot,
                 EnqueueLog );
 
-            _server = new ObsAgentHttpServer(
+            _httpServer = new ObsAgentHttpServer(
                 GetConfigSnapshot,
                 _operations,
                 EnqueueLog );
 
-            ApplyConfigToUi( _currentConfig );
             RegisterButtonEvents();
 
-            if( configPathText != null )
-            {
-                configPathText.text =
-                    ObsAgentConfigStore.ConfigPath;
-            }
-
-            EnqueueLog( "OBS Agent UI가 초기화되었습니다." );
+            EnqueueLog( "OBS Agent를 초기화했습니다." );
         }
 
         private void Start()
         {
-            if( _currentConfig.autoStartServer )
-            {
-                StartAgentServer();
-            }
-
-            RefreshStatusUi();
+            // 실행 직후 Agent 서버를 자동으로 시작한다.
+            StartOrRestartAgent();
         }
 
         private void Update()
         {
-            FlushLogs();
+            FlushPendingLogs();
 
-            if( Time.unscaledTime >= _nextStatusUpdateTime )
+            if( Time.unscaledTime >= _nextStatusRefreshTime )
             {
-                _nextStatusUpdateTime =
+                _nextStatusRefreshTime =
                     Time.unscaledTime + 0.5f;
 
-                RefreshStatusUi();
+                RefreshStatusText();
             }
         }
 
         private void RegisterButtonEvents()
         {
-            saveButton.onClick.AddListener( SaveSettings );
-            generateTokenButton.onClick.AddListener( GenerateToken );
-
-            startServerButton.onClick.AddListener( StartAgentServer );
-            stopServerButton.onClick.AddListener( StopAgentServer );
+            applyAndStartButton.onClick.AddListener(
+                StartOrRestartAgent );
 
             launchObsButton.onClick.AddListener(
-                () => RunOperation(
-                    token => _operations.LaunchObsAsync( token ) ) );
+                LaunchObs );
 
             testObsButton.onClick.AddListener(
-                () => RunOperation(
-                    token => _operations.TestConnectionAsync( token ) ) );
+                TestObsConnection );
+        }
 
-            setSceneButton.onClick.AddListener(
-                () =>
+        /// <summary>
+        /// UI 입력값을 저장하고 Agent HTTP 서버를 재시작한다.
+        /// </summary>
+        private void StartOrRestartAgent()
+        {
+            try
+            {
+                ApplyUiToConfiguration();
+                ObsAgentConfigStore.Save( GetConfigSnapshot() );
+
+                if( _httpServer.IsRunning )
                 {
-                    ApplyUiToConfig( false );
+                    _httpServer.Stop();
+                }
 
-                    string sceneName =
-                        defaultSceneInput.text.Trim();
+                _httpServer.Start();
 
-                    RunOperation(
-                        token => _operations.SetSceneAsync(
-                            sceneName,
-                            token ) );
-                } );
+                EnqueueLog(
+                    $"Agent 서버를 시작했습니다. Port={AgentPort}" );
+            }
+            catch( Exception exception )
+            {
+                EnqueueLog(
+                    $"Agent 서버 시작 실패: {exception.Message}" );
+            }
 
-            startRecordButton.onClick.AddListener(
-                () => RunOperation(
-                    token => _operations.StartRecordAsync( token ) ) );
+            RefreshStatusText();
+        }
 
-            stopRecordButton.onClick.AddListener(
-                () => RunOperation(
-                    token => _operations.StopRecordAsync( token ) ) );
+        private void LaunchObs()
+        {
+            RunOperation(
+                token => _operations.LaunchObsAsync( token ) );
+        }
 
-            startStreamButton.onClick.AddListener(
-                () => RunOperation(
-                    token => _operations.StartStreamAsync( token ) ) );
-
-            stopStreamButton.onClick.AddListener(
-                () => RunOperation(
-                    token => _operations.StopStreamAsync( token ) ) );
-
-            quitButton.onClick.AddListener( QuitApplication );
+        private void TestObsConnection()
+        {
+            RunOperation(
+                token => _operations.TestConnectionAsync( token ) );
         }
 
         private async void RunOperation(
             Func<CancellationToken, Task<AgentApiResponse>> operation )
         {
+            if( _isCommandRunning )
+            {
+                EnqueueLog( "이전 작업이 아직 실행 중입니다." );
+                return;
+            }
+
+            _isCommandRunning = true;
+            SetButtonsInteractable( false );
+
             try
             {
-                ApplyUiToConfig( false );
-                SetCommandButtonsInteractable( false );
+                ApplyUiToConfiguration();
+                ObsAgentConfigStore.Save( GetConfigSnapshot() );
 
                 AgentApiResponse response =
                     await operation(
@@ -195,7 +212,7 @@ namespace ObsAgent
 
                 EnqueueLog(
                     response.success
-                        ? $"성공: {response.message}"
+                        ? response.message
                         : $"실패: {response.message}" );
             }
             catch( OperationCanceledException )
@@ -204,184 +221,123 @@ namespace ObsAgent
             }
             catch( Exception exception )
             {
-                EnqueueLog( $"작업 예외: {exception.Message}" );
+                EnqueueLog(
+                    $"작업 중 오류: {exception.Message}" );
             }
             finally
             {
-                SetCommandButtonsInteractable( true );
-                RefreshStatusUi();
+                _isCommandRunning = false;
+                SetButtonsInteractable( true );
+                RefreshStatusText();
             }
         }
 
-        private void SaveSettings()
+        /// <summary>
+        /// 기존 설정을 Compact Agent에 맞는 고정 설정으로 변환한다.
+        /// </summary>
+        private static ObsAgentConfiguration
+            CreateCompactConfiguration(
+                ObsAgentConfiguration loaded )
         {
-            try
+            loaded ??= new ObsAgentConfiguration();
+
+            return new ObsAgentConfiguration
             {
-                ApplyUiToConfig( true );
-                EnqueueLog( "설정을 저장했습니다." );
-                RefreshStatusUi();
-            }
-            catch( Exception exception )
-            {
-                EnqueueLog( $"설정 저장 실패: {exception.Message}" );
-            }
-        }
-
-        private void StartAgentServer()
-        {
-            try
-            {
-                if( _server.IsRunning )
-                {
-                    EnqueueLog( "Agent 서버가 이미 실행 중입니다." );
-                    return;
-                }
-
-                ApplyUiToConfig( true );
-                _server.Start();
-                RefreshStatusUi();
-            }
-            catch( Exception exception )
-            {
-                EnqueueLog( $"Agent 서버 시작 실패: {exception.Message}" );
-            }
-        }
-
-        private void StopAgentServer()
-        {
-            _server.Stop();
-            RefreshStatusUi();
-        }
-
-        private void GenerateToken()
-        {
-            byte[] bytes = new byte[32];
-
-            using( RandomNumberGenerator random =
-                   RandomNumberGenerator.Create() )
-            {
-                random.GetBytes( bytes );
-            }
-
-            string token = Convert
-                .ToBase64String(bytes)
-                .TrimEnd('=')
-                .Replace('+', '-')
-                .Replace('/', '_');
-
-            agentTokenInput.SetTextWithoutNotify( token );
-
-            EnqueueLog(
-                "새 Agent Token을 생성했습니다. " +
-                "iPhone 앱에도 동일한 값을 설정하세요." );
-        }
-
-        private void ApplyUiToConfig( bool saveToDisk )
-        {
-            var config = new ObsAgentConfiguration
-            {
-                listenPort = ParsePort(
-                    listenPortInput.text,
-                    "Agent Port"),
-
-                allowLanClients =
-                    allowLanClientsToggle.isOn,
-
-                autoStartServer =
-                    autoStartServerToggle.isOn,
+                listenPort = AgentPort,
+                allowLanClients = true,
+                autoStartServer = true,
 
                 agentToken =
-                    agentTokenInput.text.Trim(),
+                    loaded.agentToken ?? string.Empty,
 
                 obsExecutablePath =
-                    obsExecutablePathInput.text.Trim(),
+                    string.IsNullOrWhiteSpace(
+                        loaded.obsExecutablePath )
+                        ? DefaultObsPath
+                        : loaded.obsExecutablePath,
 
-                profileName =
-                    profileNameInput.text.Trim(),
-
-                sceneCollectionName =
-                    sceneCollectionInput.text.Trim(),
-
-                defaultSceneName =
-                    defaultSceneInput.text.Trim(),
-
-                minimizeToTray =
-                    minimizeToTrayToggle.isOn,
-
-                obsWebSocketPort = ParsePort(
-                    obsWebSocketPortInput.text,
-                    "OBS WebSocket Port"),
+                obsWebSocketPort = ObsWebSocketPort,
 
                 obsWebSocketPassword =
-                    obsWebSocketPasswordInput.text,
+                    loaded.obsWebSocketPassword
+                    ?? string.Empty,
 
-                setSceneAfterLaunch =
-                    setSceneAfterLaunchToggle.isOn,
+                // Compact Agent에서는 고급 실행 옵션을 사용하지 않는다.
+                profileName = string.Empty,
+                sceneCollectionName = string.Empty,
+                defaultSceneName = string.Empty,
 
-                startRecordingAfterLaunch =
-                    startRecordingAfterLaunchToggle.isOn,
+                minimizeToTray = true,
 
-                startStreamingAfterLaunch =
-                    startStreamingAfterLaunchToggle.isOn
+                setSceneAfterLaunch = false,
+                startRecordingAfterLaunch = false,
+                startStreamingAfterLaunch = false
             };
-
-            ValidateConfiguration( config );
-
-            lock( _configLock )
-            {
-                _currentConfig = config;
-            }
-
-            if( saveToDisk )
-            {
-                ObsAgentConfigStore.Save( config );
-            }
         }
 
-        private void ApplyConfigToUi(
+        private void ApplyConfigurationToUi(
             ObsAgentConfiguration config )
         {
-            listenPortInput.SetTextWithoutNotify(
-                config.listenPort.ToString() );
-
-            allowLanClientsToggle.SetIsOnWithoutNotify(
-                config.allowLanClients );
-
-            autoStartServerToggle.SetIsOnWithoutNotify(
-                config.autoStartServer );
-
-            agentTokenInput.SetTextWithoutNotify(
-                config.agentToken );
-
             obsExecutablePathInput.SetTextWithoutNotify(
                 config.obsExecutablePath );
-
-            profileNameInput.SetTextWithoutNotify(
-                config.profileName );
-
-            sceneCollectionInput.SetTextWithoutNotify(
-                config.sceneCollectionName );
-
-            defaultSceneInput.SetTextWithoutNotify(
-                config.defaultSceneName );
-
-            minimizeToTrayToggle.SetIsOnWithoutNotify(
-                config.minimizeToTray );
-
-            obsWebSocketPortInput.SetTextWithoutNotify(
-                config.obsWebSocketPort.ToString() );
 
             obsWebSocketPasswordInput.SetTextWithoutNotify(
                 config.obsWebSocketPassword );
 
-            setSceneAfterLaunchToggle.SetIsOnWithoutNotify(
-                config.setSceneAfterLaunch );
+            agentTokenInput.SetTextWithoutNotify(
+                config.agentToken );
+        }
 
-            startRecordingAfterLaunchToggle.SetIsOnWithoutNotify(
-                config.startRecordingAfterLaunch );
+        private void ApplyUiToConfiguration()
+        {
+            string obsPath =
+                obsExecutablePathInput.text.Trim();
 
-            startStreamingAfterLaunchToggle.SetIsOnWithoutNotify(
-                config.startStreamingAfterLaunch );
+            string agentToken =
+                agentTokenInput.text.Trim();
+
+            if( string.IsNullOrWhiteSpace( obsPath ) )
+            {
+                throw new InvalidOperationException(
+                    "OBS 실행 파일 경로를 입력하세요." );
+            }
+
+            if( string.IsNullOrWhiteSpace( agentToken ) ||
+                agentToken.Length < 16 )
+            {
+                throw new InvalidOperationException(
+                    "Agent Token은 16자 이상이어야 합니다." );
+            }
+
+            var updated = new ObsAgentConfiguration
+            {
+                listenPort = AgentPort,
+                allowLanClients = true,
+                autoStartServer = true,
+
+                agentToken = agentToken,
+
+                obsExecutablePath = obsPath,
+                obsWebSocketPort = ObsWebSocketPort,
+
+                obsWebSocketPassword =
+                    obsWebSocketPasswordInput.text,
+
+                profileName = string.Empty,
+                sceneCollectionName = string.Empty,
+                defaultSceneName = string.Empty,
+
+                minimizeToTray = true,
+
+                setSceneAfterLaunch = false,
+                startRecordingAfterLaunch = false,
+                startStreamingAfterLaunch = false
+            };
+
+            lock( _configLock )
+            {
+                _currentConfig = updated;
+            }
         }
 
         private ObsAgentConfiguration GetConfigSnapshot()
@@ -392,116 +348,43 @@ namespace ObsAgent
             }
         }
 
-        private void ValidateConfiguration(
-            ObsAgentConfiguration config )
+        private void RefreshStatusText()
         {
-            if( config.listenPort < 1024 ||
-                config.listenPort > 65535 )
+            if( statusText == null )
             {
-                throw new InvalidOperationException(
-                    "Agent Port는 1024~65535 범위여야 합니다." );
+                return;
             }
-
-            if( config.obsWebSocketPort < 1 ||
-                config.obsWebSocketPort > 65535 )
-            {
-                throw new InvalidOperationException(
-                    "OBS WebSocket Port가 올바르지 않습니다." );
-            }
-
-            if( string.IsNullOrWhiteSpace( config.agentToken ) ||
-                config.agentToken.Length < 16 )
-            {
-                throw new InvalidOperationException(
-                    "Agent Token은 16자 이상이어야 합니다." );
-            }
-
-            if( string.IsNullOrWhiteSpace(
-                    config.obsExecutablePath ) )
-            {
-                throw new InvalidOperationException(
-                    "OBS 실행 파일 경로를 입력하세요." );
-            }
-        }
-
-        private static int ParsePort(
-            string value,
-            string fieldName )
-        {
-            if( !int.TryParse( value, out int port ) )
-            {
-                throw new InvalidOperationException(
-                    $"{fieldName}가 숫자가 아닙니다." );
-            }
-
-            return port;
-        }
-
-        private void RefreshStatusUi()
-        {
-            ObsAgentConfiguration config =
-                GetConfigSnapshot();
 
             bool serverRunning =
-                _server != null &&
-                _server.IsRunning;
+                _httpServer != null &&
+                _httpServer.IsRunning;
 
             bool obsRunning =
                 _operations != null &&
                 _operations.IsObsRunning();
 
-            serverStatusText.text =
-                serverRunning
-                    ? "Agent Server: RUNNING"
-                    : "Agent Server: STOPPED";
+            string endpoint =
+                GetAgentEndpoint();
 
-            obsStatusText.text =
-                obsRunning
-                    ? "OBS: RUNNING"
-                    : "OBS: STOPPED";
-
-            startServerButton.interactable =
-                !serverRunning;
-
-            stopServerButton.interactable =
-                serverRunning;
-
-            addressText.text =
-                BuildAddressText( config );
+            statusText.text =
+                $"Agent: {( serverRunning ? "RUNNING" : "STOPPED" )}\n" +
+                $"OBS: {( obsRunning ? "RUNNING" : "STOPPED" )}\n" +
+                $"Endpoint: {endpoint}\n" +
+                $"OBS WebSocket: 127.0.0.1:{ObsWebSocketPort}\n" +
+                $"Status: {_lastMessage}";
         }
 
-        private static string BuildAddressText(
-            ObsAgentConfiguration config )
+        private static string GetAgentEndpoint()
         {
-            if( !config.allowLanClients )
-            {
-                return $"http://127.0.0.1:{config.listenPort}";
-            }
-
             List<string> addresses =
                 GetLocalIpv4Addresses();
 
             if( addresses.Count == 0 )
             {
-                return $"http://<PC-IP>:{config.listenPort}";
+                return $"http://<PC-IP>:{AgentPort}";
             }
 
-            var builder = new StringBuilder();
-
-            foreach( string address in addresses )
-            {
-                if( builder.Length > 0 )
-                {
-                    builder.AppendLine();
-                }
-
-                builder.Append( "http://" );
-                builder.Append( address );
-                builder.Append( ':' );
-                builder.Append( config.listenPort );
-            }
-
-            return builder.ToString();
+            return $"http://{addresses[0]}:{AgentPort}";
         }
 
         private static List<string> GetLocalIpv4Addresses()
@@ -534,100 +417,145 @@ namespace ObsAgent
                     foreach( UnicastIPAddressInformation address
                              in properties.UnicastAddresses )
                     {
-                        if( address.Address.AddressFamily !=
+                        IPAddress ipAddress =
+                            address.Address;
+
+                        if( ipAddress.AddressFamily !=
                             AddressFamily.InterNetwork )
                         {
                             continue;
                         }
 
-                        if( IPAddress.IsLoopback( address.Address ) )
+                        if( IPAddress.IsLoopback( ipAddress ) )
                         {
                             continue;
                         }
 
-                        string text = address.Address.ToString();
+                        string ip = ipAddress.ToString();
 
-                        if( !result.Contains( text ) )
+                        // 자동 할당된 APIPA 주소는 제외한다.
+                        if( ip.StartsWith(
+                                "169.254.",
+                                StringComparison.Ordinal ) )
                         {
-                            result.Add( text );
+                            continue;
+                        }
+
+                        if( !result.Contains( ip ) )
+                        {
+                            result.Add( ip );
                         }
                     }
                 }
             }
             catch
             {
-                // 주소 표시 실패는 Agent 동작에 치명적이지 않다.
+                // IP 표시 실패는 Agent 실행에 영향을 주지 않는다.
             }
 
             return result;
         }
 
-        private void EnqueueLog( string message )
+        private static string GenerateSecureToken()
         {
-            string formatted =
-                $"[{DateTime.Now:HH:mm:ss}] {message}";
+            byte[] bytes = new byte[32];
 
-            _pendingLogs.Enqueue( formatted );
+            using( RandomNumberGenerator random =
+                   RandomNumberGenerator.Create() )
+            {
+                random.GetBytes( bytes );
+            }
+
+            return Convert
+                .ToBase64String( bytes )
+                .TrimEnd( '=' )
+                .Replace( '+', '-' )
+                .Replace( '/', '_' );
         }
 
-        private void FlushLogs()
+        private void EnqueueLog( string message )
         {
-            bool changed = false;
+            _pendingLogs.Enqueue(
+                $"[{DateTime.Now:HH:mm:ss}] {message}" );
+        }
 
+        private void FlushPendingLogs()
+        {
             while( _pendingLogs.TryDequeue(
                        out string message ) )
             {
-                _logBuffer.AppendLine( message );
-                changed = true;
+                _lastMessage = message;
+                Debug.Log( message );
+            }
+        }
+
+        private void SetButtonsInteractable(
+            bool interactable )
+        {
+            applyAndStartButton.interactable =
+                interactable;
+
+            launchObsButton.interactable =
+                interactable;
+
+            testObsButton.interactable =
+                interactable;
+        }
+
+        private bool ValidateUiReferences()
+        {
+            bool valid =
+                obsExecutablePathInput != null &&
+                obsWebSocketPasswordInput != null &&
+                agentTokenInput != null &&
+                applyAndStartButton != null &&
+                launchObsButton != null &&
+                testObsButton != null &&
+                statusText != null;
+
+            if( !valid )
+            {
+                Debug.LogError(
+                    "ObsAgentController의 필수 UI 참조가 " +
+                    "Inspector에 연결되지 않았습니다." );
             }
 
-            if( !changed )
+            return valid;
+        }
+
+        private void Shutdown()
+        {
+            if( _isShuttingDown )
             {
                 return;
             }
 
-            const int maxCharacters = 16000;
+            _isShuttingDown = true;
 
-            if( _logBuffer.Length > maxCharacters )
-            {
-                _logBuffer.Remove(
-                    0,
-                    _logBuffer.Length - maxCharacters );
-            }
-
-            logText.text = _logBuffer.ToString();
-        }
-
-        private void SetCommandButtonsInteractable(
-            bool interactable )
-        {
-            launchObsButton.interactable = interactable;
-            testObsButton.interactable = interactable;
-            setSceneButton.interactable = interactable;
-            startRecordButton.interactable = interactable;
-            stopRecordButton.interactable = interactable;
-            startStreamButton.interactable = interactable;
-            stopStreamButton.interactable = interactable;
-        }
-
-        private void QuitApplication()
-        {
-            _server?.Stop();
-            Application.Quit();
-        }
-
-        private void OnApplicationQuit()
-        {
             try
             {
                 _lifetimeCancellation?.Cancel();
-                _server?.Stop();
+                _httpServer?.Stop();
+            }
+            catch( Exception exception )
+            {
+                Debug.LogException( exception );
             }
             finally
             {
                 _lifetimeCancellation?.Dispose();
                 _lifetimeCancellation = null;
             }
+        }
+
+        private void OnApplicationQuit()
+        {
+            Shutdown();
+        }
+
+        private void OnDestroy()
+        {
+            Shutdown();
         }
     }
 }
