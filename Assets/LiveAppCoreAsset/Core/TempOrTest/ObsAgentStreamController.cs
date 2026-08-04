@@ -20,11 +20,11 @@ namespace ObsAgent.Client
             "ObsAgent.Token";
 
         [Header("Required UI")]
-        [SerializeField]
-        private Button startStreamButton;
+        [SerializeField] private Button startStreamButton;
+        [SerializeField] private Button stopStreamButton;
 
-        [SerializeField]
-        private Button stopStreamButton;
+        [SerializeField] private Button startRecordButton;
+        [SerializeField] private Button stopRecordButton;
 
         [SerializeField]
         private TMP_Text streamStatusText;
@@ -40,10 +40,10 @@ namespace ObsAgent.Client
             ValidateUiReferences();
 
             startStreamButton.onClick.AddListener(
-                StartStreaming );
+                StartRecording );
 
             stopStreamButton.onClick.AddListener(
-                StopStreaming );
+                StopRecording );
 
             SetStatus( "OBS 스트리밍 제어 준비 완료" );
         }
@@ -69,6 +69,21 @@ namespace ObsAgent.Client
                 "/api/obs/stream/start",
                 "OBS 스트리밍 시작 요청 중...",
                 "OBS 스트리밍을 시작했습니다." );
+        }
+        public void StartRecording()
+        {
+            StartCommand(
+                "/api/obs/record/start",
+                "OBS 녹화 시작 요청 중...",
+                "OBS 녹화를 시작했습니다." );
+        }
+
+        public void StopRecording()
+        {
+            StartCommand(
+                "/api/obs/record/stop",
+                "OBS 녹화 종료 요청 중...",
+                "OBS 녹화를 종료했습니다." );
         }
 
         public void StopStreaming()
