@@ -17,7 +17,7 @@ namespace ObsAgent.Client
         private const string TokenPreferenceKey =
             "ObsAgent.Token";
 
-        [Header("Required UI")]
+        [Header("Connection UI")]
         [SerializeField]
         private TMP_InputField endpointInput;
 
