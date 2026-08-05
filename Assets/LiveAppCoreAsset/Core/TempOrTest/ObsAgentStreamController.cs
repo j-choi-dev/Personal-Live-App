@@ -325,14 +325,14 @@ namespace ObsAgent.Client
             }
         }
 
-        [Serializable]
-        private sealed class AgentApiResponse
-        {
-            public bool success;
-            public string message;
-            public bool obsRunning;
-            public bool launched;
-            public string utcTime;
-        }
+        //[Serializable]
+        //private sealed class AgentApiResponse
+        //{
+        //    public bool success;
+        //    public string message;
+        //    public bool obsRunning;
+        //    public bool launched;
+        //    public string utcTime;
+        //}
     }
 }

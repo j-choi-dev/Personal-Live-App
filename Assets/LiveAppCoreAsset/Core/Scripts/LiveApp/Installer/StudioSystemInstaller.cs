@@ -2,6 +2,7 @@ using LiveAppCore.Google.Application;
 using LiveAppCore.Google.Domain;
 using LiveAppCore.Google.Infrastructure;
 using StudioSystemSDK.Application;
+using StudioSystemSDK.Context;
 using StudioSystemSDK.Domain;
 using StudioSystemSDK.Infrastructure;
 using UnityEngine;
@@ -27,6 +28,10 @@ namespace LiveAppCore.Installer
                 .Bind<ICryptoContext>()
                 .To<CryptoContext>()
                 .AsSingle();
+            Container
+                .Bind<IObsAgentContext>()
+                .To<ObsAgentContext>()
+                .AsSingle();
 
             Container
                 .Bind<IFileSystemDomain>()
@@ -39,6 +44,10 @@ namespace LiveAppCore.Installer
             Container
                 .Bind<IGoogleAuthInfoStorage>()
                 .To<GoogleAuthInfoStorage>()
+                .AsSingle();
+            Container
+                .Bind<IObsAgentControlDomain>()
+                .To<ObsAgentController>()
                 .AsSingle();
             Container
                 .Bind<IGoogleAuthTokenDomain>()

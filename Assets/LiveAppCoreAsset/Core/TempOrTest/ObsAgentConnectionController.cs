@@ -52,7 +52,7 @@ namespace ObsAgent.Client
 
         private void Awake()
         {
-            ValidateUiReferences();
+            //ValidateUiReferences();
             LoadSavedSettings();
 
             connectButton.onClick.AddListener(
@@ -466,41 +466,41 @@ namespace ObsAgent.Client
             Debug.Log( $"[OBS Agent Client] {message}" );
         }
 
-        private void ValidateUiReferences()
-        {
-            if( endpointInput == null )
-            {
-                throw new MissingReferenceException(
-                    "EndpointInput이 연결되지 않았습니다." );
-            }
+        //private void ValidateUiReferences()
+        //{
+        //    if( endpointInput == null )
+        //    {
+        //        throw new MissingReferenceException(
+        //            "EndpointInput이 연결되지 않았습니다." );
+        //    }
 
-            if( agentTokenInput == null )
-            {
-                throw new MissingReferenceException(
-                    "AgentTokenInput이 연결되지 않았습니다." );
-            }
+        //    if( agentTokenInput == null )
+        //    {
+        //        throw new MissingReferenceException(
+        //            "AgentTokenInput이 연결되지 않았습니다." );
+        //    }
 
-            if( connectButton == null )
-            {
-                throw new MissingReferenceException(
-                    "ConnectButton이 연결되지 않았습니다." );
-            }
+        //    if( connectButton == null )
+        //    {
+        //        throw new MissingReferenceException(
+        //            "ConnectButton이 연결되지 않았습니다." );
+        //    }
 
-            if( statusText == null )
-            {
-                throw new MissingReferenceException(
-                    "StatusText가 연결되지 않았습니다." );
-            }
-        }
+        //    if( statusText == null )
+        //    {
+        //        throw new MissingReferenceException(
+        //            "StatusText가 연결되지 않았습니다." );
+        //    }
+        //}
 
-        [Serializable]
-        private sealed class AgentApiResponse
-        {
-            public bool success;
-            public string message;
-            public bool obsRunning;
-            public bool launched;
-            public string utcTime;
-        }
+        //[Serializable]
+        //private sealed class AgentApiResponse
+        //{
+        //    public bool success;
+        //    public string message;
+        //    public bool obsRunning;
+        //    public bool launched;
+        //    public string utcTime;
+        //}
     }
 }

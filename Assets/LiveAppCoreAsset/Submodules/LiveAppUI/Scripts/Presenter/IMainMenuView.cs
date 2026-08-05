@@ -11,6 +11,7 @@ namespace LiveAppUI.Presenter
         /// <summary>
         /// 리소스 버튼 클릿 이벤트
         /// </summary>
-        IObservable<Unit> OnResourceButtonCLick { get; }        
+        IObservable<Unit> OnResourceButtonClick { get; }
+        IObservable<Unit> OnConfigButtonClick { get; }
     }
 }
