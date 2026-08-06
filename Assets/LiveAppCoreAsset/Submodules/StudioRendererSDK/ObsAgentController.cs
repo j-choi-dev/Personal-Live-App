@@ -1,12 +1,11 @@
 using Cysharp.Threading.Tasks;
-using StudioSystemSDK.Domain;
+using StudioRendererSDK.Domain;
 using System;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Networking;
-//using AgentApiResponse = StudioSystemSDK.Domain.AgentApiResponse;
 
-namespace StudioSystemSDK.Infrastructure
+namespace StudioRendererSDK.Infrastructure
 {
     public class ObsAgentController : IObsAgentControlDomain
     {

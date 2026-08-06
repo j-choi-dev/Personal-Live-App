@@ -1,9 +1,9 @@
 using Cysharp.Threading.Tasks;
 using System;
 
-namespace StudioSystemSDK.Context
+namespace StudioRendererSDK.Domain
 {
-    public interface IObsAgentContext
+    public interface IObsAgentControlDomain
     {
         IObservable<string> OnSystemMessageChanged { get; }
         IObservable<string> OnEndPointChanged { get; }

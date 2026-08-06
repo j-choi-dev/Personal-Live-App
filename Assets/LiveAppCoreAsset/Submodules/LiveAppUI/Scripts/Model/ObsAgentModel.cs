@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
-using StudioSystemSDK.Context;
-using StudioSystemSDK.Domain;
+using StudioRendererSDK.Application;
+using StudioRendererSDK.Domain;
 using System;
 
 namespace LiveAppUI.Model

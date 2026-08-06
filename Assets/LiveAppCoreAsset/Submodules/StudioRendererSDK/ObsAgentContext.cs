@@ -1,8 +1,8 @@
 using Cysharp.Threading.Tasks;
-using StudioSystemSDK.Domain;
+using StudioRendererSDK.Domain;
 using System;
 
-namespace StudioSystemSDK.Context
+namespace StudioRendererSDK.Application
 {
     public class ObsAgentContext : IObsAgentContext
     {

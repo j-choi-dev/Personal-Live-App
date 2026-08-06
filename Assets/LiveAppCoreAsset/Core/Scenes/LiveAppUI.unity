@@ -1279,7 +1279,7 @@ GameObject:
   - component: {fileID: 216601425}
   - component: {fileID: 216601424}
   m_Layer: 5
-  m_Name: RawImage
+  m_Name: RawImage - Preview
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2036,6 +2036,7 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585548}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2161,6 +2162,27 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 946a5ee618046d245a93861b4154c614, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioSystemSDK.Infrastructure.ObsRenderOutput
+  outputCamera: {fileID: 330585545}
+  localPreview: {fileID: 216601424}
+  outputResolution: {x: 1206, y: 1280}
+  outputLayerMask:
+    serializedVersion: 2
+    m_Bits: 343
+  colorFormat: 0
+  depthBufferBits: 24
+  filterMode: 1
 --- !u!1 &377360360
 GameObject:
   m_ObjectHideFlags: 0
@@ -3074,6 +3096,7 @@ MonoBehaviour:
   - {fileID: 601516612}
   - {fileID: 1953218513}
   - {fileID: 377360362}
+  - {fileID: 584104088}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -3108,6 +3131,7 @@ Transform:
   - {fileID: 601516613}
   - {fileID: 1953218512}
   - {fileID: 377360361}
+  - {fileID: 584104087}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &575728890
@@ -3162,6 +3186,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
+--- !u!1 &584104086
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 584104087}
+  - component: {fileID: 584104088}
+  m_Layer: 0
+  m_Name: StudioRendererSDKInstaller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &584104087
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 584104086}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 563598789}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &584104088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 584104086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7ab0bebd2f508d4fbbe8e3d31765e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppCore.Installer.StudioRendererSDKInstaller
+  _obsRenderOutput: {fileID: 330585549}
 --- !u!1 &601516611
 GameObject:
   m_ObjectHideFlags: 0
@@ -9389,7 +9458,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 564772396074407428, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000020934285
+      value: 0.000086075066
       objectReference: {fileID: 0}
     - target: {fileID: 914902428677726665, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchorMax.y
