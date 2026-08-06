@@ -16,5 +16,7 @@ namespace LiveAppUI.Model
         UniTask<bool> AgentConnectProcess( string endPoint, string token );
         UniTask<bool> StreamingProcess(bool isStart );
         UniTask<bool> RecordingProcess(bool isStart );
+        UniTask<bool> StartVideoLinkAsync( string endPoint, string token );
+        void StopVideoLink();
     }
 }

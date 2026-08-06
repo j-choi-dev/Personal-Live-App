@@ -145,7 +145,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 24432457}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
   m_Name: 
@@ -199,7 +199,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: -1000
+  m_SortingOrder: -100
   m_TargetDisplay: 0
 --- !u!224 &24432461
 RectTransform:
@@ -271,6 +271,7 @@ GameObject:
   - component: {fileID: 44717206}
   - component: {fileID: 44717207}
   - component: {fileID: 44717208}
+  - component: {fileID: 44717209}
   m_Layer: 0
   m_Name: Presenter
   m_TagString: Untagged
@@ -341,6 +342,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36c02a6eb419e6a43886a6eb267d9848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.Presenter.ObsAgentPresenter
+--- !u!114 &44717209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44717203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdfd54a1c3bc07b48a4df4192de591f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.Presenter.ObsVideoLinkPresenter
 --- !u!1 &58612143
 GameObject:
   m_ObjectHideFlags: 0
@@ -1279,7 +1292,7 @@ GameObject:
   - component: {fileID: 216601425}
   - component: {fileID: 216601424}
   m_Layer: 5
-  m_Name: RawImage - Preview
+  m_Name: RawImage - Output
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1324,7 +1337,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 0}
+  m_Texture: {fileID: 8400000, guid: 548b52e4c5594104c89c97c0fe01a542, type: 2}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -2036,7 +2049,6 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585548}
   - component: {fileID: 330585547}
-  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2085,7 +2097,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 343
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 0}
+  m_TargetTexture: {fileID: 8400000, guid: 548b52e4c5594104c89c97c0fe01a542, type: 2}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
@@ -2162,27 +2174,6 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
---- !u!114 &330585549
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 946a5ee618046d245a93861b4154c614, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioSystemSDK.Infrastructure.ObsRenderOutput
-  outputCamera: {fileID: 330585545}
-  localPreview: {fileID: 216601424}
-  outputResolution: {x: 1206, y: 1280}
-  outputLayerMask:
-    serializedVersion: 2
-    m_Bits: 343
-  colorFormat: 0
-  depthBufferBits: 24
-  filterMode: 1
 --- !u!1 &377360360
 GameObject:
   m_ObjectHideFlags: 0
@@ -3230,7 +3221,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7ab0bebd2f508d4fbbe8e3d31765e34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppCore.Installer.StudioRendererSDKInstaller
-  _obsRenderOutput: {fileID: 330585549}
+  _obsRenderSource: {fileID: 1008735319}
+  _obsRenderSendSession: {fileID: 1943239544}
 --- !u!1 &601516611
 GameObject:
   m_ObjectHideFlags: 0
@@ -4558,6 +4550,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 989017486}
   m_CullTransparentMesh: 1
+--- !u!1 &1008735318
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1008735320}
+  - component: {fileID: 1008735319}
+  - component: {fileID: 1008735321}
+  m_Layer: 0
+  m_Name: OBS_Output
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1008735319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1008735318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0068351db1315f4eaf6e1c2bc85cfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioRendererSDK.Infrastructure.ObsRenderTextureVideoSource
+  sourceCamera: {fileID: 330585545}
+  outputTexture: {fileID: 8400000, guid: 548b52e4c5594104c89c97c0fe01a542, type: 2}
+--- !u!4 &1008735320
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1008735318}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1277043256}
+  - {fileID: 1943239543}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1008735321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1008735318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49038634b748e494fb06c277ed370f5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioRendererSDK.Infrastructure.WebRtcRuntimePump
 --- !u!1 &1029153573
 GameObject:
   m_ObjectHideFlags: 0
@@ -5727,6 +5780,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
+--- !u!1 &1277043254
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1277043256}
+  - component: {fileID: 1277043255}
+  m_Layer: 0
+  m_Name: ObsWebRtcVideoTrackProvider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1277043255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277043254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6609ad4ddf9c3d4fa770e7009a22974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioRendererSDK.Infrastructure.ObsWebRtcVideoTrackProvider
+  videoSourceComponent: {fileID: 1008735319}
+--- !u!4 &1277043256
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277043254}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1008735320}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1298214051
 GameObject:
   m_ObjectHideFlags: 0
@@ -8827,6 +8925,59 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1937090032}
   m_CullTransparentMesh: 1
+--- !u!1 &1943239542
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1943239543}
+  - component: {fileID: 1943239544}
+  m_Layer: 0
+  m_Name: ObsWebRtcSenderSession
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1943239543
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943239542}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1008735320}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1943239544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943239542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea96fe95604184241825eedea1db0fa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioRendererSDK.Infrastructure.ObsWebRtcSenderSession
+  videoTrackProvider: {fileID: 1277043255}
+  sessionId: iphone-main
+  bitrate: 5000000
+  frameRate: 30
+  requestTimeoutSeconds: 10
+  iceGatheringTimeoutSeconds: 10
+  answerTimeoutSeconds: 20
+  connectionTimeoutSeconds: 15
+  answerPollingMilliseconds: 250
 --- !u!1 &1953218511
 GameObject:
   m_ObjectHideFlags: 0
@@ -9458,7 +9609,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 564772396074407428, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000086075066
+      value: 0.0001593433
       objectReference: {fileID: 0}
     - target: {fileID: 914902428677726665, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchorMax.y
@@ -10115,5 +10266,6 @@ SceneRoots:
   - {fileID: 24432461}
   - {fileID: 841055556}
   - {fileID: 956767199}
+  - {fileID: 1008735320}
   - {fileID: 44717204}
   - {fileID: 563598789}

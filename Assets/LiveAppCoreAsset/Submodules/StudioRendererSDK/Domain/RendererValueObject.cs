@@ -33,4 +33,30 @@ namespace StudioRendererSDK.Domain
             };
         }
     }
+
+    [Serializable]
+    public sealed class VideoSessionRequest
+    {
+        public string sessionId;
+    }
+
+    [Serializable]
+    public sealed class VideoSessionDescriptionRequest
+    {
+        public string sessionId;
+        public string type;
+        public string sdp;
+    }
+
+    [Serializable]
+    public sealed class VideoSessionDescriptionResponse
+    {
+        public bool success;
+        public string message;
+        public bool hasValue;
+
+        public string sessionId;
+        public string type;
+        public string sdp;
+    }
 }
