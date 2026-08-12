@@ -11,7 +11,7 @@ namespace StudioRendererSDK.Application
         public IObservable<string> OnEndPointChanged => _obsAgentControlDomain.OnEndPointChanged;
         public IObservable<string> OnAgentTokenChanged => _obsAgentControlDomain.OnAgentTokenChanged;
 
-        public IObservable<bool> OnConnectionChanged => _obsAgentControlDomain.OnConnectionChanged;
+        public IObservable<bool> OnAgentConnectionChanged => _obsAgentControlDomain.OnConnectionChanged;
         public IObservable<bool> OnStreamingChanged => _obsAgentControlDomain.OnStreamingChanged;
         public IObservable<bool> OnRecordingChanged => _obsAgentControlDomain.OnRecordingChanged;
 

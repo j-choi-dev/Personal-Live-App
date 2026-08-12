@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using LiveAppUI.Model;
-using StudioRendererSDK.Domain;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -22,7 +21,7 @@ namespace LiveAppUI.Presenter
 
         private void Awake()
         {
-            SubscribeView();
+            //SubscribeView();
             SubscribeModel();
         }
 
@@ -41,13 +40,14 @@ namespace LiveAppUI.Presenter
             _agentModel.OnSystemMessageChanged
                 .Subscribe( msg => _configMenuView.AddLogText( msg ) )
                 .AddTo( this );
-            _agentModel.OnConnectionChanged
+            _agentModel.OnAgentConnectionChanged
                 .Subscribe( isVal => Debug.Log( $"OnConnectionChanged ... {isVal}" ) )
                 .AddTo( this );
         }
 
-        private void SetVideoLink( bool isActive )
+        public void SetVideoLink( bool isActive )
         {
+            Debug.Log( $"[WebRTC UI] SetVideoLink({isActive})", this );
             if( isActive )
             {
                 _agentModel.StartVideoLinkAsync( _configMenuView.EndPoint, _configMenuView.AgentToken ).Forget();

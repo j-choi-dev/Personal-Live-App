@@ -42,37 +42,97 @@ namespace StudioRendererSDK.Infrastructure
             {
                 throw new InvalidOperationException( "WebRTC VideoTrackProvider가 비활성화되어 있습니다." );
             }
-
             if( peerConnection == null )
             {
                 throw new ArgumentNullException( nameof( peerConnection ) );
             }
-
-            if( _videoSource == null ||
-                !_videoSource.IsReady ||
-                _videoSource.OutputTexture == null )
+            if( _videoSource == null || !_videoSource.IsReady || _videoSource.OutputTexture == null )
             {
                 throw new InvalidOperationException( "OBS RenderTexture가 준비되지 않았습니다." );
             }
-
             if( bitrate <= 0 )
             {
                 throw new ArgumentOutOfRangeException( nameof( bitrate ), "Bitrate는 0보다 커야 합니다." );
             }
-
             if( frameRate <= 0 )
             {
                 throw new ArgumentOutOfRangeException( nameof( frameRate ), "FrameRate는 0보다 커야 합니다." );
             }
             DisposeTrack();
             _peerConnection = peerConnection;
+            Texture sourceTexture = _videoSource.OutputTexture;
+            var actualFormat = sourceTexture.graphicsFormat;
 
-            _videoTrack = new VideoStreamTrack( _videoSource.OutputTexture );
-
+            var supportedFormat = WebRTC.GetSupportedGraphicsFormat( SystemInfo.graphicsDeviceType );
+            if( actualFormat != supportedFormat )
+            {
+                throw new InvalidOperationException( "WebRTC 영상 소스 Graphics Format이 현재 실행 환경에서 지원되지 않습니다.\n" +
+                    $"Graphics Device: {SystemInfo.graphicsDeviceType}\n" +
+                    $"Current Format: {actualFormat}\n" +
+                    $"Required Format: {supportedFormat}" );
+            }
+            _videoTrack = new VideoStreamTrack( sourceTexture );
             _sender = _peerConnection.AddTrack( _videoTrack );
-            ApplyEncodingParameters( bitrate, frameRate );
+            Debug.Log( "[WebRTC Track]\nVideoTrack Created: {_videoTrack != null}\n" +
+                $"Sender Created: {_sender != null}\n" +
+                $"Texture: {sourceTexture.name}\n" +
+                $"Format: {sourceTexture.graphicsFormat}\n" +
+                $"Size: {sourceTexture.width}x{sourceTexture.height}",
+                this );
             return _videoTrack;
         }
+
+        //public VideoStreamTrack CreateTrack( RTCPeerConnection peerConnection, int bitrate, int frameRate )
+        //{
+        //    if( !enabled )
+        //    {
+        //        throw new InvalidOperationException( "WebRTC VideoTrackProvider가 비활성화되어 있습니다." );
+        //    }
+
+        //    if( peerConnection == null )
+        //    {
+        //        throw new ArgumentNullException( nameof( peerConnection ) );
+        //    }
+
+        //    if( _videoSource == null ||
+        //        !_videoSource.IsReady ||
+        //        _videoSource.OutputTexture == null )
+        //    {
+        //        throw new InvalidOperationException( "OBS RenderTexture가 준비되지 않았습니다." );
+        //    }
+
+        //    if( bitrate <= 0 )
+        //    {
+        //        throw new ArgumentOutOfRangeException( nameof( bitrate ), "Bitrate는 0보다 커야 합니다." );
+        //    }
+
+        //    if( frameRate <= 0 )
+        //    {
+        //        throw new ArgumentOutOfRangeException( nameof( frameRate ), "FrameRate는 0보다 커야 합니다." );
+        //    }
+        //    DisposeTrack();
+        //    _peerConnection = peerConnection;
+
+        //    Texture sourceTexture = _videoSource.OutputTexture;
+        //    var actualFormat = sourceTexture.graphicsFormat;
+        //    var supportedFormat = WebRTC.GetSupportedGraphicsFormat( SystemInfo.graphicsDeviceType );
+        //    if( actualFormat != supportedFormat )
+        //    {
+        //        throw new InvalidOperationException( "WebRTC 영상 소스 Graphics Format이 " +
+        //            "현재 실행 환경에서 지원되지 않습니다.\n" +
+        //            $"Graphics Device: " +
+        //            $"{SystemInfo.graphicsDeviceType}\n" +
+        //            $"Current Format: {actualFormat}\n" +
+        //            $"Required Format: {supportedFormat}" );
+        //    }
+
+        //    _videoTrack = new VideoStreamTrack( sourceTexture );
+        //    _sender = _peerConnection.AddTrack( _videoTrack );
+        //    ApplyEncodingParameters( bitrate, frameRate );
+        //    return _videoTrack;
+        //    ApplyEncodingParameters( bitrate, frameRate );
+        //    return _videoTrack;
+        //}
 
         private void ApplyEncodingParameters( int bitrate, int frameRate )
         {

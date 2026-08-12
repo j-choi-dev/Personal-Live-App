@@ -7,7 +7,7 @@ namespace StudioRendererSDK.Application
     public interface IRenderSendContext
     {
         IObservable<string> OnMessageChanged { get; }
-        IObservable<bool> OnConnectionChanged { get; }
+        IObservable<bool> OnRendererConnectionChanged { get; }
 
         UniTask<bool> StartVideoLinkAsync( string endpoint, string token );
         void StopVideoLink();

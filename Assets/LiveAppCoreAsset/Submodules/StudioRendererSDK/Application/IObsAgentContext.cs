@@ -9,7 +9,7 @@ namespace StudioRendererSDK.Application
         IObservable<string> OnEndPointChanged { get; }
         IObservable<string> OnAgentTokenChanged { get; }
 
-        IObservable<bool> OnConnectionChanged { get; }
+        IObservable<bool> OnAgentConnectionChanged { get; }
         IObservable<bool> OnStreamingChanged { get; }
         IObservable<bool> OnRecordingChanged { get; }
 

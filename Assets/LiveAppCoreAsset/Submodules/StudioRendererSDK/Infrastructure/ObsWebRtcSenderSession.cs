@@ -126,9 +126,24 @@ namespace StudioRendererSDK.Infrastructure
                 _isStarting = false;
             }
         }
+        private void CleanupSession()
+        {
+            if( _sessionCancellation != null )
+            {
+                if( _sessionCancellation.IsCancellationRequested == false )
+                {
+                    _sessionCancellation.Cancel();
+                }
 
+                _sessionCancellation.Dispose();
+                _sessionCancellation = null;
+            }
+
+            DisposePeerConnection();
+        }
         public void StopVideoLink()
         {
+            Debug.LogWarning( $"[WebRTC DEBUG] StopVideoLink() 호출됨\n{Environment.StackTrace}", this );
             if( _sessionCancellation != null )
             {
                 _sessionCancellation.Cancel();
@@ -217,6 +232,27 @@ namespace StudioRendererSDK.Infrastructure
             throw new InvalidOperationException( "RTCPeerConnection이 종료되었습니다." );
         }
 
+        private static async UniTask SendRequestAsync( UnityWebRequest request, CancellationToken cancellationToken )
+        {
+            UnityWebRequestAsyncOperation operation;
+            try
+            {
+                operation = request.SendWebRequest();
+            }
+            catch( Exception exception )
+            {
+                throw new InvalidOperationException( $"HTTP 요청을 시작하지 못했습니다.\nMethod: {request.method}\nURL: {request.url}\nReason: {exception.Message}", exception );
+            }
+            try
+            {
+                await UniTask.WaitUntil( () => operation.isDone, cancellationToken: cancellationToken );
+            }
+            catch( OperationCanceledException )
+            {
+                request.Abort();
+                throw;
+            }
+        }
         private async UniTask ResetSessionAsync( string endpoint, string token, CancellationToken cancellationToken )
         {
             var requestData = new VideoSessionRequest { sessionId = sessionId };
@@ -247,7 +283,7 @@ namespace StudioRendererSDK.Infrastructure
             while( true )
             {
                 cancellationToken .ThrowIfCancellationRequested();
-                string path = "/api/video/answer?sessionId={encodedSessionId}";
+                string path = $"/api/video/answer?sessionId={encodedSessionId}";
                 VideoSessionDescriptionResponse response = await GetJsonAsync<VideoSessionDescriptionResponse>( endpoint, token, path, cancellationToken);
 
                 if( response != null && response.success && response.hasValue && string.IsNullOrWhiteSpace( response.sdp ) == false )
@@ -275,7 +311,7 @@ namespace StudioRendererSDK.Infrastructure
                 request.SetRequestHeader( "Authorization", $"Bearer {token}" );
                 request.SetRequestHeader( "Content-Type", "application/json" );
                 request.timeout = Mathf.Max( 1, requestTimeoutSeconds );
-                await request.SendWebRequest();
+                await SendRequestAsync( request, cancellationToken );
                 cancellationToken.ThrowIfCancellationRequested();
                 ThrowIfRequestFailed( request );
                 return JsonUtility.FromJson<TResponse>( request.downloadHandler.text );
@@ -290,7 +326,7 @@ namespace StudioRendererSDK.Infrastructure
             {
                 request.SetRequestHeader( "Authorization", $"Bearer {token}" );
                 request.timeout = Mathf.Max( 1, requestTimeoutSeconds );
-                await request.SendWebRequest();
+                await SendRequestAsync( request, cancellationToken );
                 cancellationToken .ThrowIfCancellationRequested();
                 ThrowIfRequestFailed( request );
                 return JsonUtility .FromJson<TResponse>( request.downloadHandler.text );
@@ -303,7 +339,7 @@ namespace StudioRendererSDK.Infrastructure
             {
                 return;
             }
-            throw new InvalidOperationException( "Agent HTTP 요청 실패\nURL: {request.url}\nHTTP: {request.responseCode}\nError: {request.error}\nBody: {request.downloadHandler?.text}" );
+            throw new InvalidOperationException( $"Agent HTTP 요청 실패\nURL: {request.url}\nHTTP: {request.responseCode}\nError: {request.error}\nBody: {request.downloadHandler?.text}" );
         }
 
         private static async UniTask WaitOperationAsync( RTCSessionDescriptionAsyncOperation operation, CancellationToken cancellationToken )
@@ -311,7 +347,7 @@ namespace StudioRendererSDK.Infrastructure
             await UniTask.WaitUntil( () => operation.IsDone, cancellationToken: cancellationToken );
             if( operation.IsError )
             {
-                throw new InvalidOperationException( "WebRTC Session Description 작업 실패\nType: {operation.Error.errorType}\nMessage: {operation.Error.message}" );
+                throw new InvalidOperationException( $"WebRTC Session Description 작업 실패\nType: {operation.Error.errorType}\nMessage: {operation.Error.message}" );
             }
         }
 

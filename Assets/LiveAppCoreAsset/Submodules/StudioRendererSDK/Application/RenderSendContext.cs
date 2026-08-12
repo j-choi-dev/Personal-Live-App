@@ -9,7 +9,7 @@ namespace StudioRendererSDK.Application
         private IWebRtcSenderSessionDomain _senderSessionDomain;
 
         public IObservable<string> OnMessageChanged => _senderSessionDomain.OnMessageChanged;
-        public IObservable<bool> OnConnectionChanged => _senderSessionDomain.OnConnectionChanged;
+        public IObservable<bool> OnRendererConnectionChanged => _senderSessionDomain.OnConnectionChanged;
 
         public RenderSendContext(IWebRtcSenderSessionDomain senderSessionDomain )
         {

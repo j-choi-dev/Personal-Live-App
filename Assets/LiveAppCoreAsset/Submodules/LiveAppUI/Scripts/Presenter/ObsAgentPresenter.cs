@@ -29,7 +29,8 @@ namespace LiveAppUI.Presenter
         private void SubscribeView()
         {
             _configMenuView.OnConnectionChanged
-                .Subscribe( isOn => _obsAgentModel.AgentConnectProcess( _configMenuView.EndPoint, _configMenuView.AgentToken ).Forget() )
+                .Where( isOn => isOn )
+                .Subscribe( _ => _obsAgentModel.AgentConnectProcess( _configMenuView.EndPoint, _configMenuView.AgentToken ).Forget() )
                 .AddTo( this );
             _configMenuView.OnStreamingChanged
                 .Subscribe( isOn => _obsAgentModel.StreamingProcess( isOn ).Forget() )
@@ -45,10 +46,11 @@ namespace LiveAppUI.Presenter
                 .Subscribe( msg => _configMenuView.AddLogText( msg ) )
                 .AddTo( this );
             _obsAgentModel.OnEndPointChanged
-                .Subscribe( msg => _configMenuView.AddLogText( msg ) )
+                .Subscribe( endpoint => _configMenuView.SetEndPointWithoutNotify( endpoint ) )
                 .AddTo( this );
+
             _obsAgentModel.OnAgentTokenChanged
-                .Subscribe( msg => _configMenuView.AddLogText( msg ) )
+                .Subscribe( token => _configMenuView.SetAgentTokenWithoutNotify( token ) )
                 .AddTo( this );
         }
     }
