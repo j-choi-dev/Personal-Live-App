@@ -143,7 +143,6 @@ namespace StudioRendererSDK.Infrastructure
         }
         public void StopVideoLink()
         {
-            Debug.LogWarning( $"[WebRTC DEBUG] StopVideoLink() 호출됨\n{Environment.StackTrace}", this );
             if( _sessionCancellation != null )
             {
                 _sessionCancellation.Cancel();
@@ -356,7 +355,7 @@ namespace StudioRendererSDK.Infrastructure
             await UniTask.WaitUntil( () => operation.IsDone, cancellationToken: cancellationToken );
             if( operation.IsError )
             {
-                throw new InvalidOperationException( "WebRTC SDP 적용 실패\nType: {operation.Error.errorType}\nMessage: {operation.Error.message}" );
+                throw new InvalidOperationException( $"WebRTC SDP 적용 실패\nType: {operation.Error.errorType}\nMessage: {operation.Error.message}" );
             }
         }
 
@@ -426,7 +425,7 @@ namespace StudioRendererSDK.Infrastructure
 
         private void OnDestroy()
         {
-            StopVideoLink();
+            CleanupSession();
         }
 
 #if UNITY_EDITOR

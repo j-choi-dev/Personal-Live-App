@@ -37,11 +37,11 @@ namespace LiveAppUI.Presenter
 
         private void SubscribeModel()
         {
-            _agentModel.OnSystemMessageChanged
-                .Subscribe( msg => _configMenuView.AddLogText( msg ) )
-                .AddTo( this );
-            _agentModel.OnAgentConnectionChanged
-                .Subscribe( isVal => Debug.Log( $"OnConnectionChanged ... {isVal}" ) )
+            //_agentModel.OnSystemMessageChanged
+            //    .Subscribe( msg => _configMenuView.AddLogText( msg ) )
+            //    .AddTo( this );
+            _agentModel.OnRendererConnectionChanged
+                .Subscribe( isConnected => Debug.Log( $"[WebRTC UI] Renderer Connected: {isConnected}" ) )
                 .AddTo( this );
         }
 

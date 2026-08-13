@@ -71,15 +71,21 @@ namespace LiveAppUI.View
         private void SetStreamingState( bool isActive )
         {
             _recToggle.Interactable = !isActive;
-            _recToggle.SetIsActiveWithoutNotify( !isActive );
-            _streamingToggle.SetIsActiveWithoutNotify( isActive );
+            if(isActive)
+            {
+                _recToggle.SetIsActiveWithoutNotify( false );
+                //_streamingToggle.SetIsActiveWithoutNotify( isActive );
+            }
         }
 
         private void SetRecordingState( bool isActive )
         {
             _streamingToggle.Interactable = !isActive;
-            _streamingToggle.SetIsActiveWithoutNotify( !isActive );
-            _recToggle.SetIsActiveWithoutNotify( isActive );
+            if( isActive )
+            {
+                _streamingToggle.SetIsActiveWithoutNotify( false );
+                //_recToggle.SetIsActiveWithoutNotify( isActive );
+            }
         }
 
         public void SetActive( bool isActive )
