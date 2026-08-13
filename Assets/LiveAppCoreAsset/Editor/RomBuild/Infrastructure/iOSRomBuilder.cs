@@ -182,6 +182,7 @@ namespace LiveAppCore.Editor.Infrastructure
                 File.Copy( pListPath, destinationPath, overwrite: true );
 
                 ApplyInfoPlistSettings();
+                OBSControlSettingProcess();
                 ApplyPbxProjectSettings();
 
                 Debug.Log( "[iOSRomBuilder] PostProcess completed." );
@@ -434,6 +435,46 @@ namespace LiveAppCore.Editor.Infrastructure
                 }
             }
             return false;
+        }
+
+        private void OBSControlSettingProcess()
+        {
+            var mainInfoPlistPath = Path.Combine( XcodeProjectPath, "Info.plist" );
+
+            if( File.Exists( mainInfoPlistPath ) == false )
+            {
+                throw new FileNotFoundException( $"Info.plist not found for OBS Control settings: {mainInfoPlistPath}" );
+            }
+
+            var mainInfoPlist = new PlistDocument();
+            mainInfoPlist.ReadFromFile( mainInfoPlistPath );
+
+            var mainRoot = mainInfoPlist.root;
+
+            // iPhone → PC OBS Agent의 로컬 네트워크 통신 권한 설명
+            mainRoot.SetString( "NSLocalNetworkUsageDescription",
+                "같은 로컬 네트워크의 OBS Agent와 연결하여 영상 송출 및 OBS 제어 기능을 사용합니다." );
+
+            // OBS Agent가 로컬 IP의 HTTP 서버(http://192.168.x.x:7443)를 사용하므로
+            // ATS에서 로컬 네트워크 접근을 허용.
+            PlistElementDict appTransportSecurity;
+
+            if( mainRoot.values.TryGetValue( "NSAppTransportSecurity", out PlistElement appTransportSecurityElement ) )
+            {
+                appTransportSecurity = appTransportSecurityElement.AsDict();
+                if( appTransportSecurity == null )
+                {
+                    throw new InvalidOperationException( "NSAppTransportSecurity가 Dictionary 형식이 아닙니다." );
+                }
+            }
+            else
+            {
+                appTransportSecurity = mainRoot.CreateDict( "NSAppTransportSecurity" );
+            }
+
+            appTransportSecurity.SetBoolean( "NSAllowsLocalNetworking", true );
+            mainInfoPlist.WriteToFile( mainInfoPlistPath );
+            Debug.Log( "[iOSRomBuilder] OBS Control settings applied to Info.plist." );
         }
 
         private void ApplyPbxProjectSettings()
