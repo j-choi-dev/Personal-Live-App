@@ -23,6 +23,11 @@ namespace StudioTrackingSDK.Infrastructure
 
         private Subject<float> _onEyeBlinkRight = new Subject<float>();
         public IObservable<float> OnEyeBlinkRight => _onEyeBlinkRight;
+        [SerializeField]
+        private bool _enableTrackingDebugLog = true;
+
+        [SerializeField, Min(1)]
+        private int _trackingDebugLogInterval = 30;
 
         public bool IsActive { get; private set; }
 
@@ -42,18 +47,48 @@ namespace StudioTrackingSDK.Infrastructure
         /// 눈동자 정보 변경 이벤트
         /// </summary>
         /// <param name="eventArgs">발생한 이벤트 값</param>
-        private void OnEyeChanged( ARTrackablesChangedEventArgs<ARFace> eventArgs )
+        private void OnEyeChanged(
+    ARTrackablesChangedEventArgs<ARFace> eventArgs )
         {
-            if ( eventArgs.updated.Count != 0 )
+            if( !IsActive )
             {
-                var arFace = eventArgs.updated[ 0 ];
-                if ( arFace.trackingState == TrackingState.Tracking
-                    && ( ARSession.state > ARSessionState.Ready ) )
+                return;
+            }
+
+            if( ARSession.state != ARSessionState.SessionTracking )
+            {
+                return;
+            }
+
+            foreach( ARFace face in eventArgs.updated )
+            {
+                if( TryUpdateEyes( face ) )
                 {
-                    UpdateEyeBlendShape( arFace );
-                    UpdateEyeBallDirection( arFace );
+                    return;
                 }
             }
+
+            foreach( ARFace face in eventArgs.added )
+            {
+                if( TryUpdateEyes( face ) )
+                {
+                    return;
+                }
+            }
+        }
+
+        private bool TryUpdateEyes( ARFace face )
+        {
+            if( face == null ||
+                face.trackingState != TrackingState.Tracking )
+            {
+                return false;
+            }
+
+            UpdateEyeBlendShape( face );
+            UpdateEyeBallDirection( face );
+
+            return true;
         }
 
         private void UpdateEyeBlendShape( ARFace arFace )
@@ -61,27 +96,19 @@ namespace StudioTrackingSDK.Infrastructure
             _faceSubsystem = ( ARKitFaceSubsystem )_faceManager.subsystem;
             using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
 
-            for ( var i = 0 ; i < blendShapesARKit.Length ; i++ )
+            for( var i = 0; i < blendShapesARKit.Length; i++ )
             {
-                switch ( blendShapesARKit[ i ].blendShapeLocation )
+                switch( blendShapesARKit[i].blendShapeLocation )
                 {
                     case ARKitBlendShapeLocation.EyeBlinkLeft:
-                        var eyeBlinkLeft = 1 - blendShapesARKit[ i ].coefficient;
+                        var eyeBlinkLeft = 1f - blendShapesARKit[i].coefficient;
                         _onEyeBlinkLeft.OnNext( eyeBlinkLeft );
-                        break; ;
-                    case ARKitBlendShapeLocation.EyeBlinkRight:
-                        var eyeBlinkRight = 1 - blendShapesARKit[ i ].coefficient;
-                        _onEyeBlinkRight.OnNext( eyeBlinkRight );
                         break;
 
-                    //case ARKitBlendShapeLocation.EyeLookUpLeft:
-                    //case ARKitBlendShapeLocation.EyeLookUpRight:
-                    //    _avatar.SetEyeLookVertical( -blendShapesARKit[ i ].coefficient );
-                    //    break;
-                    //case ARKitBlendShapeLocation.EyeLookDownLeft:
-                    //case ARKitBlendShapeLocation.EyeLookDownRight:
-                    //    _avatar.SetEyeLookVertical( blendShapesARKit[ i ].coefficient );
-                    //    break;
+                    case ARKitBlendShapeLocation.EyeBlinkRight:
+                        var eyeBlinkRight = 1f - blendShapesARKit[i].coefficient;
+                        _onEyeBlinkRight.OnNext( eyeBlinkRight );
+                        break;
                 }
             }
         }
@@ -98,7 +125,7 @@ namespace StudioTrackingSDK.Infrastructure
             var eyeLookUpRight = 0f;
             var eyeLookDownRight = 0f;
 
-            if ( arFace == null || IsActive == false )
+            if( arFace == null || IsActive == false )
             {
                 return;
             }
@@ -107,41 +134,41 @@ namespace StudioTrackingSDK.Infrastructure
             var blendShapes = _faceSubsystem = ( ARKitFaceSubsystem )_faceManager.subsystem;
             using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
 
-            for ( var i = 0 ; i < blendShapesARKit.Length ; i++ )
+            for( var i = 0; i < blendShapesARKit.Length; i++ )
             {
-                switch ( blendShapesARKit[ i ].blendShapeLocation )
+                switch( blendShapesARKit[i].blendShapeLocation )
                 {
                     case ARKitBlendShapeLocation.EyeLookDownLeft:
-                        eyeLookDownLeft = blendShapesARKit[ i ].coefficient;
+                        eyeLookDownLeft = blendShapesARKit[i].coefficient;
                         break;
                     case ARKitBlendShapeLocation.EyeLookDownRight:
-                        eyeLookDownRight = blendShapesARKit[ i ].coefficient;
+                        eyeLookDownRight = blendShapesARKit[i].coefficient;
                         break;
                     case ARKitBlendShapeLocation.EyeLookInLeft:
-                        eyeLookInLeft = blendShapesARKit[ i ].coefficient;
+                        eyeLookInLeft = blendShapesARKit[i].coefficient;
                         break;
                     case ARKitBlendShapeLocation.EyeLookInRight:
-                        eyeLookInRight = blendShapesARKit[ i ].coefficient;
+                        eyeLookInRight = blendShapesARKit[i].coefficient;
                         break;
                     case ARKitBlendShapeLocation.EyeLookOutLeft:
-                        eyeLookOutLeft = blendShapesARKit[ i ].coefficient;
+                        eyeLookOutLeft = blendShapesARKit[i].coefficient;
                         break;
                     case ARKitBlendShapeLocation.EyeLookOutRight:
-                        eyeLookOutRight = blendShapesARKit[ i ].coefficient;
+                        eyeLookOutRight = blendShapesARKit[i].coefficient;
                         break;
                     case ARKitBlendShapeLocation.EyeLookUpLeft:
-                        eyeLookUpLeft = blendShapesARKit[ i ].coefficient;
+                        eyeLookUpLeft = blendShapesARKit[i].coefficient;
                         break;
                     case ARKitBlendShapeLocation.EyeLookUpRight:
-                        eyeLookUpRight = blendShapesARKit[ i ].coefficient;
+                        eyeLookUpRight = blendShapesARKit[i].coefficient;
                         break;
                 }
             }
             var eyeBallXValue = ( eyeLookOutLeft - eyeLookInLeft + eyeLookInRight - eyeLookOutRight ) / 2.0f;
             var eyeBallYValue = ( eyeLookUpLeft - eyeLookDownLeft + eyeLookUpRight - eyeLookDownRight ) / 2.0f;
 
-            var resultX = Mathf.Clamp( eyeBallXValue, -1f, 1f );
-            var resultY = Mathf.Clamp( eyeBallXValue, -1f, 1f );
+            var resultX = Mathf.Clamp(eyeBallXValue, -1f, 1f);
+            var resultY = Mathf.Clamp(eyeBallXValue, -1f, 1f);
 
             _onEyeBallAngleX.OnNext( resultX );
             _onEyeBallAngleY.OnNext( resultY );

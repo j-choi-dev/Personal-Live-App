@@ -15,6 +15,7 @@ namespace LiveAppUI.Installer
         [SerializeField] private ServerModalView _serverModalView;
         [SerializeField] private RoomModalView _roomModalView;
         [SerializeField] private ResourceListView _resourceListView;
+        [SerializeField] private ConfigMenuView _configMenuView;
 
         public override void InstallBindings()
         {
@@ -39,6 +40,9 @@ namespace LiveAppUI.Installer
             Container
                 .Bind<IResourceListView>()
                 .FromInstance( _resourceListView );
+            Container
+                .Bind<IConfigMenuView>()
+                .FromInstance( _configMenuView );
         }
 
         private void ModelBinding()
@@ -59,8 +63,19 @@ namespace LiveAppUI.Installer
                 .AsSingle();
 
             Container
+                .Bind<IObsAgentModel>()
+                .To<ObsAgentModel>()
+                .AsSingle();
+
+            Container
                 .Bind<IARKitFacialTrackingModel>()
                 .To<ARKitFacialTrackingModel>()
+                .AsSingle()
+                .NonLazy();
+
+            Container
+                .Bind<ILipSyncModel>()
+                .To<LipSyncModel>()
                 .AsSingle()
                 .NonLazy();
         }

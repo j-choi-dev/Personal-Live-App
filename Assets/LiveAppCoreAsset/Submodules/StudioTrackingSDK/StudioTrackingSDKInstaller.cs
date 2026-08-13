@@ -11,6 +11,7 @@ namespace StudioResourceSDK.Application
     {
         [SerializeField] private ARKitFaceTraker _faceTracker = null;
         [SerializeField] private ARKitEyeTracker _eyeTracker = null;
+        [SerializeField] private OVRLipSyncVowelSource _ovrLipsync = null;
         public override void InstallBindings()
         {
             Container
@@ -21,6 +22,10 @@ namespace StudioResourceSDK.Application
                 .Bind<IEyeTrackingContext>()
                 .To<EyeTrackingContext>()
                 .AsSingle();
+            Container
+                .Bind<ILipSyncContext>()
+                .To<LipSyncContext>()
+                .AsSingle();
 
             Container
                 .Bind<IFaceTrackingDomain>()
@@ -28,6 +33,9 @@ namespace StudioResourceSDK.Application
             Container
                 .Bind<IEyeTrackingDomain>()
                 .FromInstance( _eyeTracker );
+            Container
+                .Bind<ILipSyncDomain>()
+                .FromInstance( _ovrLipsync );
         }
     }
 }

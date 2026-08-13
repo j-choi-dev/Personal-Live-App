@@ -787,7 +787,33 @@ namespace Live2D.Cubism.Rendering.URP
                 {
                     return;
                 }
+                // ============================================
+                // Diagnostic
+                // ============================================
+                var cameraData = frameData.Get<UniversalCameraData>();
+                var resourceData = frameData.Get<UniversalResourceData>();
+                if( resourceData.isActiveTargetBackBuffer )
+                {
+                    Camera camera = cameraData.camera;
+                    string cameraName = camera != null ? camera.name : "(null)";
+                    string cameraType = camera != null ? camera.cameraType.ToString() : "(null)";
 
+                    string targetTextureName = camera != null && camera.targetTexture != null ? camera.targetTexture.name : "(null / BackBuffer)";
+
+                    Debug.LogError( $"[Cubism RenderGraph Diagnostic]\nCamera Name: {cameraName}\nCamera Type: {cameraType}\nCamera TargetTexture: {targetTextureName}\nisActiveTargetBackBuffer: {resourceData.isActiveTargetBackBuffer}" );
+
+                    // GetDescriptor()를 호출하면 현재 예외가 발생하므로
+                    // 진단 중에는 Cubism Pass를 건너뛴다.
+                    return;
+                }
+
+
+                if( !resourceData.activeColorTexture.IsValid() )
+                {
+                    Debug.LogError( "[Cubism RenderGraph Diagnostic]\nCamera: {cameraData.camera?.name}\nactiveColorTexture가 유효하지 않습니다." );
+
+                    return;
+                }
                 // This adds a raster render pass to the graph, specifying the name and the data type that will be passed to the ExecutePass function.
                 using (var builder = renderGraph.AddUnsafePass<PassData>(renderCustomPass, out var passData))
                 {
@@ -797,8 +823,8 @@ namespace Live2D.Cubism.Rendering.URP
                     var renderControllerGroups = CubismRenderControllerGroup.GetInstance().GroupDataArray;
                     passData.RenderControllerGroupDaraArray = renderControllerGroups;
 
-                    var cameraData = frameData.Get<UniversalCameraData>();
-                    var resourceData = frameData.Get<UniversalResourceData>();
+                    //var cameraData = frameData.Get<UniversalCameraData>();
+                    //var resourceData = frameData.Get<UniversalResourceData>();
 
                     passData.CameraData = cameraData;
                     passData.ResourceData = resourceData;

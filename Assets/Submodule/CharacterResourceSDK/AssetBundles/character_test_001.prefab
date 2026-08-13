@@ -66,6 +66,8 @@ MonoBehaviour:
   - paramterType: 9
     parameter: {fileID: 4130275037650574634}
   - paramterType: 10
+    parameter: {fileID: 7869362846751369195}
+  - paramterType: 11
     parameter: {fileID: 2794428987891761842}
 --- !u!1 &7436793114057110451
 GameObject:
@@ -6934,6 +6936,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 308e904e3f33207489a2c15b9b0b297b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Live2D.Cubism::Live2D.Cubism.Rendering.CubismRenderer
+--- !u!114 &7869362846751369195 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3774789521959136200, guid: 95fa09bdf78247741b6fbf00baebfa17, type: 3}
+  m_PrefabInstance: {fileID: 6437659009518930979}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dafbb7ec1700e8147a48dbed2e4e543c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Live2D.Cubism::Live2D.Cubism.Core.CubismParameter
 --- !u!114 &7905518232525089798 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3810364352246063141, guid: 95fa09bdf78247741b6fbf00baebfa17, type: 3}
