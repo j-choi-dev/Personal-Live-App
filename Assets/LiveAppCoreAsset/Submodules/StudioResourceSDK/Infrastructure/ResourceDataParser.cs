@@ -33,7 +33,7 @@ namespace StudioSystemSDK.Infrastructure
         public IReadOnlyCollection<CharacterResourceItem> ParseCharacterData( string rawData )
         {
             var list = new List<CharacterResourceItem>();
-            UnityEngine.Debug.Log( rawData );
+            //UnityEngine.Debug.Log( rawData );// TODO 지울것 @Choi 26.07.28
             var rows = rawData.Split("\n");
             for(var i = HeaderCount; i < rows.Length; ++i)
             {

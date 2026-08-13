@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using StudioNetworkSDK.Domain;
 using StudioResourceSDK.Application;
-using StudioResourceSDK.Domain;
 using StudioSystemSDK.Application;
 using System;
 using System.Collections.Generic;
@@ -10,11 +9,14 @@ using UniRx;
 
 namespace LiveAppUI.Model
 {
+    /// <summary>
+    /// Resource List Model 구현체
+    /// </summary>
     public class ResourceListModel : IResourceListModel, IDisposable
     {
         private IResourceServerConfigContext _resourceConfigContext;
         private IResourceTableContext _resourceTableContext;
-        private IFileSystemContext _fileSystemContext;
+        private IResourceLoadContext _resourceLoadContext;
         private CompositeDisposable _disposable = new CompositeDisposable();
 
         private Dictionary<ResourceType, ServerType> _serverTypeDic = new Dictionary<ResourceType, ServerType>();
@@ -25,15 +27,15 @@ namespace LiveAppUI.Model
 
         public ResourceListModel( IResourceServerConfigContext resourceConfigContext,
             IResourceTableContext resourceTableContext,
-            IFileSystemContext fileSystemContext )
+            IResourceLoadContext resourceLoadContext )
         {
             _resourceConfigContext = resourceConfigContext;
             _resourceTableContext = resourceTableContext;
-            _fileSystemContext = fileSystemContext;
+            _resourceLoadContext = resourceLoadContext;
 
             _resourceTableContext.OnCharacterListChanged
-                .Subscribe(list =>
-                { 
+                .Subscribe( list =>
+                {
                     var result = list.Select( arg => (arg.ID, arg.DisplayName) )
                         .ToList();
                     _onCharacterListChanged.OnNext( result );
@@ -54,10 +56,20 @@ namespace LiveAppUI.Model
             }
         }
 
-        public async UniTask InitializeServerConfig()
+        public async UniTask<bool> InitializeServerConfig()
         {
-            var rawData = await _fileSystemContext.ReadBinaryFile( ResourceConstValue.BinFileName );
-            _serverConfigs =  _resourceConfigContext.ParseServerConfigData(rawData).ToList();
+            try
+            {
+                var cloudConfigTask = await _resourceConfigContext.LoadCloudConfig();
+                var serverConfigTask = await _resourceConfigContext.LoadServerConfig();
+                _serverConfigs =  serverConfigTask.ToList();
+                return true;
+            }
+            catch( Exception ex )
+            {
+                UnityEngine.Debug.LogError( ex.Message );
+                return false;
+            }
             // 리소스 & 구글 시트 링크 보존 -> Context 통해서 DataClass로 ...? @Choi
         }
 
@@ -69,11 +81,10 @@ namespace LiveAppUI.Model
                 .FirstOrDefault(arg => arg.resourceType == resource &&
                 arg.serverType == server);
 
-            var loadResult = await _resourceTableContext.LoadResourceTableProcess( 
-                config.resourceType, 
-                server.ToString(), 
-                config.tableUrl 
-                );
+            var loadResult = await _resourceTableContext.LoadResourceTableProcess(
+                config.resourceType,
+                server.ToString(),
+                config.tableUrl );
         }
 
         public ServerType GetCurrentServerType( ResourceType resourceType )
@@ -82,35 +93,25 @@ namespace LiveAppUI.Model
         public void SetCurrentServerType( ResourceType resourceType, ServerType serverType )
             => _serverTypeDic[resourceType] = serverType;
 
-        public async UniTask<bool> LoadResourceProcess( ResourceType resourceType, 
-            ServerType serverType, 
+        public async UniTask<bool> LoadResourceProcess( ResourceType resourceType,
+            ServerType serverType,
             IReadOnlyList<string> resourceId )
         {
-            UnityEngine.Debug.Log( $"_resourceListView.OnClickLoad : {resourceId}" );
-            for( var i = 0; i < resourceId.Count; i++ )
-            {
-                UnityEngine.Debug.Log( $"{resourceId[i]}" );
-            }
-            return false;
+            return await _resourceLoadContext.LoadResource( 
+                ConvertResourceType( resourceType ), 
+                serverType, 
+                resourceId );
         }
 
         private StudioResourceSDK.Domain.ResourceType ConvertResourceType( ResourceType type )
-        {
-            StudioResourceSDK.Domain.ResourceType retVal
-                = (StudioResourceSDK.Domain.ResourceType)Enum.Parse(
-                    typeof(StudioResourceSDK.Domain.ResourceType), type.ToString()
-                    );
-            return retVal;
-        }
+            => ( StudioResourceSDK.Domain.ResourceType )Enum.Parse( 
+                typeof( StudioResourceSDK.Domain.ResourceType ), 
+                type.ToString() );
 
-        private StudioNetworkSDK.Domain.ServerType ConvertServerType(ServerType type)
-        {
-            StudioNetworkSDK.Domain.ServerType retVal 
-                = (StudioNetworkSDK.Domain.ServerType)Enum.Parse(
-                    typeof(StudioNetworkSDK.Domain.ServerType), type.ToString()
-                    );
-            return retVal;
-        }
+        private StudioNetworkSDK.Domain.ServerType ConvertServerType( ServerType type )
+            => ( StudioNetworkSDK.Domain.ServerType )Enum.Parse( 
+                typeof( StudioNetworkSDK.Domain.ServerType ), 
+                type.ToString() );
 
         public void Dispose()
         {

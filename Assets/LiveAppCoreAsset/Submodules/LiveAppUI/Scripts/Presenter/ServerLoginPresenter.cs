@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using LiveAppUI.Model;
 using UniRx;
 using UnityEngine;
@@ -40,8 +40,8 @@ namespace LiveAppUI.Presenter
         {
             _loginView.SetActive( false );
             _roomView.SetActive( false );
-
             var result = await _authTokenModel.InitilizeAuthProcess();
+
             if( result == false )
             {
                 return;
@@ -115,7 +115,7 @@ namespace LiveAppUI.Presenter
 
         private void TokenResultProcess(bool isResult)
         {
-            Debug.Log( $"Token Complete :: {isResult}" );
+            Debug.Log( $"Server Login Token Complete :: {isResult}" );
             if( isResult )
             {
                 _loginView.SetActive( true );

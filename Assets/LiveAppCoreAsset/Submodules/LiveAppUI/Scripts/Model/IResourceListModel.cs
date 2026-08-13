@@ -24,7 +24,7 @@ namespace LiveAppUI.Model
         /// Server Config 정보 취득을 위한 초기화 작업
         /// </summary>
         /// <returns></returns>
-        UniTask InitializeServerConfig();
+        UniTask<bool> InitializeServerConfig();
         /// <summary>
         /// 선택한 리소스 및 서버 타입의 리스트
         /// </summary>

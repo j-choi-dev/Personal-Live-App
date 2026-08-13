@@ -4,12 +4,15 @@ using LiveAppCore.Google.Infrastructure;
 using StudioSystemSDK.Application;
 using StudioSystemSDK.Domain;
 using StudioSystemSDK.Infrastructure;
+using UnityEngine;
 using Zenject;
 
 namespace LiveAppCore.Installer
 {
     public class StudioSystemInstaller : MonoInstaller
     {
+        [SerializeField] private iOSSigninInfrastructure _signInInfrastructure;
+        [SerializeField] private CryptoKeySetting _cryptoKeySetting;
         public override void InstallBindings()
         {
             Container
@@ -19,6 +22,10 @@ namespace LiveAppCore.Installer
             Container
                 .Bind<IAuthInfoContext>()
                 .To<AuthInfoContext>()
+                .AsSingle();
+            Container
+                .Bind<ICryptoContext>()
+                .To<CryptoContext>()
                 .AsSingle();
 
             Container
@@ -35,7 +42,24 @@ namespace LiveAppCore.Installer
                 .AsSingle();
             Container
                 .Bind<IGoogleAuthTokenDomain>()
-                .To<GoogleAuthTokenInfrastructure>()
+#if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
+                .To<iOSAuthTokenInfrastructure>()
+#else
+                .To<StandaloneAuthTokenInfrastructure>()
+#endif
+                .AsSingle();
+
+            Container
+                .Bind<ICryptoProcessDomain>()
+                .To<AESCryptoProcessor>()
+                .AsSingle();
+            Container
+                .Bind<INativeSigninDomain>()
+                .FromInstance( _signInInfrastructure )
+                .AsSingle();
+            Container
+                .Bind<ICryptoKeySettingDomain>()
+                .FromInstance(_cryptoKeySetting)
                 .AsSingle();
         }
     }

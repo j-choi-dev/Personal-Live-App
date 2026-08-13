@@ -26,5 +26,6 @@ namespace LiveAppCore.Google.Domain
         /// <param name="cancellationToken"></param>
         /// <returns>토큰 값</returns>
         UniTask<string> GetAccessTokenAsync( CancellationToken cancellationToken = default );
+        void ClearAllPrefs();
     }
 }

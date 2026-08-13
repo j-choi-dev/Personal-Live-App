@@ -11,12 +11,15 @@ namespace LiveAppUI.View
     {
         [SerializeField] private ObservableButton _loginButton = null;
         [SerializeField] private ObservableButton _resourceButton = null;
+        [SerializeField] private ObservableButton _configButton = null;
         [SerializeField] private ResourceMenuView _resourceView = null;
+        [SerializeField] private ConfigMenuView _configMenuView = null;
 
         private IServerModalView _loginView;
         private IRoomModalView _roomView;
 
-        public IObservable<Unit> OnResourceButtonCLick => _resourceButton.OnClick;
+        public IObservable<Unit> OnResourceButtonClick => _resourceButton.OnClick;
+        public IObservable<Unit> OnConfigButtonClick => _configButton.OnClick;
 
         public bool IsActive => gameObject.activeSelf;
 
@@ -42,6 +45,7 @@ namespace LiveAppUI.View
         private void Start()
         {
             _resourceView.gameObject.SetActive( false );
+            _configMenuView.gameObject.SetActive( false );
         }
 
         public void SetActive( bool isActive )
