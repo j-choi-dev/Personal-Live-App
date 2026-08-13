@@ -182,7 +182,7 @@ namespace LiveAppCore.Editor.Infrastructure
                 File.Copy( pListPath, destinationPath, overwrite: true );
 
                 ApplyInfoPlistSettings();
-                OBSControlSettingProcess();
+                ApplyOBSSettingProcess();
                 ApplyPbxProjectSettings();
 
                 Debug.Log( "[iOSRomBuilder] PostProcess completed." );
@@ -437,7 +437,7 @@ namespace LiveAppCore.Editor.Infrastructure
             return false;
         }
 
-        private void OBSControlSettingProcess()
+        private void ApplyOBSSettingProcess()
         {
             var mainInfoPlistPath = Path.Combine( XcodeProjectPath, "Info.plist" );
 
