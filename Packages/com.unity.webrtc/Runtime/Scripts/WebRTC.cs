@@ -910,7 +910,7 @@ namespace Unity.WebRTC
         {
             NativeMethods.SetGraphicsSyncTimeout(nSecTimeout);
         }
-#endif[
+#endif
 
         internal static void DisposeInternal()
         {
