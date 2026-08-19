@@ -899,6 +899,7 @@ namespace Unity.WebRTC
             }
         }
 
+#if !UNITY_IOS || UNITY_EDITOR
         /// <summary>
         /// Sets the graphics sync timeout.
         /// Graphics sync timeout determines how long the graphics device will wait on the frame copy for encoding before timing out.
@@ -909,6 +910,7 @@ namespace Unity.WebRTC
         {
             NativeMethods.SetGraphicsSyncTimeout(nSecTimeout);
         }
+#endif[
 
         internal static void DisposeInternal()
         {
@@ -1790,9 +1792,10 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void FrameTransformerSendFrameToSink(IntPtr transform, IntPtr frame);
 
+#if !UNITY_IOS || UNITY_EDITOR
         [DllImport(WebRTC.Lib)]
         public static extern void SetGraphicsSyncTimeout(uint nSecTimeout);
-
+#endif
     }
 
     internal static class VideoUpdateMethods
