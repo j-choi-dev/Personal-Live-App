@@ -16,6 +16,8 @@ namespace LiveAppUI.Installer
         [SerializeField] private RoomModalView _roomModalView;
         [SerializeField] private ResourceListView _resourceListView;
         [SerializeField] private ConfigMenuView _configMenuView;
+        [SerializeField] private ObsConfigView _obsConfigView;
+        [SerializeField] private YoutubeConfigView _youtubeConfigView;
 
         public override void InstallBindings()
         {
@@ -43,6 +45,12 @@ namespace LiveAppUI.Installer
             Container
                 .Bind<IConfigMenuView>()
                 .FromInstance( _configMenuView );
+            Container
+                .Bind<IOBSConfigView>()
+                .FromInstance( _obsConfigView );
+            Container
+                .Bind<IYoutubeConfigView>()
+                .FromInstance( _youtubeConfigView );
         }
 
         private void ModelBinding()

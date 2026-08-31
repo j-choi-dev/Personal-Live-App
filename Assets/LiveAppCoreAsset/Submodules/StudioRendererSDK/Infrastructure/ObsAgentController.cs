@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using StudioRendererSDK.Domain;
 using System;
+using System.Text;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -17,6 +18,7 @@ namespace StudioRendererSDK.Infrastructure
         private int healthTimeoutSeconds = 5;
         private int obsTestTimeoutSeconds = 10;
         private int requestTimeoutSeconds = 15;
+        private const int MinimumAgentTokenLength  = 8;
 
         private Subject<string> _onSystemMessageChanged = new Subject<string>();
         public IObservable<string> OnSystemMessageChanged => _onSystemMessageChanged;
@@ -68,9 +70,9 @@ namespace StudioRendererSDK.Infrastructure
                     throw new InvalidOperationException( msg );
                 }
 
-                if( normalizedToken.Length < 16 )
+                if( normalizedToken.Length < MinimumAgentTokenLength )
                 {
-                    msg = "[Error] Agent Token Character Count is Under 16";
+                    msg = $"[Error] Agent Token Character Count is Under {MinimumAgentTokenLength}";
                     _onSystemMessageChanged.OnNext( msg );
                     Debug.LogError( msg );
                     throw new InvalidOperationException( msg );
@@ -151,7 +153,7 @@ namespace StudioRendererSDK.Infrastructure
                         return false;
                     }
 
-                    if( testResponse.success == false)
+                    if( testResponse.success == false )
                     {
                         msg = $"[Error] OBS Connecting FAILED :: {testResponse.message}";
                         _onSystemMessageChanged.OnNext( msg );
@@ -239,7 +241,7 @@ namespace StudioRendererSDK.Infrastructure
                 }
 
                 await operation;
- 
+
                 AgentApiResponse response = ParseApiResponse( request.downloadHandler.text);
 
                 if( request.responseCode == 401 )
@@ -364,11 +366,80 @@ namespace StudioRendererSDK.Infrastructure
 
             try
             {
-                return JsonUtility .FromJson<AgentApiResponse>( json );
+                return JsonUtility.FromJson<AgentApiResponse>( json );
             }
             catch( Exception )
             {
                 return null;
+            }
+        }
+
+        public async UniTask<bool> PrepareYoutubeLiveProcess( YoutubeLivePrepareRequest request )
+        {
+            return await SendYoutubePostAsync( "/api/youtube/live/prepare", JsonUtility.ToJson( request ) );
+        }
+
+        public async UniTask<bool> StartYoutubeLiveProcess()
+        {
+            return await SendYoutubePostAsync( "/api/youtube/live/start", string.Empty );
+        }
+
+        public async UniTask<bool> StopYoutubeLiveProcess()
+        {
+            return await SendYoutubePostAsync( "/api/youtube/live/stop", string.Empty );
+        }
+
+        private async UniTask<bool> SendYoutubePostAsync( string apiPath, string json )
+        {
+            string endpoint = PlayerPrefs.GetString( EndpointPreferenceKey, string.Empty );
+            string token = PlayerPrefs.GetString( TokenPreferenceKey, string.Empty );
+            if( string.IsNullOrWhiteSpace( endpoint ) || string.IsNullOrWhiteSpace( token ) )
+            {
+                return false;
+            }
+
+            string url = endpoint.TrimEnd( '/' ) + apiPath;
+            using( var request = new UnityWebRequest( url, UnityWebRequest.kHttpVerbPOST ) )
+            {
+                byte[] body = string.IsNullOrEmpty( json ) ? Array.Empty<byte>() : Encoding.UTF8.GetBytes( json );
+                request.uploadHandler = new UploadHandlerRaw( body );
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader( "Authorization", $"Bearer {token}" );
+                request.SetRequestHeader( "Content-Type", "application/json" );
+                request.timeout = 10;
+                await request.SendWebRequest();
+
+                if( request.result != UnityWebRequest.Result.Success )
+                {
+                    Debug.LogError( $"YouTube Agent 명령 실패\nHTTP={request.responseCode}\n{request.downloadHandler.text}" );
+                    return false;
+                }
+
+                YoutubeLiveStatusResponse response = JsonUtility.FromJson<YoutubeLiveStatusResponse>( request.downloadHandler.text );
+                return response != null && response.success;
+            }
+        }
+
+        public async UniTask<YoutubeLiveStatusResponse> GetYoutubeLiveStatusProcess()
+        {
+            string endpoint = PlayerPrefs.GetString( EndpointPreferenceKey, string.Empty );
+            string token = PlayerPrefs.GetString( TokenPreferenceKey, string.Empty );
+            if( string.IsNullOrWhiteSpace( endpoint ) || string.IsNullOrWhiteSpace( token ) )
+            {
+                return null;
+            }
+            string url = endpoint.TrimEnd( '/' ) + "/api/youtube/live/status";
+            using( UnityWebRequest request = UnityWebRequest.Get( url ) )
+            {
+                request.SetRequestHeader( "Authorization", $"Bearer {token}" );
+                request.timeout = 5;
+                await request.SendWebRequest();
+
+                if( request.result != UnityWebRequest.Result.Success )
+                {
+                    return null;
+                }
+                return JsonUtility.FromJson<YoutubeLiveStatusResponse>( request.downloadHandler.text );
             }
         }
     }

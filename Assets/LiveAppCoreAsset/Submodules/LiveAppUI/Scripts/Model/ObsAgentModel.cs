@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using StudioRendererSDK.Application;
+using StudioRendererSDK.Domain;
 using System;
 using UniRx;
 
@@ -50,5 +51,22 @@ namespace LiveAppUI.Model
 
         public void StopVideoLink()
             => _renderSendContext.StopVideoLink();
+
+        public async UniTask<bool> PrepareYoutubeLiveProcess( YoutubeLivePrepareRequest request )
+        {
+            return await _obsAgentContext.PrepareYoutubeLiveProcess( request );
+        }
+        public async UniTask<bool> StartYoutubeLiveProcess()
+        {
+            return await _obsAgentContext.StartYoutubeLiveProcess();
+        }
+        public async UniTask<bool> StopYoutubeLiveProcess()
+        {
+            return await _obsAgentContext.StopYoutubeLiveProcess();
+        }
+        public async UniTask<YoutubeLiveStatusResponse> GetYoutubeLiveStatusProcess()
+        {
+            return await _obsAgentContext.GetYoutubeLiveStatusProcess();
+        }
     }
 }

@@ -9,11 +9,11 @@ namespace LiveAppUI.Presenter
 {
     public class ObsAgentPresenter : MonoBehaviour
     {
-        private IConfigMenuView _configMenuView;
+        private IOBSConfigView _configMenuView;
         private IObsAgentModel _obsAgentModel;
 
         [Inject]
-        public void Initialize( IConfigMenuView configMenuView,
+        public void Initialize( IOBSConfigView configMenuView,
             IObsAgentModel obsAgentModel )
         {
             _configMenuView = configMenuView;

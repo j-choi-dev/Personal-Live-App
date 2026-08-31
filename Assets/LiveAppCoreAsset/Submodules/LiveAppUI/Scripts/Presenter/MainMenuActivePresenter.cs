@@ -14,7 +14,7 @@ namespace LiveAppUI.Presenter
         [Inject]
         public void Initialize( IMainMenuView mainMenuView,
             IResourceMenuView resourceMenuView,
-            IConfigMenuView configMenuView)
+            IConfigMenuView configMenuView )
         {
             _mainMenuView = mainMenuView;
             _resourceMenuView = resourceMenuView;

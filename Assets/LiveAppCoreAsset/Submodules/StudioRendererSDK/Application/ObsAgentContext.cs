@@ -44,5 +44,22 @@ namespace StudioRendererSDK.Application
         {
             return await _obsAgentControlDomain.StopStreamingProcess();
         }
+
+        public async UniTask<bool> PrepareYoutubeLiveProcess( YoutubeLivePrepareRequest request )
+        {
+            return await _obsAgentControlDomain.PrepareYoutubeLiveProcess( request );
+        }
+        public async UniTask<bool> StartYoutubeLiveProcess()
+        {
+            return await _obsAgentControlDomain.StartYoutubeLiveProcess();
+        }
+        public async UniTask<bool> StopYoutubeLiveProcess()
+        {
+            return await _obsAgentControlDomain.StopYoutubeLiveProcess();
+        }
+        public async UniTask<YoutubeLiveStatusResponse> GetYoutubeLiveStatusProcess()
+        {
+            return await _obsAgentControlDomain.GetYoutubeLiveStatusProcess();
+        }
     }
 }

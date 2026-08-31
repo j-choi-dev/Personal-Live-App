@@ -9,10 +9,10 @@ namespace LiveAppUI.Presenter
     public sealed class ObsVideoLinkPresenter : MonoBehaviour
     {
         private IObsAgentModel _agentModel;
-        private IConfigMenuView _configMenuView;
+        private IOBSConfigView _configMenuView;
 
         [Inject]
-        public void Initialize( IConfigMenuView configMenuView,
+        public void Initialize( IOBSConfigView configMenuView,
             IObsAgentModel agentModel )
         {
             _configMenuView = configMenuView;

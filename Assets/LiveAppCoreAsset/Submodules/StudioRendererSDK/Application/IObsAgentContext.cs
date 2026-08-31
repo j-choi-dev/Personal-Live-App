@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using StudioRendererSDK.Domain;
 using System;
 
 namespace StudioRendererSDK.Application
@@ -18,5 +19,9 @@ namespace StudioRendererSDK.Application
         UniTask<bool> StopStreamingProcess();
         UniTask<bool> StartRecordingProcess();
         UniTask<bool> StopRecordingProcess();
+        UniTask<bool> PrepareYoutubeLiveProcess( YoutubeLivePrepareRequest request );
+        UniTask<bool> StartYoutubeLiveProcess();
+        UniTask<bool> StopYoutubeLiveProcess();
+        UniTask<YoutubeLiveStatusResponse> GetYoutubeLiveStatusProcess();
     }
 }
