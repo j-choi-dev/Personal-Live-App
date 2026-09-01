@@ -15,7 +15,8 @@ namespace ObsAgent
     public sealed class ObsAgentHttpServer
     {
         private const int MaxRequestBytes = 64 * 1024;
-        private const int MaxBodyBytes = 32 * 1024;
+        private const int MaxBodyBytes = 32 * 1024; 
+        private const int AgentTokenLength = 8;
 
         private readonly Func<ObsAgentConfiguration> _configProvider;
         private readonly ObsAgentOperations _operations;
@@ -58,7 +59,7 @@ namespace ObsAgent
             }
 
             if( string.IsNullOrWhiteSpace( config.agentToken ) ||
-                config.agentToken.Length < 16 )
+                config.agentToken.Length < AgentTokenLength )
             {
                 throw new InvalidOperationException(
                     "Agent Token은 16자 이상이어야 합니다." );

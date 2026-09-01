@@ -1,15 +1,18 @@
 using Cysharp.Threading.Tasks;
 using LiveAppUI.Model;
 using StudioRendererSDK.Domain;
+using System;
 using System.Threading;
+using UniRx;
 using UnityEngine;
 using Zenject;
-using UniRx;
 
 namespace LiveAppUI.Presenter
 {
     public class YoutubeConfigPresenter : MonoBehaviour
     {
+        private const int MaxStatusRequestFailures = 5;
+
         private IYoutubeConfigView _youtubeConfigView;
         private IOBSConfigView _obsConfigView;
         private IObsAgentModel _obsAgentModel;
@@ -42,6 +45,7 @@ namespace LiveAppUI.Presenter
         {
             string title = _youtubeConfigView.Title;
             string streamKey = _youtubeConfigView.StreamKey;
+
             if (string.IsNullOrWhiteSpace(title))
             {
                 _youtubeConfigView.SetFailed("방송 제목을 입력하세요.");
@@ -66,16 +70,31 @@ namespace LiveAppUI.Presenter
 
             _youtubeConfigView.SetPreparing("방송 준비 요청 중...");
 
-            bool accepted = await _obsAgentModel.PrepareYoutubeLiveProcess(request);
-
-            if (!accepted)
+            try
             {
-                _youtubeConfigView.SetFailed("Agent가 방송 준비 요청을 거부했습니다.");
+                bool accepted = await _obsAgentModel.PrepareYoutubeLiveProcess(request);
+
+                if (!accepted)
+                {
+                    _youtubeConfigView.SetFailed("Agent가 방송 준비 요청을 처리하지 못했습니다.");
+                    return false;
+                }
+
+                StartPolling();
+                return true;
+            }
+            catch (OperationCanceledException)
+            {
+                _youtubeConfigView.SetFailed("방송 준비 요청이 취소되었습니다.");
                 return false;
             }
+            catch (System.Exception exception)
+            {
+                Debug.LogException(exception, this);
+                _youtubeConfigView.SetFailed($"방송 준비 요청 실패\n{exception.Message}");
 
-            StartPolling();
-            return true;
+                return false;
+            }
         }
 
         private async UniTask<bool> StartProcessAsync()
@@ -130,24 +149,46 @@ namespace LiveAppUI.Presenter
 
         private async UniTaskVoid PollStatusAsync(CancellationToken cancellationToken)
         {
-            while (cancellationToken.IsCancellationRequested == false)
+            int consecutiveFailures = 0;
+            try
             {
-                YoutubeLiveStatusResponse status = await _obsAgentModel.GetYoutubeLiveStatusProcess();
-
-                if (status != null)
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    ApplyStatus(status);
+                    YoutubeLiveStatusResponse status = await _obsAgentModel.GetYoutubeLiveStatusProcess();
 
-                    if (status.state == "READY" ||
-                        status.state == "LIVE" ||
-                        status.state == "FAILED" ||
-                        status.state == "IDLE")
+                    if (status == null)
                     {
-                        return;
+                        consecutiveFailures++;
+                        if (consecutiveFailures >= MaxStatusRequestFailures)
+                        {
+                            _youtubeConfigView.SetFailed("OBS Agent 상태 확인에 반복해서 실패했습니다.\nEndpoint와 로컬 네트워크 연결을 확인하세요.");
+                            return;
+                        }
                     }
-                }
+                    else
+                    {
+                        consecutiveFailures = 0;
+                        ApplyStatus(status);
 
-                await UniTask.Delay(1000, cancellationToken: cancellationToken);
+                        if (status.state == "READY" ||
+                            status.state == "LIVE" ||
+                            status.state == "FAILED" ||
+                            status.state == "IDLE")
+                        {
+                            return;
+                        }
+                    }
+                    await UniTask.Delay(1000, cancellationToken: cancellationToken);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (System.Exception exception)
+            {
+                Debug.LogException(exception, this);
+
+                _youtubeConfigView.SetFailed($"OBS Agent 상태 확인 중 오류\n{exception.Message}");
             }
         }
 
