@@ -1,3 +1,4 @@
+using LiveApp.Util;
 using StudioNetworkSDK.Domain;
 using System;
 using UnityEngine;
@@ -12,10 +13,10 @@ namespace StudioNetworkSDK.Infrastructure
         public MqTTServerConfig GetConfigData()
         {
             var config = new MqTTServerConfig();
-            if(PlayerPrefs.HasKey( ServerConfigKey.GUID) == false)
+            if( PlayerPrefsUtil.IsExistKey( ServerConfigKey.GUID) == false)
             {
                 var guid = Guid.NewGuid().ToString();
-                PlayerPrefs.SetString( ServerConfigKey.GUID, guid );
+                PlayerPrefsUtil.SetStringValueByKey( ServerConfigKey.GUID, guid );
             }
             config.guid = PlayerPrefs.GetString( ServerConfigKey.GUID );
 

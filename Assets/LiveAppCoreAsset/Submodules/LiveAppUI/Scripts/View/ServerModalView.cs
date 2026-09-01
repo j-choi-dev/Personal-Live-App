@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using LiveApp.Util;
 
 
 namespace LiveAppUI.View
@@ -54,6 +55,16 @@ namespace LiveAppUI.View
         public void SetActive( bool isActive )
         {
             gameObject.SetActive( isActive );
+        }
+
+        public void SetServerIdWithoutNotify( string id )
+        {
+            _id.SetTextWithoutNotify( id );
+        }
+
+        public void SetServerPasswordWithoutNotify( string password )
+        {
+            _password.SetTextWithoutNotify( password );
         }
     }
 }

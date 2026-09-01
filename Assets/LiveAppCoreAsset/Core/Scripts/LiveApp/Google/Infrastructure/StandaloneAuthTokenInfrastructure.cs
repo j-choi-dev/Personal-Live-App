@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using LiveApp.Util;
 using LiveAppCore.Google.Domain;
 using SimpleJSON;
 using System;
@@ -69,7 +70,7 @@ namespace LiveAppCore.Google.Infrastructure
         }
         private GoogleOAuthToken LoadTokenFromPrefs()
         {
-            var json = PlayerPrefs.GetString(_playerPrefsKey, string.Empty);
+            var json = PlayerPrefsUtil.GetStringValueByKey( _playerPrefsKey );
 
             if( string.IsNullOrEmpty( json ) )
             {
@@ -327,8 +328,7 @@ namespace LiveAppCore.Google.Infrastructure
         private void SaveTokenToPrefs( GoogleOAuthToken token )
         {
             string json = JsonUtility.ToJson(token);
-            PlayerPrefs.SetString( _playerPrefsKey, json );
-            PlayerPrefs.Save();
+            PlayerPrefsUtil.SetStringValueByKey( _playerPrefsKey, json );
         }
 
         public void ClearAllPrefs()

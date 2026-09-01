@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using LiveApp.Util;
 using StudioRendererSDK.Domain;
 using System;
 using System.Text;
@@ -23,10 +24,10 @@ namespace StudioRendererSDK.Infrastructure
         private Subject<string> _onSystemMessageChanged = new Subject<string>();
         public IObservable<string> OnSystemMessageChanged => _onSystemMessageChanged;
 
-        private Subject<string> _onEndPointChanged = new Subject<string>();
+        private ReplaySubject<string> _onEndPointChanged = new ReplaySubject<string>( 1 );
         public IObservable<string> OnEndPointChanged => _onEndPointChanged;
 
-        private Subject<string> _onAgentTokenChanged = new Subject<string>();
+        private ReplaySubject<string> _onAgentTokenChanged = new ReplaySubject<string>( 1 );
         public IObservable<string> OnAgentTokenChanged => _onAgentTokenChanged;
 
 
@@ -195,8 +196,8 @@ namespace StudioRendererSDK.Infrastructure
         private async UniTask<bool> SendCommand( string apiPath, string pendingMessage, string successMessage )
         {
             var msg = string.Empty;
-            var endpoint = PlayerPrefs.GetString( EndpointPreferenceKey, string.Empty);
-            var token = PlayerPrefs.GetString( TokenPreferenceKey, string.Empty);
+            var endpoint = PlayerPrefsUtil.GetStringValueByKey( EndpointPreferenceKey );
+            var token = PlayerPrefsUtil.GetStringValueByKey( TokenPreferenceKey );
             if( string.IsNullOrWhiteSpace( endpoint ) )
             {
                 msg = "[ERROR] OBS Agent Endpoint is NULL";
@@ -286,18 +287,17 @@ namespace StudioRendererSDK.Infrastructure
         }
         private void LoadSavedSettings()
         {
-            var savedEndpoint = PlayerPrefs.GetString( EndpointPreferenceKey, string.Empty);
-            var savedToken = PlayerPrefs.GetString( TokenPreferenceKey, string.Empty);
+            var savedEndpoint = PlayerPrefsUtil.GetStringValueByKey( EndpointPreferenceKey );
+            var savedToken = PlayerPrefsUtil.GetStringValueByKey( TokenPreferenceKey );
+            Debug.Log( $"LoadSavedSettings :: {savedEndpoint} / {savedToken}" );
 
             _onEndPointChanged.OnNext( savedEndpoint );
             _onAgentTokenChanged.OnNext( savedToken );
         }
         private void SaveSettings( string endpoint, string token )
         {
-            PlayerPrefs.SetString( EndpointPreferenceKey, endpoint );
-            PlayerPrefs.SetString( TokenPreferenceKey, token );
-
-            PlayerPrefs.Save();
+            PlayerPrefsUtil.SetStringValueByKey( EndpointPreferenceKey, endpoint );
+            PlayerPrefsUtil.SetStringValueByKey( TokenPreferenceKey, token );
         }
 
         private string NormalizeEndpoint( string input )
@@ -391,8 +391,8 @@ namespace StudioRendererSDK.Infrastructure
 
         private async UniTask<bool> SendYoutubePostAsync( string apiPath, string json )
         {
-            string endpoint = PlayerPrefs.GetString( EndpointPreferenceKey, string.Empty );
-            string token = PlayerPrefs.GetString( TokenPreferenceKey, string.Empty );
+            var endpoint = PlayerPrefsUtil.GetStringValueByKey( EndpointPreferenceKey );
+            var token = PlayerPrefsUtil.GetStringValueByKey( TokenPreferenceKey );
             if( string.IsNullOrWhiteSpace( endpoint ) || string.IsNullOrWhiteSpace( token ) )
             {
                 return false;
@@ -422,8 +422,8 @@ namespace StudioRendererSDK.Infrastructure
 
         public async UniTask<YoutubeLiveStatusResponse> GetYoutubeLiveStatusProcess()
         {
-            string endpoint = PlayerPrefs.GetString( EndpointPreferenceKey, string.Empty );
-            string token = PlayerPrefs.GetString( TokenPreferenceKey, string.Empty );
+            var endpoint = PlayerPrefsUtil.GetStringValueByKey( EndpointPreferenceKey );
+            var token = PlayerPrefsUtil.GetStringValueByKey( TokenPreferenceKey );
             if( string.IsNullOrWhiteSpace( endpoint ) || string.IsNullOrWhiteSpace( token ) )
             {
                 return null;

@@ -46,11 +46,19 @@ namespace LiveAppUI.Presenter
                 .Subscribe( msg => _configMenuView.AddLogText( msg ) )
                 .AddTo( this );
             _obsAgentModel.OnEndPointChanged
-                .Subscribe( endpoint => _configMenuView.SetEndPointWithoutNotify( endpoint ) )
+                .Subscribe( endpoint =>
+                {
+                    Debug.Log( $"_configMenuView.SetEndPointWithoutNotify( {endpoint} )" );
+                    _configMenuView.SetEndPointWithoutNotify( endpoint );
+                } )
                 .AddTo( this );
 
             _obsAgentModel.OnAgentTokenChanged
-                .Subscribe( token => _configMenuView.SetAgentTokenWithoutNotify( token ) )
+                .Subscribe( token =>
+                {
+                    Debug.Log( $"_configMenuView.SetAgentTokenWithoutNotify( {token} )" );
+                    _configMenuView.SetAgentTokenWithoutNotify( token );
+                } )
                 .AddTo( this );
         }
     }

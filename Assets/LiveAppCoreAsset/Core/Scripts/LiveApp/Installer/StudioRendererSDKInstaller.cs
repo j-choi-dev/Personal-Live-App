@@ -25,7 +25,8 @@ namespace LiveAppCore.Installer
             Container
                 .Bind<IObsAgentControlDomain>()
                 .To<ObsAgentController>()
-                .AsSingle();
+                .AsSingle()
+                .NonLazy();
             Container
                 .Bind<IWebRtcSenderSessionDomain>()
                 .FromInstance( _obsRenderSendSession )

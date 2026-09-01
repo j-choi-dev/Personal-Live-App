@@ -46,5 +46,7 @@ namespace LiveAppUI.Presenter
         /// </summary>
         /// <param name="isActive">Active값</param>
         void SetActive( bool isActive );
+
+        void SetNameWithoutNotify( string name );
     }
 }

@@ -6,7 +6,7 @@ namespace LiveApp.Util
         public static bool IsExistKey( string key )
             => PlayerPrefs.HasKey( key );
 
-        public static string GetStringValueByKey(string key)
+        public static string GetStringValueByKey( string key )
         {
             return PlayerPrefs.HasKey( key ) ?
                 PlayerPrefs.GetString( key, string.Empty ) :
@@ -14,6 +14,9 @@ namespace LiveApp.Util
         }
 
         public static void SetStringValueByKey( string key, string value )
-            => PlayerPrefs.SetString( key, value );
+        {
+            PlayerPrefs.SetString( key, value );
+            PlayerPrefs.Save();
+        }
     }
 }
