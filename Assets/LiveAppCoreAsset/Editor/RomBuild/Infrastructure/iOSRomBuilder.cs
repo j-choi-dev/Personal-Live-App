@@ -185,6 +185,8 @@ namespace LiveAppCore.Editor.Infrastructure
                 ApplyOBSSettingProcess();
                 ApplyPbxProjectSettings();
 
+                ValidateWebRtcXcodeIntegration();
+
                 Debug.Log( "[iOSRomBuilder] PostProcess completed." );
                 _isResult = true;
             }
@@ -339,6 +341,32 @@ namespace LiveAppCore.Editor.Infrastructure
                 throw new Exception( "REVERSED_CLIENT_ID is empty in GoogleService-Info.plist." );
             }
             Debug.Log( "[iOSRomBuilder] GoogleService-Info.plist validated." );
+        }
+
+        private void ValidateWebRtcXcodeIntegration()
+        {
+            string frameworkPath = Directory.EnumerateDirectories( XcodeProjectPath, "webrtc.framework", SearchOption.AllDirectories ).FirstOrDefault();
+
+            if( string.IsNullOrWhiteSpace( frameworkPath ) )
+            {
+                throw new FileNotFoundException( "Xcode 프로젝트에서 Unity WebRTC의 webrtc.framework를 찾지 못했습니다. Embedded Unity WebRTC Package의 iOS Plugin Import 설정을 확인하세요." );
+            }
+
+            string pbxPath = PBXProject.GetPBXProjectPath( XcodeProjectPath );
+
+            if( File.Exists( pbxPath ) == false )
+            {
+                throw new FileNotFoundException( $"project.pbxproj not found: {pbxPath}" );
+            }
+
+            string pbxText = File.ReadAllText( pbxPath );
+
+            if( pbxText.IndexOf( "webrtc.framework", StringComparison.OrdinalIgnoreCase ) < 0 )
+            {
+                throw new InvalidOperationException( "webrtc.framework 파일은 존재하지만 Xcode PBXProject에 등록되어 있지 않습니다. Unity WebRTC iOS Plugin Import 설정을 확인하세요." );
+            }
+
+            Debug.Log( $"[iOSRomBuilder] WebRTC iOS framework verified: {frameworkPath}" );
         }
 
         private void ApplyInfoPlistSettings()
@@ -508,9 +536,10 @@ namespace LiveAppCore.Editor.Infrastructure
         private void ApplyBuildProperties( PBXProject pbx, string mainTargetGuid, string frameworkTargetGuid )
         {
             string[] targetGuids = { mainTargetGuid, frameworkTargetGuid };
-            // Bitcode 비활성화
-            pbx.SetBuildProperty( mainTargetGuid, "ENABLE_BITCODE", "NO" );
-            pbx.SetBuildProperty( frameworkTargetGuid, "ENABLE_BITCODE", "NO" );
+            //// Bitcode 비활성화
+            //pbx.SetBuildProperty( mainTargetGuid, "ENABLE_BITCODE", "NO" );
+            //pbx.SetBuildProperty( frameworkTargetGuid, "ENABLE_BITCODE", "NO" );
+            ApplyWebRtcBuildProperties( pbx, mainTargetGuid, frameworkTargetGuid );
 
             // Unity-iPhone과 UnityFramework 모두 OS 버전 지정
             pbx.SetBuildProperty( mainTargetGuid, "IPHONEOS_DEPLOYMENT_TARGET", _iOSConfig.TargetOSVersion );
@@ -540,6 +569,12 @@ namespace LiveAppCore.Editor.Infrastructure
 
             // Xcode가 사용할 기본 AppIcon 세트 이름
             pbx.SetBuildProperty( mainTargetGuid, "ASSETCATALOG_COMPILER_APPICON_NAME", "AppIcon" );
+        }
+
+        private static void ApplyWebRtcBuildProperties( PBXProject pbx, string mainTargetGuid, string frameworkTargetGuid )
+        {
+            pbx.SetBuildProperty( mainTargetGuid, "ENABLE_BITCODE", "NO" );
+            pbx.SetBuildProperty( frameworkTargetGuid, "ENABLE_BITCODE", "NO" );
         }
 
         private void AddFrameworks( PBXProject pbx, string frameworkTargetGuid )
