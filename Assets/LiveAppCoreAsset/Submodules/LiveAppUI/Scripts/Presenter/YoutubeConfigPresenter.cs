@@ -11,47 +11,50 @@ namespace LiveAppUI.Presenter
     public class YoutubeConfigPresenter : MonoBehaviour
     {
         private IYoutubeConfigView _youtubeConfigView;
+        private IOBSConfigView _obsConfigView;
         private IObsAgentModel _obsAgentModel;
 
         private CancellationTokenSource _pollCancellation;
 
         [Inject]
-        public void Construct( IYoutubeConfigView youtubeConfigView,
-            IObsAgentModel obsAgentModel )
+        public void Construct(IYoutubeConfigView youtubeConfigView,
+            IOBSConfigView obsConfigView,
+            IObsAgentModel obsAgentModel)
         {
             _youtubeConfigView = youtubeConfigView;
+            _obsConfigView = obsConfigView;
             _obsAgentModel = obsAgentModel;
         }
         private void Awake()
         {
             _youtubeConfigView.OnPrepareButton
-                .Subscribe( _ => PrepareProcessAsync().Forget() )
-                .AddTo( this );
+                .Subscribe(_ => PrepareProcessAsync().Forget())
+                .AddTo(this);
             _youtubeConfigView.OnStartButton
-                .Subscribe( _ => StartProcessAsync().Forget() )
-                .AddTo( this );
+                .Subscribe(_ => StartProcessAsync().Forget())
+                .AddTo(this);
             _youtubeConfigView.OnStopButton
-                .Subscribe( _ => StopProcessAsync().Forget() )
-                .AddTo( this );
+                .Subscribe(_ => StopProcessAsync().Forget())
+                .AddTo(this);
         }
 
         private async UniTask<bool> PrepareProcessAsync()
         {
             string title = _youtubeConfigView.Title;
             string streamKey = _youtubeConfigView.StreamKey;
-            if( string.IsNullOrWhiteSpace( title ) )
+            if (string.IsNullOrWhiteSpace(title))
             {
-                _youtubeConfigView.SetFailed( "방송 제목을 입력하세요." );
+                _youtubeConfigView.SetFailed("방송 제목을 입력하세요.");
                 return false;
             }
 
-            if( string.IsNullOrWhiteSpace( streamKey ) )
+            if (string.IsNullOrWhiteSpace(streamKey))
             {
-                _youtubeConfigView.SetFailed( "YouTube Stream Key를 입력하세요." );
+                _youtubeConfigView.SetFailed("YouTube Stream Key를 입력하세요.");
                 return false;
             }
 
-            _youtubeConfigView.GetResolution( out int width, out int height );
+            _youtubeConfigView.GetResolution(out int width, out int height);
 
             var request = new YoutubeLivePrepareRequest
             {
@@ -61,13 +64,13 @@ namespace LiveAppUI.Presenter
                 streamKey = streamKey
             };
 
-            _youtubeConfigView.SetPreparing( "방송 준비 요청 중..." );
+            _youtubeConfigView.SetPreparing("방송 준비 요청 중...");
 
-            bool accepted = await _obsAgentModel.PrepareYoutubeLiveProcess( request );
+            bool accepted = await _obsAgentModel.PrepareYoutubeLiveProcess(request);
 
-            if( !accepted )
+            if (!accepted)
             {
-                _youtubeConfigView.SetFailed( "Agent가 방송 준비 요청을 거부했습니다." );
+                _youtubeConfigView.SetFailed("Agent가 방송 준비 요청을 거부했습니다.");
                 return false;
             }
 
@@ -77,13 +80,24 @@ namespace LiveAppUI.Presenter
 
         private async UniTask<bool> StartProcessAsync()
         {
-            _youtubeConfigView.SetStarting( "방송 시작 요청 중..." );
+            _youtubeConfigView.SetStarting("OBS 영상 연결 중...");
 
-            bool accepted =                await _obsAgentModel                    .StartYoutubeLiveProcess();
+            bool videoConnected = await _obsAgentModel.StartVideoLinkAsync(_obsConfigView.EndPoint, _obsConfigView.AgentToken);
 
-            if( !accepted )
+            if (!videoConnected)
             {
-                _youtubeConfigView.SetReady( "방송 시작 요청에 실패했습니다." );
+                _youtubeConfigView.SetReady("OBS 영상 연결에 실패했습니다.");
+                return false;
+            }
+
+            _youtubeConfigView.SetStarting("YouTube 방송 시작 요청 중...");
+
+            bool accepted = await _obsAgentModel.StartYoutubeLiveProcess();
+
+            if (!accepted)
+            {
+                _obsAgentModel.StopVideoLink();
+                _youtubeConfigView.SetReady("방송 시작 요청에 실패했습니다.");
                 return false;
             }
 
@@ -93,14 +107,13 @@ namespace LiveAppUI.Presenter
 
         private async UniTask<bool> StopProcessAsync()
         {
-            _youtubeConfigView.SetStarting( "방송 종료 요청 중..." );
-            bool accepted =                await _obsAgentModel                    .StopYoutubeLiveProcess();
-            if( !accepted )
+            _youtubeConfigView.SetStarting("방송 종료 요청 중...");
+            bool accepted = await _obsAgentModel.StopYoutubeLiveProcess();
+            if (!accepted)
             {
-                _youtubeConfigView.SetFailed( "방송 종료 요청에 실패했습니다." );
+                _youtubeConfigView.SetFailed("방송 종료 요청에 실패했습니다.");
                 return false;
             }
-
             StartPolling();
             return true;
         }
@@ -110,64 +123,65 @@ namespace LiveAppUI.Presenter
             _pollCancellation?.Cancel();
             _pollCancellation?.Dispose();
 
-            _pollCancellation = CancellationTokenSource.CreateLinkedTokenSource( this.GetCancellationTokenOnDestroy() );
+            _pollCancellation = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
 
-            PollStatusAsync( _pollCancellation.Token ).Forget();
+            PollStatusAsync(_pollCancellation.Token).Forget();
         }
 
-        private async UniTaskVoid PollStatusAsync( CancellationToken cancellationToken )
+        private async UniTaskVoid PollStatusAsync(CancellationToken cancellationToken)
         {
-            while( cancellationToken.IsCancellationRequested == false )
+            while (cancellationToken.IsCancellationRequested == false)
             {
                 YoutubeLiveStatusResponse status = await _obsAgentModel.GetYoutubeLiveStatusProcess();
 
-                if( status != null )
+                if (status != null)
                 {
-                    ApplyStatus( status );
+                    ApplyStatus(status);
 
-                    if( status.state == "READY" ||
+                    if (status.state == "READY" ||
                         status.state == "LIVE" ||
                         status.state == "FAILED" ||
-                        status.state == "IDLE" )
+                        status.state == "IDLE")
                     {
                         return;
                     }
                 }
 
-                await UniTask.Delay( 1000, cancellationToken: cancellationToken );
+                await UniTask.Delay(1000, cancellationToken: cancellationToken);
             }
         }
 
-        private void ApplyStatus( YoutubeLiveStatusResponse status )
+        private void ApplyStatus(YoutubeLiveStatusResponse status)
         {
-            switch( status.state )
+            switch (status.state)
             {
                 case "IDLE":
+                    _obsAgentModel.StopVideoLink();
                     _youtubeConfigView.SetIdleStatus();
                     break;
 
                 case "PREPARING":
-                    _youtubeConfigView.SetPreparing( status.message );
+                    _youtubeConfigView.SetPreparing(status.message);
                     break;
 
                 case "READY":
-                    _youtubeConfigView.SetReady( status.message );
+                    _youtubeConfigView.SetReady(status.message);
                     break;
 
                 case "STARTING":
-                    _youtubeConfigView.SetStarting( status.message );
+                    _youtubeConfigView.SetStarting(status.message);
                     break;
 
                 case "LIVE":
-                    //_youtubeConfigView.SetLive( status.message );
+                    _youtubeConfigView.SetLive(status.message);
                     break;
 
                 case "STOPPING":
-                    _youtubeConfigView.SetStarting( status.message );
+                    _youtubeConfigView.SetStarting(status.message);
                     break;
 
                 case "FAILED":
-                    _youtubeConfigView.SetFailed( status.message );
+                    _youtubeConfigView.SetFailed(status.message);
                     break;
             }
         }

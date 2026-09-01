@@ -21,7 +21,7 @@ namespace LiveAppUI.Presenter
 
         private void Awake()
         {
-            //SubscribeView();
+            SubscribeView();
             SubscribeModel();
         }
 
@@ -37,9 +37,9 @@ namespace LiveAppUI.Presenter
 
         private void SubscribeModel()
         {
-            //_agentModel.OnSystemMessageChanged
-            //    .Subscribe( msg => _configMenuView.AddLogText( msg ) )
-            //    .AddTo( this );
+            _agentModel.OnSystemMessageChanged
+                .Subscribe(msg => _configMenuView.AddLogText(msg))
+                .AddTo(this);
             _agentModel.OnRendererConnectionChanged
                 .Subscribe( isConnected => Debug.Log( $"[WebRTC UI] Renderer Connected: {isConnected}" ) )
                 .AddTo( this );
