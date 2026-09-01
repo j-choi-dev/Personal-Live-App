@@ -18,14 +18,14 @@ namespace StudioNetworkSDK.Infrastructure
                 var guid = Guid.NewGuid().ToString();
                 PlayerPrefsUtil.SetStringValueByKey( ServerConfigKey.GUID, guid );
             }
-            config.guid = PlayerPrefs.GetString( ServerConfigKey.GUID );
+            config.guid = PlayerPrefsUtil.GetStringValueByKey( ServerConfigKey.GUID );
 
             var platform = UnityEngine.Application.platform.ToString();
-            if( PlayerPrefs.HasKey( ServerConfigKey.Platform ) == false )
+            if( PlayerPrefsUtil.IsExistKey( ServerConfigKey.Platform ) == false )
             {
-                PlayerPrefs.SetString( ServerConfigKey.Platform, platform );
+                PlayerPrefsUtil.SetStringValueByKey( ServerConfigKey.Platform, platform );
             }
-            config.platform = PlayerPrefs.GetString( ServerConfigKey.Platform );
+            config.platform = PlayerPrefsUtil.GetStringValueByKey( ServerConfigKey.Platform );
             return config;
         }
     }
