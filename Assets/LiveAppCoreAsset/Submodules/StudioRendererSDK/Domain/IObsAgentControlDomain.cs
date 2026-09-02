@@ -8,6 +8,7 @@ namespace StudioRendererSDK.Domain
         IObservable<string> OnSystemMessageChanged { get; }
         IObservable<string> OnEndPointChanged { get; }
         IObservable<string> OnAgentTokenChanged { get; }
+        IObservable<string> OnStreamKeyChanged { get; }
 
         IObservable<bool> OnConnectionChanged { get; }
         IObservable<bool> OnStreamingChanged { get; }

@@ -11,11 +11,12 @@ namespace LiveAppUI.Presenter
         string Title { get; }
         string StreamKey { get; }
 
+        void SetStreamKeyWithoutNotify( string key );
         void SetIdleStatus();
         void SetPreparing( string message );
         void SetReady( string message );
         void SetStarting( string message );
-        void SetLive(string message);
+        void SetLive( string message );
         void SetFailed( string message );
         void GetResolution( out int width, out int height );
     }

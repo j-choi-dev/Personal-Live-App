@@ -10,6 +10,7 @@ namespace StudioRendererSDK.Application
         public IObservable<string> OnSystemMessageChanged => _obsAgentControlDomain.OnSystemMessageChanged;
         public IObservable<string> OnEndPointChanged => _obsAgentControlDomain.OnEndPointChanged;
         public IObservable<string> OnAgentTokenChanged => _obsAgentControlDomain.OnAgentTokenChanged;
+        public IObservable<string> OnStreamKeyChanged => _obsAgentControlDomain.OnStreamKeyChanged;
 
         public IObservable<bool> OnAgentConnectionChanged => _obsAgentControlDomain.OnConnectionChanged;
         public IObservable<bool> OnStreamingChanged => _obsAgentControlDomain.OnStreamingChanged;

@@ -33,6 +33,11 @@ namespace LiveAppUI.View
             SetIdleStatus();
         }
 
+        public void SetStreamKeyWithoutNotify( string key )
+        {
+            _streamKeyInput.SetTextWithoutNotify( key );
+        }
+
         public void GetResolution( out int width, out int height )
         {
             if( _resolutionDropdown.Value == 0 )

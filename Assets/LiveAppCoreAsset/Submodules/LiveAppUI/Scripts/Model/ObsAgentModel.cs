@@ -14,6 +14,7 @@ namespace LiveAppUI.Model
         public IObservable<string> OnSystemMessageChanged => _obsAgentContext.OnSystemMessageChanged.Merge( _renderSendContext.OnMessageChanged );
         public IObservable<string> OnEndPointChanged => _obsAgentContext.OnEndPointChanged;
         public IObservable<string> OnAgentTokenChanged => _obsAgentContext.OnAgentTokenChanged;
+        public IObservable<string> OnStreamKeyChanged => _obsAgentContext.OnStreamKeyChanged;
 
         public IObservable<bool> OnAgentConnectionChanged => _obsAgentContext.OnAgentConnectionChanged;
         public IObservable<bool> OnRendererConnectionChanged => _renderSendContext.OnRendererConnectionChanged;

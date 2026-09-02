@@ -9,6 +9,7 @@ namespace LiveAppUI.Model
         IObservable<string> OnSystemMessageChanged { get; }
         IObservable<string> OnEndPointChanged { get; }
         IObservable<string> OnAgentTokenChanged { get; }
+        IObservable<string> OnStreamKeyChanged { get; }
 
         IObservable<bool> OnAgentConnectionChanged { get; }
         IObservable<bool> OnRendererConnectionChanged { get; }

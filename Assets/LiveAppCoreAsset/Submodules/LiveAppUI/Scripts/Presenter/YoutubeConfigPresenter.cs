@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using LiveAppUI.Model;
+using LiveAppUI.View;
 using StudioRendererSDK.Domain;
 using System;
 using System.Threading;
@@ -39,6 +40,14 @@ namespace LiveAppUI.Presenter
             _youtubeConfigView.OnStopButton
                 .Subscribe(_ => StopProcessAsync().Forget())
                 .AddTo(this);
+
+            _obsAgentModel.OnStreamKeyChanged
+                .Subscribe( key =>
+                {
+                    Debug.Log( $"_youtubeConfigView.SetStreamKeyWithoutNotify( {key} )" );
+                    _youtubeConfigView.SetStreamKeyWithoutNotify( key );
+                } )
+                .AddTo( this );
         }
 
         private async UniTask<bool> PrepareProcessAsync()
