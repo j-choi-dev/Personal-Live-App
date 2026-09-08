@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using LiveAppCore;
 using LiveAppUI;
 using StudioCharacterSDK.Domain;
 using StudioCommonSDK.Domain;
@@ -7,13 +8,15 @@ using System;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace StudioResourceSDK.Application
 {
     public class ResourceLoadContext : IResourceLoadContext
     {
         private IResourceDownloadDomain _resourceLoadDomain;
-        private ISpawnPivotTransform _spawnPivot;
+        private ISpawnPivotTransform _objectPivot;
+        private ISpawnPivotTransform _backGroundPivot;
         private ISceneResourceListDomain _sceneResourceListDomain;
 
         private Subject<IReadOnlyList<ICharacter>> _onCharacterListChanged = new Subject<IReadOnlyList<ICharacter>>();
@@ -23,11 +26,13 @@ namespace StudioResourceSDK.Application
         public IObservable<ICharacter> OnLoadCharacter => _onLoadCharacter;
 
         public ResourceLoadContext( IResourceDownloadDomain resourceLoadDomain,
-            ISpawnPivotTransform spawnPivot,
+            [Inject(Id = SpawnPivotId.Object)] ISpawnPivotTransform objectPivot,
+            [Inject( Id = SpawnPivotId.Sprite )] ISpawnPivotTransform spritePivot,
             ISceneResourceListDomain sceneResourceListDomain)
         {
             _resourceLoadDomain = resourceLoadDomain;
-            _spawnPivot = spawnPivot;
+            _objectPivot = objectPivot;
+            _backGroundPivot = spritePivot;
             _sceneResourceListDomain = sceneResourceListDomain;
         }
 
@@ -35,6 +40,7 @@ namespace StudioResourceSDK.Application
             ServerType serverType, 
             IReadOnlyList<string> resourceIds )
         {
+            Debug.Log( $"LoadResource :: {resourceType}, {serverType}, {resourceIds[0]}" );
             var isAllSucceeded = true;
             for( var i = 0; i < resourceIds.Count; i++ )
             {
@@ -50,14 +56,21 @@ namespace StudioResourceSDK.Application
                 GameObject prefab = data as GameObject;
                 await UniTask.SwitchToMainThread();
 
-                GameObject instance = UnityEngine.Object.Instantiate( prefab, Vector3.zero, Quaternion.identity, _spawnPivot.Transform );
-                instance.transform.localScale = Vector3.one;
                 switch( resourceType )
                 {
                     case Domain.ResourceType.Character:
-                        var character = instance.GetComponent<ICharacter>();
+                        GameObject characterRawObj = UnityEngine.Object.Instantiate( prefab, Vector3.zero, Quaternion.identity, _objectPivot.Transform );
+                        characterRawObj.transform.localScale = Vector3.one;
+                        var character = characterRawObj.GetComponent<ICharacter>();
                         character.SetID( resourceId );
                         _sceneResourceListDomain.AddCharacter( character );
+                        break;
+                    case Domain.ResourceType.BackGround:
+                        GameObject bgRawObj = UnityEngine.Object.Instantiate( prefab, Vector3.zero, Quaternion.identity, _backGroundPivot.Transform );
+                        bgRawObj.transform.localScale = Vector3.one;
+                        var bg = bgRawObj.GetComponent<IBackground>();
+                        bg.SetID( resourceId );
+                        _sceneResourceListDomain.AddBackGround( bg );
                         break;
                 }
             }

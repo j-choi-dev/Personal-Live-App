@@ -19,7 +19,7 @@ namespace LiveAppCore.Editor.Infrastructure
         {
             try
             {
-                _guids = AssetDatabase.FindAssets( "t:Prefab", new[] { BuildPath.OriginalBundleRoot } ).ToList();
+                _guids = AssetDatabase.FindAssets( "t:Prefab", new[] { BuildPath.OriginalCharacterBundleRoot } ).ToList();
 
                 foreach(var guid in _guids)
                 {

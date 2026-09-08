@@ -52,7 +52,7 @@ namespace LiveAppUI.Presenter
 
             _resourceListView.SetServerItem( GetServerIndex( ServerType.Develop ) );
             _resourceListModel.SetCurrentServerType( ResourceType.Character, ServerType.Develop );
-            _resourceListModel.SetCurrentServerType( ResourceType.Stage, ServerType.Develop );
+            _resourceListModel.SetCurrentServerType( ResourceType.BackGround, ServerType.Develop );
             _resourceListModel.SetCurrentServerType( ResourceType.Prop, ServerType.Develop );
             await _resourceListModel.GetResourceList( ResourceType.Character, _currentResourceServerType );
         }
@@ -76,11 +76,11 @@ namespace LiveAppUI.Presenter
             _resourceMenuView.OnClickStage
                 .Subscribe( _ =>
                 {
-                    _currentResourceServerType = _resourceListModel.GetCurrentServerType( ResourceType.Stage );
+                    _currentResourceServerType = _resourceListModel.GetCurrentServerType( ResourceType.BackGround );
                     _resourceListView.SetServerItem( GetServerIndex( _currentResourceServerType ) );
                     UpdateResourceList(
-                        ResourceType.Stage,
-                    _resourceListModel.GetCurrentServerType( ResourceType.Stage ) );
+                        ResourceType.BackGround,
+                    _resourceListModel.GetCurrentServerType( ResourceType.BackGround ) );
                 } )
                 .AddTo( this );
             _resourceMenuView.OnClickProp

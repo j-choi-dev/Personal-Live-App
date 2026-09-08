@@ -4,7 +4,7 @@ namespace LiveAppUI
     {
         None = 0,
         Character,
-        Stage,
+        BackGround,
         Prop,
     }
 

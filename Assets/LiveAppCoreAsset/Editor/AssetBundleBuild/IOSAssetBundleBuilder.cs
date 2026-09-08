@@ -7,6 +7,7 @@ using System.Linq;
 using System.IO;
 using System;
 using StudioCharacterSDK.Domain;
+using StudioResourceSDK.Domain;
 
 namespace LiveAppCore.Editor.View
 {
@@ -19,7 +20,7 @@ namespace LiveAppCore.Editor.View
         {
             try
             {
-                _guids = AssetDatabase.FindAssets( "t:Prefab", new[] { BuildPath.OriginalBundleRoot } ).ToList();
+                _guids = AssetDatabase.FindAssets( "t:Prefab", new[] { BuildPath.OriginalCharacterBundleRoot, BuildPath.OriginalBackGroundBundleRoot } ).ToList();
 
                 foreach(var guid in _guids)
                 {
@@ -28,8 +29,16 @@ namespace LiveAppCore.Editor.View
                     Debug.Log( prefab.name );
                     if(prefab != null)
                     {
-                        var targetComponent = prefab.GetComponent<ICharacter>();
-                        if(targetComponent != null)
+                        var charcacter = prefab.GetComponent<ICharacter>();
+                        if( charcacter != null)
+                        {
+                            var build = new AssetBundleBuild();
+                            build.assetBundleName = prefab.name + ".ab";
+                            build.assetNames = new[] { assetPath };
+                            _buildMap.Add( build );
+                        }
+                        var bg = prefab.GetComponent<IBackground>();
+                        if( bg != null )
                         {
                             var build = new AssetBundleBuild();
                             build.assetBundleName = prefab.name + ".ab";
