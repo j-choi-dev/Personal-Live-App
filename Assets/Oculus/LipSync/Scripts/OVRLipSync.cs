@@ -252,8 +252,8 @@ public class OVRLipSync : MonoBehaviour
     public static Result Initialize()
     {
 #if UNITY_EDITOR_OSX
-        Debug.LogWarning( "OVRLipSync는 현재 Mac Apple Silicon Editor에서 지원되지 않아 초기화를 건너뜁니다.", this );
-        enabled = false;
+        Debug.LogWarning( "OVRLipSync는 현재 Mac Apple Silicon Editor에서 지원되지 않아 초기화를 건너뜁니다." );
+    sInitialized = Result.MissingDLL;
         return sInitialized;
 #endif
         int sampleRate;
@@ -276,8 +276,8 @@ public class OVRLipSync : MonoBehaviour
     public static Result Initialize(int sampleRate, int bufferSize)
     {
 #if UNITY_EDITOR_OSX
-        Debug.LogWarning( "OVRLipSync는 현재 Mac Apple Silicon Editor에서 지원되지 않아 초기화를 건너뜁니다.", this );
-        enabled = false;
+        Debug.LogWarning( "OVRLipSync는 현재 Mac Apple Silicon Editor에서 지원되지 않아 초기화를 건너뜁니다." );
+    sInitialized = Result.MissingDLL;
         return sInitialized;
 #endif
         String str = System.String.Format
