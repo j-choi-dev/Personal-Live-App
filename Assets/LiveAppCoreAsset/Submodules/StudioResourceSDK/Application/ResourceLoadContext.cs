@@ -45,7 +45,7 @@ namespace StudioResourceSDK.Application
             for( var i = 0; i < resourceIds.Count; i++ )
             {
                 var resourceId = resourceIds[i];
-                var targetId = resourceId.ToLower() +".ab";
+                var targetId = $"{resourceType.ToString().ToLower()}/{resourceId.ToLower()}.ab";
                 var data = await _resourceLoadDomain.DownloadProcess( targetId );
                 if( data == null )
                 {

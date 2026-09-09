@@ -4,6 +4,7 @@ using StudioResourceSDK.Application;
 using StudioSystemSDK.Application;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UniRx;
 
@@ -61,13 +62,21 @@ namespace LiveAppUI.Model
             try
             {
                 var cloudConfigTask = await _resourceConfigContext.LoadCloudConfig();
+                if(cloudConfigTask == null)
+                {
+                    UnityEngine.Debug.Log( $"cloudConfigTask == null" );
+                }
                 var serverConfigTask = await _resourceConfigContext.LoadServerConfig();
+                if( serverConfigTask == null )
+                {
+                    UnityEngine.Debug.Log( $"serverConfigTask == null" );
+                }
                 _serverConfigs =  serverConfigTask.ToList();
                 return true;
             }
             catch( Exception ex )
             {
-                UnityEngine.Debug.LogError( ex.Message );
+                UnityEngine.Debug.LogError( ex.Message ); 
                 return false;
             }
             // 리소스 & 구글 시트 링크 보존 -> Context 통해서 DataClass로 ...? @Choi

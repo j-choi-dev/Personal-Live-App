@@ -55,11 +55,18 @@ namespace StudioResourceSDK.Domain
             UnityEngine.Debug.Log( $"CurrentSelectedCharacter = NULL" );
         }
 
+        public void ResetCurrentSelectedBackGround()
+        {
+            CurrentSelectedBackGround = null;
+            _onCurrentBackGroundChanged.OnNext( CurrentSelectedBackGround );
+            UnityEngine.Debug.Log( $"CurrentSelectedBackGround = NULL" );
+        }
+
         public void AddBackGround( IBackground background )
         {
             _backGroundList.Add( background );
             _onChangedBackGroundList.OnNext( _backGroundList );
-            SetCurrentSelectedCharacter( background.ID );
+            SetCurrentSelectedBackGround( background.ID );
         }
 
         public void SetCurrentSelectedCharacter( string id )
@@ -79,7 +86,7 @@ namespace StudioResourceSDK.Domain
             var target = _backGroundList.FirstOrDefault( arg => arg.ID.Equals( id ) );
             if( target == null )
             {
-                ResetCurrentSelectedCharacter();
+                ResetCurrentSelectedBackGround();
                 return;
             }
             CurrentSelectedBackGround = target;

@@ -26,24 +26,25 @@ namespace LiveAppCore.Editor.View
                 {
                     var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-                    Debug.Log( prefab.name );
                     if(prefab != null)
                     {
                         var charcacter = prefab.GetComponent<ICharacter>();
                         if( charcacter != null)
                         {
                             var build = new AssetBundleBuild();
-                            build.assetBundleName = prefab.name + ".ab";
+                            build.assetBundleName = Path.Combine(ResourceType.Character.ToString(), prefab.name + ".ab").ToLower();
                             build.assetNames = new[] { assetPath };
                             _buildMap.Add( build );
+                            Debug.Log( $"{prefab.name} :: {assetPath}, {build.assetBundleName}" );
                         }
                         var bg = prefab.GetComponent<IBackground>();
                         if( bg != null )
                         {
                             var build = new AssetBundleBuild();
-                            build.assetBundleName = prefab.name + ".ab";
+                            build.assetBundleName = Path.Combine( ResourceType.BackGround.ToString(), prefab.name + ".ab" ).ToLower();
                             build.assetNames = new[] { assetPath };
                             _buildMap.Add( build );
+                            Debug.Log( $"{prefab.name} :: {assetPath}, {build.assetBundleName}" );
                         }
                     }
                 }

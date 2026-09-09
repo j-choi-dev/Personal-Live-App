@@ -23,7 +23,7 @@ namespace StudioResourceSDK.Domain
         private string _regionSystemName = "ap-northeast-2";
         private string _bucketName = "weavr-liveapp-assetbundle";
 
-        private string _targetPath = "iOS/0.0.0.1/character";
+        private string _targetPath = "iOS/0.0.0.1/"; // TODO 리펙터링 대상 @choi 26.09.09
         private string _cloudFrontBaseUrl = "https://d2vg1d2gp7bnqk.cloudfront.net/";
 
         private CloudConfigData _configData = null;
@@ -77,6 +77,7 @@ namespace StudioResourceSDK.Domain
             var normalizedName = name.Replace('\\', '/').TrimStart('/');
             var normalizedPrefix = _targetPath.Replace('\\', '/').Trim('/');
             var objectKey = normalizedPrefix + "/" + normalizedName;
+            Debug.Log( objectKey );
 
             try
             {

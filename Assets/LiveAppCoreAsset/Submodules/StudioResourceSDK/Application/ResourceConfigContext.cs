@@ -73,6 +73,7 @@ namespace StudioResourceSDK.Application
                     _fileSystemDomain.CopyFile( originPath, destPath, true );
                 }
                 var rawData = await _fileSystemDomain.LoadTextFile(destPath);
+                UnityEngine.Debug.Log( rawData );
                 return _domain.ParseServerConfigData( rawData );
             }
             catch(System.Exception e)
