@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+#if !LIVEAPP_ASSETBUNDLE_STANDALONE
 using UnityEngine.XR.ARKit;
+#endif
 using Unity.Collections;
 using TMPro;
 using StudioCharacterSDK.Infrastructure;
@@ -15,8 +17,9 @@ namespace StudioTrackingSDK.Infrastructure
         [SerializeField] private TMP_Text _logHeader;
         [SerializeField] private TMP_Text _logDetail;
         [SerializeField] private TMP_Text _logResult;
-
+#if !LIVEAPP_ASSETBUNDLE_STANDALONE
         private ARKitFaceSubsystem _faceSubsystem;
+        #endif
 
         private void Awake()
         {
@@ -25,14 +28,19 @@ namespace StudioTrackingSDK.Infrastructure
 
         private void OnEnable()
         {
+#if !LIVEAPP_ASSETBUNDLE_STANDALONE
             faceManager.trackablesChanged.AddListener( OnFaceChanged );
+#endif
         }
 
         private void OnDisable()
         {
+#if !LIVEAPP_ASSETBUNDLE_STANDALONE
             faceManager.trackablesChanged.RemoveListener( OnFaceChanged );
+#endif
         }
 
+#if !LIVEAPP_ASSETBUNDLE_STANDALONE
         /// <summary>
         /// 얼굴 정보 변경 이벤트
         /// </summary>
@@ -224,5 +232,6 @@ namespace StudioTrackingSDK.Infrastructure
             }
             return angle;
         }
+#endif
     }
 }
