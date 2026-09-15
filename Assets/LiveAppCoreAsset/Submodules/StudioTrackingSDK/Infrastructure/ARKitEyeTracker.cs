@@ -4,7 +4,9 @@ using UnityEngine.XR.ARSubsystems;
 using UniRx;
 using System;
 using StudioTrackingSDK.Domain;
+#if !LIVEAPP_ASSETBUNDLE_STANDALONE
 using UnityEngine.XR.ARKit;
+#endif
 using Unity.Collections;
 
 namespace StudioTrackingSDK.Infrastructure
@@ -31,7 +33,9 @@ namespace StudioTrackingSDK.Infrastructure
 
         public bool IsActive { get; private set; }
 
+#if !LIVEAPP_ASSETBUNDLE_STANDALONE
         private ARKitFaceSubsystem _faceSubsystem;
+#endif
 
         private void OnEnable()
         {
@@ -47,9 +51,9 @@ namespace StudioTrackingSDK.Infrastructure
         /// 눈동자 정보 변경 이벤트
         /// </summary>
         /// <param name="eventArgs">발생한 이벤트 값</param>
-        private void OnEyeChanged(
-    ARTrackablesChangedEventArgs<ARFace> eventArgs )
+        private void OnEyeChanged( ARTrackablesChangedEventArgs<ARFace> eventArgs )
         {
+#if !LIVEAPP_ASSETBUNDLE_STANDALONE
             if( !IsActive )
             {
                 return;
@@ -75,8 +79,10 @@ namespace StudioTrackingSDK.Infrastructure
                     return;
                 }
             }
+#endif
         }
 
+#if !LIVEAPP_ASSETBUNDLE_STANDALONE
         private bool TryUpdateEyes( ARFace face )
         {
             if( face == null ||
@@ -173,6 +179,7 @@ namespace StudioTrackingSDK.Infrastructure
             _onEyeBallAngleX.OnNext( resultX );
             _onEyeBallAngleY.OnNext( resultY );
         }
+#endif
 
         public void SetIsActive( bool isValue )
             => IsActive = isValue;

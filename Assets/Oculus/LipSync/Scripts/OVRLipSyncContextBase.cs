@@ -100,8 +100,13 @@ public class OVRLipSyncContextBase : MonoBehaviour
     /// </summary>
     void Awake()
     {
+#if UNITY_EDITOR_OSX
+        Debug.LogWarning( "OVRLipSync는 현재 Mac Apple Silicon Editor에서 지원되지 않아 비활성화합니다.", this );
+        enabled = false;
+        return;
+#endif
         // Cache the audio source we are going to be using to pump data to the SR
-        if (!audioSource)
+        if( !audioSource)
         {
             audioSource = GetComponent<AudioSource>();
         }

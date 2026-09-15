@@ -12,18 +12,20 @@ using System.Net;
 using System.Net.Http;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace StudioResourceSDK.Domain
 {
     public class S3CloudResourceDownloader : IResourceDownloadDomain
     {
+        private const string AssetBundleVersion = "0.0.0.1";
         private IAmazonS3 _s3Client = null;
         private IFileSystemDomain _fileSystemDomain = null;
 
         private string _regionSystemName = "ap-northeast-2";
         private string _bucketName = "weavr-liveapp-assetbundle";
 
-        private string _targetPath = "iOS/0.0.0.1/character";
+        private string TargetPath => $"AssetBundles/{AssetBundleVersion}/{GetPlatformFolder()}/";
         private string _cloudFrontBaseUrl = "https://d2vg1d2gp7bnqk.cloudfront.net/";
 
         private CloudConfigData _configData = null;
@@ -34,7 +36,7 @@ namespace StudioResourceSDK.Domain
         private readonly List<string> _resourceList = new List<string>();
         public IReadOnlyList<string> CurrentResourceList => _resourceList;
 
-        public S3CloudResourceDownloader( IFileSystemDomain fileSystemDomain)
+        public S3CloudResourceDownloader( IFileSystemDomain fileSystemDomain )
         {
             _fileSystemDomain = fileSystemDomain;
 
@@ -45,7 +47,7 @@ namespace StudioResourceSDK.Domain
             Timeout = TimeSpan.FromSeconds(10)
         };
 
-        public async UniTask<bool> InitProcess( CloudConfigData config)
+        public async UniTask<bool> InitProcess( CloudConfigData config )
         {
             _configData = config;
             if( string.IsNullOrWhiteSpace( config.AccessKey ) )
@@ -74,9 +76,10 @@ namespace StudioResourceSDK.Domain
                 throw new InvalidDataException( "Bucket Name is NULL" );
             }
 
-            var normalizedName = name.Replace('\\', '/').TrimStart('/');
-            var normalizedPrefix = _targetPath.Replace('\\', '/').Trim('/');
+            var normalizedName = name.Replace('\\', '/').TrimStart('/'); 
+            var normalizedPrefix = TargetPath.Replace( '\\', '/' ).Trim( '/' );
             var objectKey = normalizedPrefix + "/" + normalizedName;
+            Debug.Log( $"AssetBundle 다운로드 :: Platform={GetPlatformFolder()}, Key={objectKey}" );
 
             try
             {
@@ -111,6 +114,10 @@ namespace StudioResourceSDK.Domain
                             {
                                 throw new Exception( "Asset Name is NULL" );
                             }
+                            foreach( string assetName in assetNames )
+                            {
+                                Debug.Log( $"[AssetBundle Contents] {assetName}" );
+                            }
 
                             string targetAssetName = assetNames[0];
                             Debug.Log( $"AssetBundle 내부 에셋 로드 시작. :: Bundle={name}, Asset={targetAssetName}" );
@@ -122,7 +129,19 @@ namespace StudioResourceSDK.Domain
                                 throw new Exception( "Asset Load Failed" );
                             }
                             Debug.Log( $"UnityEngine.Object 로드 성공 :: Name={loadedObject.name}, Type={loadedObject.GetType().Name}" );
-                            // loadedObject를 이후 Domain 또는 Infrastructure로 전달하거나 타입에 따라 처리한다.
+
+                            GameObject prefab =    loadedObject as GameObject;
+
+                            if( prefab != null )
+                            {
+                                Image[] images = prefab.GetComponentsInChildren<Image>( true );
+                                foreach( Image image in images )
+                                {
+                                    string spriteName = image.sprite != null ? image.sprite.name : "NULL";
+                                    string textureName = image.sprite != null && image.sprite.texture != null ? image.sprite.texture.name : "NULL";
+                                    Debug.Log( $"[AssetBundle Image Debug] Object={image.name}, Sprite={spriteName}, Texture={textureName}, Color={image.color}" );
+                                }
+                            }
                         }
                         finally
                         {
@@ -153,10 +172,7 @@ namespace StudioResourceSDK.Domain
             {
                 throw new InvalidDataException( "CloudFront Base URL is NULL" );
             }
-
-            var normalizedTargetPath = string.IsNullOrWhiteSpace( _targetPath )
-                ? string.Empty
-                : _targetPath.Replace( '\\', '/' ).Trim( '/' );
+            var normalizedTargetPath = TargetPath.Replace( '\\', '/' ).Trim( '/' );
 
             var normalizedName = name.Replace( '\\', '/' ).Trim( '/' );
 
@@ -220,10 +236,7 @@ namespace StudioResourceSDK.Domain
             {
                 throw new InvalidDataException( "Bucket Name is NULL" );
             }
-
-            var normalizedPrefix = string.IsNullOrWhiteSpace(_targetPath)
-                ? string.Empty
-                : _targetPath.Replace('\\', '/').Trim('/') + "/";
+            var normalizedPrefix = TargetPath.Replace( '\\', '/' ).Trim( '/' ) + "/";
 
             var updatedResourceList = new List<string>();
             string continuationToken = null;
@@ -275,7 +288,7 @@ namespace StudioResourceSDK.Domain
                         break;
                     }
                 }
-                while( string.IsNullOrEmpty( continuationToken ) == false);
+                while( string.IsNullOrEmpty( continuationToken ) == false );
 
                 updatedResourceList.Sort( StringComparer.Ordinal );
 
@@ -290,6 +303,18 @@ namespace StudioResourceSDK.Domain
                 Debug.LogError( exception.Message );
                 return false;
             }
+        }
+        private static string GetPlatformFolder()
+        {
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            return "Windows";
+#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+    return "macOS";
+#elif UNITY_IOS && !UNITY_EDITOR
+    return "iOS";
+#else
+    throw new PlatformNotSupportedException( $"지원하지 않는 AssetBundle 플랫폼입니다. Platform={Application.platform}" );
+#endif
         }
     }
 }

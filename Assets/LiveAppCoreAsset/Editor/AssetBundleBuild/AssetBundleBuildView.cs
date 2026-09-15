@@ -22,11 +22,15 @@ namespace LiveAppCore.Editor.View
             IAssetBundleBuildDomain domain = null;
             switch(target)
             {
-
                 case BuildTarget.StandaloneWindows64:
                 case BuildTarget.StandaloneWindows:
                     targetGroup = BuildTargetGroup.Standalone;
-                    domain = new StanaloneAssetBundleBuilder();
+                    domain = new StanaloneAssetBundleBuilder( target );
+                    break;
+
+                case BuildTarget.StandaloneOSX:
+                    targetGroup = BuildTargetGroup.Standalone;
+                    domain = new StanaloneAssetBundleBuilder( target );
                     break;
 
                 case BuildTarget.Android:
@@ -35,7 +39,7 @@ namespace LiveAppCore.Editor.View
 
                 case BuildTarget.iOS:
                     targetGroup = BuildTargetGroup.iOS;
-                    domain = new IOSAssetBundleBuilder();
+                    domain = new IOSAssetBundleBuilder( target );
                     break;
 
                 default:
@@ -45,6 +49,45 @@ namespace LiveAppCore.Editor.View
             var application = new AssetBundleBuildApplication(domain);
             var result = await application.ExecuteAssetBundleBuild(targetGroup);
             if(result == false)
+            {
+                throw new Exception( "AssetBundle Build Failed" );
+            }
+            Debug.Log( "AssetBundle Build Success" );
+            return true;
+        }
+        public static async UniTask<bool> ExecuteAssetBundleBuild( BuildTarget target )
+        {
+            var targetGroup = default(BuildTargetGroup);
+            IAssetBundleBuildDomain domain = null;
+            switch( target )
+            {
+                case BuildTarget.StandaloneWindows64:
+                case BuildTarget.StandaloneWindows:
+                    targetGroup = BuildTargetGroup.Standalone;
+                    domain = new StanaloneAssetBundleBuilder( target );
+                    break;
+
+                case BuildTarget.StandaloneOSX:
+                    targetGroup = BuildTargetGroup.Standalone;
+                    domain = new StanaloneAssetBundleBuilder( target );
+                    break;
+
+                case BuildTarget.Android:
+                    targetGroup = BuildTargetGroup.Android;
+                    break;
+
+                case BuildTarget.iOS:
+                    targetGroup = BuildTargetGroup.iOS;
+                    domain = new IOSAssetBundleBuilder( target );
+                    break;
+
+                default:
+                    throw new Exception( $"Invalid Platform :: {target}" );
+            }
+
+            var application = new AssetBundleBuildApplication(domain);
+            var result = await application.ExecuteAssetBundleBuild(targetGroup);
+            if( result == false )
             {
                 throw new Exception( "AssetBundle Build Failed" );
             }

@@ -9,7 +9,7 @@ namespace StudioResourceSDK.Domain
     {
         None = 0,
         Character,
-        Stage,
+        BackGround,
         Prop,
         Media,
     }
