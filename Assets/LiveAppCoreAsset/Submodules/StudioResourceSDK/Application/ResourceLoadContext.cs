@@ -66,8 +66,14 @@ namespace StudioResourceSDK.Application
                         _sceneResourceListDomain.AddCharacter( character );
                         break;
                     case Domain.ResourceType.BackGround:
-                        GameObject bgRawObj = UnityEngine.Object.Instantiate( prefab, Vector3.zero, Quaternion.identity, _backGroundPivot.Transform );
-                        bgRawObj.transform.localScale = Vector3.one;
+                        GameObject bgRawObj = UnityEngine.Object.Instantiate( prefab, _backGroundPivot.Transform, false );
+                        RectTransform bgRect = bgRawObj.GetComponent<RectTransform>();
+                        if( bgRect != null )
+                        {
+                            bgRect.anchoredPosition3D = Vector3.zero;
+                            bgRect.localScale = Vector3.one;
+                            bgRect.localRotation = Quaternion.identity;
+                        }
                         var bg = bgRawObj.GetComponent<IBackground>();
                         bg.SetID( resourceId );
                         _sceneResourceListDomain.AddBackGround( bg );

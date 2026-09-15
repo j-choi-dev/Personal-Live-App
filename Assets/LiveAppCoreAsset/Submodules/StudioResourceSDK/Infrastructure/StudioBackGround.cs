@@ -28,6 +28,22 @@ namespace StudioResourceSDK.Infrastructure
                 return;
             }
 
+            RectTransform rootRect = transform as RectTransform;
+
+            if( rootRect != null )
+            {
+                rootRect.anchoredPosition3D = Vector3.zero;
+                rootRect.localScale = Vector3.one;
+                rootRect.localRotation = Quaternion.identity;
+            }
+
+            viewport.localScale = Vector3.one;
+            imageRect.localScale = Vector3.one;
+
+            Vector3 viewportPosition = viewport.anchoredPosition3D;
+            viewportPosition.z = 0f;
+            viewport.anchoredPosition3D = viewportPosition;
+
             Canvas.ForceUpdateCanvases();
 
             float viewportWidth = viewport.rect.width;
@@ -62,22 +78,13 @@ namespace StudioResourceSDK.Infrastructure
             imageRect.anchorMax = new Vector2( 0.5f, 0.5f );
             imageRect.pivot = new Vector2( 0.5f, 0.5f );
             imageRect.localScale = Vector3.one;
+            imageRect.localRotation = Quaternion.identity;
             imageRect.sizeDelta = new Vector2( targetWidth, targetHeight );
-            imageRect.anchoredPosition = Vector2.zero;
+            imageRect.anchoredPosition3D = Vector3.zero;
 
             image.color = Color.white;
 
-            Debug.Log( $"{ID} ... Background Layout :: Viewport={viewportWidth}x{viewportHeight}, Sprite={spriteWidth}x{spriteHeight}, Result={targetWidth}x{targetHeight}" );
-        }
-
-        public void RefreshLayout()
-        {
-        }
-
-        public void SetSprite( Sprite sprite )
-        {
-            image.sprite = sprite;
-            RefreshLayout();
+            Debug.Log( $"{ID} ... Background Layout :: RootZ={rootRect?.localPosition.z}, Viewport={viewportWidth}x{viewportHeight}, Sprite={spriteWidth}x{spriteHeight}, Result={targetWidth}x{targetHeight}" );
         }
     }
 }
