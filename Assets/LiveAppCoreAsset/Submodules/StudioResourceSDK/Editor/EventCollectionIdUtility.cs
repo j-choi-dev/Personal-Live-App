@@ -36,68 +36,14 @@ namespace StudioResourceSDK.Editor
             }
         }
 
-        private static void CollectIDs(GameObject rootObject, HashSet<int> usedIDs)
+        public static HashSet<int> CollectUsedIDs()
         {
-            foreach (EventCollection collection in rootObject.GetComponentsInChildren<EventCollection>(true))
-            {
-                if (collection.CollectionID != 0)
-                {
-                    usedIDs.Add(collection.CollectionID);
-                }
-            }
+            HashSet<int> usedIDs = new HashSet<int>();
 
-            foreach (EventCollectionGroup group in rootObject.GetComponentsInChildren<EventCollectionGroup>(true))
-            {
-                if (group.GroupID != 0)
-                {
-                    usedIDs.Add(group.GroupID);
-                }
-            }
+            CollectPrefabIDs(usedIDs);
+            CollectSceneIDs(usedIDs);
 
-            foreach (EventCollectionElement element in rootObject.GetComponentsInChildren<EventCollectionElement>(true))
-            {
-                if (element.EventID != 0)
-                {
-                    usedIDs.Add(element.EventID);
-                }
-            }
-        }
-
-        private static void CollectSceneIDs(HashSet<int> usedIDs)
-        {
-            for (int i = 0; i < SceneManager.sceneCount; i++)
-            {
-                Scene scene = SceneManager.GetSceneAt(i);
-
-                if (scene.isLoaded == false)
-                {
-                    continue;
-                }
-
-                foreach (GameObject rootObject in scene.GetRootGameObjects())
-                {
-                    CollectIDs(rootObject, usedIDs);
-                }
-            }
-        }
-
-        private static void CollectIDs(GameObject rootObject, HashSet<int> usedIDs)
-        {
-            foreach (EventCollection collection in rootObject.GetComponentsInChildren<EventCollection>(true))
-            {
-                if (collection.CollectionID != 0)
-                {
-                    usedIDs.Add(collection.CollectionID);
-                }
-            }
-
-            foreach (EventCollectionNode node in rootObject.GetComponentsInChildren<EventCollectionNode>(true))
-            {
-                if (node.ID != 0)
-                {
-                    usedIDs.Add(node.ID);
-                }
-            }
+            return usedIDs;
         }
 
         public static void RegenerateHierarchyIDs(GameObject rootObject)
@@ -147,6 +93,24 @@ namespace StudioResourceSDK.Editor
             return hash & int.MaxValue;
         }
 
+        private static void CollectSceneIDs(HashSet<int> usedIDs)
+        {
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                Scene scene = SceneManager.GetSceneAt(i);
+
+                if (scene.isLoaded == false)
+                {
+                    continue;
+                }
+
+                foreach (GameObject rootObject in scene.GetRootGameObjects())
+                {
+                    CollectIDs(rootObject, usedIDs);
+                }
+            }
+        }
+
         private static void CollectPrefabIDs(HashSet<int> usedIDs)
         {
             string[] prefabGuids = AssetDatabase.FindAssets("t:Prefab");
@@ -159,6 +123,33 @@ namespace StudioResourceSDK.Editor
                 if (prefab != null)
                 {
                     CollectIDs(prefab, usedIDs);
+                }
+            }
+        }
+
+        private static void CollectIDs(GameObject rootObject, HashSet<int> usedIDs)
+        {
+            foreach (EventCollection collection in rootObject.GetComponentsInChildren<EventCollection>(true))
+            {
+                if (collection.CollectionID != 0)
+                {
+                    usedIDs.Add(collection.CollectionID);
+                }
+            }
+
+            foreach (EventCollectionGroup group in rootObject.GetComponentsInChildren<EventCollectionGroup>(true))
+            {
+                if (group.GroupID != 0)
+                {
+                    usedIDs.Add(group.GroupID);
+                }
+            }
+
+            foreach (EventCollectionElement element in rootObject.GetComponentsInChildren<EventCollectionElement>(true))
+            {
+                if (element.EventID != 0)
+                {
+                    usedIDs.Add(element.EventID);
                 }
             }
         }

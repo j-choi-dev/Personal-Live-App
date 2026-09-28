@@ -28,7 +28,23 @@ namespace StudioResourceSDK.Editor
                 rect.y += 2f;
                 rect.height = EditorGUIUtility.singleLineHeight;
 
-                EditorGUI.PropertyField(rect, element, GUIContent.none);
+                MonoBehaviour current = element.objectReferenceValue as MonoBehaviour;
+
+                EditorGUI.BeginChangeCheck();
+
+                MonoBehaviour selected = EditorGUI.ObjectField(rect, current, typeof(MonoBehaviour), true) as MonoBehaviour;
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    if (selected == null || selected is EventCollectionGroup || selected is EventCollectionElement)
+                    {
+                        element.objectReferenceValue = selected;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"EventCollectionGroup 또는 EventCollectionElement만 등록할 수 있습니다. Type={selected.GetType().Name}", selected);
+                    }
+                }
             };
         }
 
@@ -57,12 +73,17 @@ namespace StudioResourceSDK.Editor
     public class EventCollectionGroupEditor : UnityEditor.Editor
     {
         private ReorderableList _items;
+        private SerializedProperty _groupIDProperty;
+        private SerializedProperty _displayNameProperty;
+        private SerializedProperty _itemsProperty;
 
         private void OnEnable()
         {
-            SerializedProperty itemsProperty = serializedObject.FindProperty("items");
+            _groupIDProperty = serializedObject.FindProperty("groupID");
+            _displayNameProperty = serializedObject.FindProperty("displayName");
+            _itemsProperty = serializedObject.FindProperty("items");
 
-            _items = new ReorderableList(serializedObject, itemsProperty, true, true, true, true);
+            _items = new ReorderableList(serializedObject, _itemsProperty, true, true, true, true);
 
             _items.drawHeaderCallback = rect =>
             {
@@ -71,12 +92,28 @@ namespace StudioResourceSDK.Editor
 
             _items.drawElementCallback = (rect, index, isActive, isFocused) =>
             {
-                SerializedProperty element = itemsProperty.GetArrayElementAtIndex(index);
+                SerializedProperty element = _itemsProperty.GetArrayElementAtIndex(index);
 
                 rect.y += 2f;
                 rect.height = EditorGUIUtility.singleLineHeight;
 
-                EditorGUI.PropertyField(rect, element, GUIContent.none);
+                MonoBehaviour current = element.objectReferenceValue as MonoBehaviour;
+
+                EditorGUI.BeginChangeCheck();
+
+                MonoBehaviour selected = EditorGUI.ObjectField(rect, current, typeof(MonoBehaviour), true) as MonoBehaviour;
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    if (selected == null || selected is EventCollectionGroup || selected is EventCollectionElement)
+                    {
+                        element.objectReferenceValue = selected;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"EventCollectionGroup 또는 EventCollectionElement만 등록할 수 있습니다. Type={selected.GetType().Name}", selected);
+                    }
+                }
             };
         }
 
@@ -84,15 +121,12 @@ namespace StudioResourceSDK.Editor
         {
             serializedObject.Update();
 
-            SerializedProperty idProperty = serializedObject.FindProperty("id");
-            SerializedProperty displayNameProperty = serializedObject.FindProperty("displayName");
-
             using (new EditorGUI.DisabledScope(true))
             {
-                EditorGUILayout.PropertyField(idProperty, new GUIContent("Group ID"));
+                EditorGUILayout.PropertyField(_groupIDProperty, new GUIContent("Group ID"));
             }
 
-            EditorGUILayout.PropertyField(displayNameProperty, new GUIContent("Display Name"));
+            EditorGUILayout.PropertyField(_displayNameProperty, new GUIContent("Display Name"));
 
             EditorGUILayout.Space();
 
@@ -105,19 +139,25 @@ namespace StudioResourceSDK.Editor
     [CustomEditor(typeof(EventCollectionElement), true)]
     public class EventCollectionElementEditor : UnityEditor.Editor
     {
+        private SerializedProperty _eventIDProperty;
+        private SerializedProperty _eventDisplayNameProperty;
+
+        private void OnEnable()
+        {
+            _eventIDProperty = serializedObject.FindProperty("eventID");
+            _eventDisplayNameProperty = serializedObject.FindProperty("eventDisplayName");
+        }
+
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
-            SerializedProperty idProperty = serializedObject.FindProperty("id");
-            SerializedProperty displayNameProperty = serializedObject.FindProperty("displayName");
-
             using (new EditorGUI.DisabledScope(true))
             {
-                EditorGUILayout.PropertyField(idProperty, new GUIContent("Event ID"));
+                EditorGUILayout.PropertyField(_eventIDProperty, new GUIContent("Event ID"));
             }
 
-            EditorGUILayout.PropertyField(displayNameProperty, new GUIContent("Display Name"));
+            EditorGUILayout.PropertyField(_eventDisplayNameProperty, new GUIContent("Display Name"));
 
             EventCollectionElement element = (EventCollectionElement)target;
 
@@ -126,7 +166,9 @@ namespace StudioResourceSDK.Editor
                 EditorGUILayout.EnumPopup("Data Type", element.DataType);
             }
 
-            DrawPropertiesExcluding(serializedObject, "m_Script", "id", "displayName");
+            EditorGUILayout.Space();
+
+            DrawPropertiesExcluding(serializedObject, "m_Script", "eventID", "eventDisplayName");
 
             serializedObject.ApplyModifiedProperties();
         }

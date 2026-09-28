@@ -33,13 +33,16 @@ namespace StudioResourceSDK.Editor
             GameObject pivotObject = CreateObject("Transform Pivot", rootObject.transform);
             collection.SetEditorTransformPivot(pivotObject.transform);
 
+            Undo.AddComponent<TransformEmitter>(pivotObject);
+            BoolEmitter boolEmitter = Undo.AddComponent<BoolEmitter>(pivotObject);
+
             CreateObject(GetResourceObjectName(resourceType), pivotObject.transform);
 
             GameObject listObject = CreateObject("EventCollectionList", rootObject.transform);
             EventCollectionList eventList = Undo.AddComponent<EventCollectionList>(listObject);
             collection.SetEditorList(eventList);
 
-            CreateDefaultEvents(eventList, listObject.transform, pivotObject, pivotObject.transform, usedIDs);
+            CreateDefaultEvents(eventList, listObject.transform, usedIDs);
 
             eventList.Refresh();
 
@@ -97,17 +100,17 @@ namespace StudioResourceSDK.Editor
             return element;
         }
 
-        private static void CreateDefaultEvents(EventCollectionList eventList, Transform parent, Transform transformTarget, HashSet<int> usedIDs)
+        private static void CreateDefaultEvents(EventCollectionList eventList, Transform parent, HashSet<int> usedIDs)
         {
             GameObject defaultGroupObject = CreateObject("Default Event Group", parent);
 
             EventCollectionGroup defaultGroup = Undo.AddComponent<EventCollectionGroup>(defaultGroupObject);
             defaultGroup.SetEditorIdentity(EventCollectionIdUtility.GenerateUniqueID(usedIDs), "Default Event Group");
 
-            GameObject setActiveObject = CreateObject("SetActive Event", defaultGroupObject.transform);
+            GameObject toggleObject = CreateObject("Toggle Event", defaultGroupObject.transform);
 
-            SetActiveEvent setActiveEvent = Undo.AddComponent<SetActiveEvent>(setActiveObject);
-            setActiveEvent.SetEditorIdentity(EventCollectionIdUtility.GenerateUniqueID(usedIDs), "SetActive");
+            ToggleEvent toggleEvent = Undo.AddComponent<ToggleEvent>(toggleObject);
+            toggleEvent.SetEditorIdentity(EventCollectionIdUtility.GenerateUniqueID(usedIDs), "Toggle");
 
             GameObject transformObject = CreateObject("Transform Event", defaultGroupObject.transform);
 
@@ -115,13 +118,14 @@ namespace StudioResourceSDK.Editor
             transformGroup.SetEditorIdentity(EventCollectionIdUtility.GenerateUniqueID(usedIDs), "Transform");
 
             EventCollectionGroup positionGroup = CreateTransformGroup(
-    "Position",
-    transformObject.transform,
-    usedIDs,
-    "Position X",
-    "Position Y",
-    "Position Z"
-);
+                "Position",
+                transformObject.transform,
+                usedIDs,
+                "Position X",
+                "Position Y",
+                "Position Z"
+            );
+
             EventCollectionGroup rotationGroup = CreateTransformGroup(
                 "Rotation",
                 transformObject.transform,
@@ -144,12 +148,12 @@ namespace StudioResourceSDK.Editor
             transformGroup.AddEditorItem(rotationGroup);
             transformGroup.AddEditorItem(scaleGroup);
 
-            defaultGroup.AddEditorItem(setActiveEvent);
+            defaultGroup.AddEditorItem(toggleEvent);
             defaultGroup.AddEditorItem(transformGroup);
 
             eventList.AddEditorItem(defaultGroup);
 
-            EditorUtility.SetDirty(setActiveEvent);
+            EditorUtility.SetDirty(toggleEvent);
             EditorUtility.SetDirty(positionGroup);
             EditorUtility.SetDirty(rotationGroup);
             EditorUtility.SetDirty(scaleGroup);

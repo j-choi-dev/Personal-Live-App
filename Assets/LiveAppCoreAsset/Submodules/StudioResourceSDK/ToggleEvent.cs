@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace StudioResourceSDK.Domain
 {
-    public class SetActiveEvent : EventCollectionElement
+    public class ToggleEvent : EventCollectionElement
     {
         [SerializeField] private UnityEvent<bool> onValueChanged = new UnityEvent<bool>();
 
