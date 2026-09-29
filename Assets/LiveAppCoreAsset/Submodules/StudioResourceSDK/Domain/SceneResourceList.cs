@@ -1,7 +1,9 @@
 ﻿using StudioCharacterSDK.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
+using Unity.VisualScripting;
 
 namespace StudioResourceSDK.Domain
 {
@@ -38,7 +40,17 @@ namespace StudioResourceSDK.Domain
 
         public bool IsExist( ResourceType resourceType, string id )
         {
-            return _characterList.Exists( arg => arg.ID.Equals( id ) );
+            switch(resourceType)
+            {
+                case ResourceType.Character:
+                    return _characterList.Exists(arg => arg.ID.Equals(id));
+                case ResourceType.BackGround:
+                    return _backGroundList.Exists(arg => arg.ID.Equals(id));
+                case ResourceType.Prop:
+                    throw new NotImplementedException("Prop 미구현");
+                default: 
+                    return false;
+            }
         }
 
         public void RemoveCharacter( string id )
