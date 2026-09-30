@@ -1,7 +1,14 @@
+using System;
 using UnityEngine;
 
-public interface ISceneResourceLifecycleContext
+namespace StudioResourceSDK.Application
 {
-    bool RegisterGimmick(string resourceID, GameObject resourceObject);
-    void RemoveGimmick(string resourceID);
+    public interface ISceneResourceLifecycleContext
+    {
+        IObservable<string> OnGimmickRegistered { get; }
+        IObservable<string> OnGimmickRemoved { get; }
+
+        bool RegisterGimmick(string resourceID, GameObject resourceObject);
+        void RemoveGimmick(string resourceID);
+    }
 }

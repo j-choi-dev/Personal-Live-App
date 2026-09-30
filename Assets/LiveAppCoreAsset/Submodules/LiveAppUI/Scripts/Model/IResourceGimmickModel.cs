@@ -1,8 +1,13 @@
-namespace StudioResourceSDK.Application
+using System;
+
+namespace LiveAppUI.Model
 {
-    public interface IResourceEventApplicationContext
+    public interface IResourceGimmickModel
     {
-        bool TryGetGimmickDescriptor(string resourceID, out ResourceGimmickDescriptor descriptor);
+        IObservable<ResourceGimmickData> OnGimmickAdded { get; }
+        IObservable<string> OnGimmickRemoved { get; }
+
+        bool TryGetGimmick(string resourceID, out ResourceGimmickData data);
 
         bool InvokeTrigger(string resourceID, int collectionID, int eventID);
         bool InvokeBool(string resourceID, int collectionID, int eventID, bool value);

@@ -18,6 +18,7 @@ namespace StudioResourceSDK.Application
         private ISpawnPivotTransform _objectPivot;
         private ISpawnPivotTransform _backGroundPivot;
         private ISceneResourceListDomain _sceneResourceListDomain;
+        private ISceneResourceLifecycleContext _sceneResourceLifecycleContext;
 
         private Subject<IReadOnlyList<ICharacter>> _onCharacterListChanged = new Subject<IReadOnlyList<ICharacter>>();
         public IObservable<IReadOnlyList<ICharacter>> OnCharacterListChanged => _onCharacterListChanged;
@@ -25,58 +26,63 @@ namespace StudioResourceSDK.Application
         private Subject<ICharacter> _onLoadCharacter = new Subject<ICharacter>();
         public IObservable<ICharacter> OnLoadCharacter => _onLoadCharacter;
 
-        public ResourceLoadContext( IResourceDownloadDomain resourceLoadDomain,
+        public ResourceLoadContext(IResourceDownloadDomain resourceLoadDomain,
             [Inject(Id = SpawnPivotId.Object)] ISpawnPivotTransform objectPivot,
-            [Inject( Id = SpawnPivotId.Sprite )] ISpawnPivotTransform spritePivot,
-            ISceneResourceListDomain sceneResourceListDomain)
+            [Inject(Id = SpawnPivotId.Sprite)] ISpawnPivotTransform spritePivot,
+            ISceneResourceListDomain sceneResourceListDomain,
+            ISceneResourceLifecycleContext sceneResourceLifecycleContext)
         {
             _resourceLoadDomain = resourceLoadDomain;
             _objectPivot = objectPivot;
             _backGroundPivot = spritePivot;
             _sceneResourceListDomain = sceneResourceListDomain;
+            _sceneResourceLifecycleContext = sceneResourceLifecycleContext;
         }
 
-        public async UniTask<bool> LoadResource( Domain.ResourceType resourceType, 
-            ServerType serverType, 
-            IReadOnlyList<string> resourceIds )
+        public async UniTask<bool> LoadResource(Domain.ResourceType resourceType,
+            ServerType serverType,
+            IReadOnlyList<string> resourceIds)
         {
-            Debug.Log( $"LoadResource :: {resourceType}, {serverType}, {resourceIds[0]}" );
+            Debug.Log($"LoadResource :: {resourceType}, {serverType}, {resourceIds[0]}");
             var isAllSucceeded = true;
-            for( var i = 0; i < resourceIds.Count; i++ )
+            for (var i = 0; i < resourceIds.Count; i++)
             {
                 var resourceId = resourceIds[i];
                 var targetId = $"{resourceType.ToString().ToLower()}/{resourceId.ToLower()}.ab";
-                var data = await _resourceLoadDomain.DownloadProcess( targetId );
-                if( data == null )
+                var data = await _resourceLoadDomain.DownloadProcess(targetId);
+                if (data == null)
                 {
-                    Debug.LogError( $"AssetBundle Download Process Failed ... ResourceId={resourceId}" );
+                    Debug.LogError($"AssetBundle Download Process Failed ... ResourceId={resourceId}");
                     isAllSucceeded = false;
                     continue;
                 }
                 GameObject prefab = data as GameObject;
                 await UniTask.SwitchToMainThread();
 
-                switch( resourceType )
+                switch (resourceType)
                 {
                     case Domain.ResourceType.Character:
-                        GameObject characterRawObj = UnityEngine.Object.Instantiate( prefab, Vector3.zero, Quaternion.identity, _objectPivot.Transform );
+                        GameObject characterRawObj = UnityEngine.Object.Instantiate(prefab, Vector3.zero, Quaternion.identity, _objectPivot.Transform);
                         characterRawObj.transform.localScale = Vector3.one;
                         var character = characterRawObj.GetComponent<ICharacter>();
-                        character.SetID( resourceId );
-                        _sceneResourceListDomain.AddCharacter( character );
+                        character.SetID(resourceId);
+
+                        _sceneResourceListDomain.AddCharacter(character);
+                        _sceneResourceLifecycleContext.RegisterGimmick(resourceId, characterRawObj);
                         break;
                     case Domain.ResourceType.BackGround:
                         GameObject bgRawObj = UnityEngine.Object.Instantiate( prefab, _backGroundPivot.Transform, false );
                         RectTransform bgRect = bgRawObj.GetComponent<RectTransform>();
-                        if( bgRect != null )
+                        if (bgRect != null)
                         {
                             bgRect.anchoredPosition3D = Vector3.zero;
                             bgRect.localScale = Vector3.one;
                             bgRect.localRotation = Quaternion.identity;
                         }
                         var bg = bgRawObj.GetComponent<IBackground>();
-                        bg.SetID( resourceId );
-                        _sceneResourceListDomain.AddBackGround( bg );
+                        bg.SetID(resourceId);
+                        _sceneResourceListDomain.AddBackGround(bg);
+                        _sceneResourceLifecycleContext.RegisterGimmick( resourceId, bgRawObj );
                         break;
                 }
             }
