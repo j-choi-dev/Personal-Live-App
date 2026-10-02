@@ -26,7 +26,8 @@ namespace StudioResourceSDK.Application
         private Subject<ICharacter> _onLoadCharacter = new Subject<ICharacter>();
         public IObservable<ICharacter> OnLoadCharacter => _onLoadCharacter;
 
-        public ResourceLoadContext(IResourceDownloadDomain resourceLoadDomain,
+        public ResourceLoadContext(
+            IResourceDownloadDomain resourceLoadDomain,
             [Inject(Id = SpawnPivotId.Object)] ISpawnPivotTransform objectPivot,
             [Inject(Id = SpawnPivotId.Sprite)] ISpawnPivotTransform spritePivot,
             ISceneResourceListDomain sceneResourceListDomain,
@@ -68,10 +69,18 @@ namespace StudioResourceSDK.Application
                         character.SetID(resourceId);
 
                         _sceneResourceListDomain.AddCharacter(character);
+                        if (characterRawObj.GetComponent<EventCollection>() != null)
+                        {
+                            _sceneResourceLifecycleContext.RegisterGimmick(resourceId, characterRawObj);
+                        }
                         _sceneResourceLifecycleContext.RegisterGimmick(resourceId, characterRawObj);
                         break;
                     case Domain.ResourceType.BackGround:
-                        GameObject bgRawObj = UnityEngine.Object.Instantiate( prefab, _backGroundPivot.Transform, false );
+                        GameObject bgRawObj = UnityEngine.Object.Instantiate(prefab, _backGroundPivot.Transform, false);
+                        if (bgRawObj.GetComponent<EventCollection>() != null)
+                        {
+                            _sceneResourceLifecycleContext.RegisterGimmick(resourceId, bgRawObj);
+                        }
                         RectTransform bgRect = bgRawObj.GetComponent<RectTransform>();
                         if (bgRect != null)
                         {
@@ -82,7 +91,7 @@ namespace StudioResourceSDK.Application
                         var bg = bgRawObj.GetComponent<IBackground>();
                         bg.SetID(resourceId);
                         _sceneResourceListDomain.AddBackGround(bg);
-                        _sceneResourceLifecycleContext.RegisterGimmick( resourceId, bgRawObj );
+                        _sceneResourceLifecycleContext.RegisterGimmick(resourceId, bgRawObj);
                         break;
                 }
             }

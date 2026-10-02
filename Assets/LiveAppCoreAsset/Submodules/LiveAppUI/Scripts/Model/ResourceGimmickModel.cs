@@ -192,7 +192,7 @@ namespace LiveAppUI.Model
             if (descriptor.Event != null)
             {
                 return new GimmickEntryData(
-                    new GimmickEventData(
+                    new GimmickEventData(   
                         descriptor.Event.EventID,
                         descriptor.Event.DisplayName,
                         ConvertValueType(descriptor.Event.ResourceEventValueType)
