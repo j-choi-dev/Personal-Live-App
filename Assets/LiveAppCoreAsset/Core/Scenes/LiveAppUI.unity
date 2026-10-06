@@ -966,6 +966,7 @@ MonoBehaviour:
   _configMenuView: {fileID: 6512752416724687230}
   _obsConfigView: {fileID: 6512752416724687229}
   _youtubeConfigView: {fileID: 6512752416724687226}
+  _gimmickControlView: {fileID: 966602023}
 --- !u!4 &601516613
 Transform:
   m_ObjectHideFlags: 0
@@ -1331,6 +1332,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &966602023 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2523207430167152788, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
+  m_PrefabInstance: {fileID: 6512752416724687223}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 381a2d60f38c14c448d8a4b7e171a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.GimmickControlView
 --- !u!224 &979374968 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2974854802279554769, guid: 738045247e4937d4b97877ca5130eba8, type: 3}
@@ -2425,7 +2437,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 564772396074407428, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0008122289
+      value: 0.0002982882
       objectReference: {fileID: 0}
     - target: {fileID: 725447160919081212, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2437,7 +2449,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 873010737266811815, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00023860135
+      value: 0.00028512118
       objectReference: {fileID: 0}
     - target: {fileID: 914902428677726665, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2618,7 +2630,7 @@ PrefabInstance:
     - target: {fileID: 2523207430167152788, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: _groupPrefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 8311660136079144661, guid: 8bff72eb2dc769d4bacd69a02931e9bb, type: 3}
     - target: {fileID: 2706662848117426022, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

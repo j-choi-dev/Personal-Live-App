@@ -33,11 +33,21 @@ namespace StudioResourceSDK.Installer
                 .To<ResourceLoadContext>()
                 .AsSingle();
 
+            Container
+                .Bind<IResourceEventApplicationContext>()
+                .To< ResourceEventApplicationContext >()
+                .AsSingle();
+
+            Container
+                .Bind<ISceneResourceLifecycleContext>()
+                .To<SceneResourceLifecycleContext>()
+                .AsSingle();
 
             Container
                 .Bind<IResourceConfigParseDomain>()
                 .To<ResourceConfigParser>()
                 .AsSingle();
+
             Container
                 .Bind<IResourceTableLoadDomain>()
 #if !UNITY_EDITOR_WIN && (UNITY_IOS || UNITY_IPHONE) 
@@ -61,6 +71,10 @@ namespace StudioResourceSDK.Installer
             Container
                 .Bind<ISceneResourceListDomain>()
                 .To<SceneResourceList>()
+                .AsSingle();
+            Container
+                .Bind<ISceneGimmickListDomain>()
+                .To<SceneGimmickList>()
                 .AsSingle();
         }
     }

@@ -18,6 +18,7 @@ namespace LiveAppUI.Installer
         [SerializeField] private ConfigMenuView _configMenuView;
         [SerializeField] private ObsConfigView _obsConfigView;
         [SerializeField] private YoutubeConfigView _youtubeConfigView;
+        [SerializeField] private ResourceGimmickView _gimmickControlView;
 
         public override void InstallBindings()
         {
@@ -51,6 +52,9 @@ namespace LiveAppUI.Installer
             Container
                 .Bind<IYoutubeConfigView>()
                 .FromInstance( _youtubeConfigView );
+            Container
+                .Bind<IResourceGimmickView>()
+                .FromInstance(_gimmickControlView);
         }
 
         private void ModelBinding()
@@ -86,6 +90,11 @@ namespace LiveAppUI.Installer
                 .To<LipSyncModel>()
                 .AsSingle()
                 .NonLazy();
+
+            Container
+                .Bind<IResourceGimmickModel>()
+                .To<ResourceGimmickModel>()
+                .AsSingle();
         }
     }
 }

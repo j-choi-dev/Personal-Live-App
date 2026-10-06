@@ -6,9 +6,9 @@ namespace StudioResourceSDK.Application
 {
     public class ResourceEventApplicationContext : IResourceEventApplicationContext
     {
-        private readonly SceneGimmickList _sceneGimmickList;
+        private ISceneGimmickListDomain _sceneGimmickList;
 
-        public ResourceEventApplicationContext(SceneGimmickList sceneGimmickList)
+        public ResourceEventApplicationContext(ISceneGimmickListDomain sceneGimmickList)
         {
             _sceneGimmickList = sceneGimmickList;
         }

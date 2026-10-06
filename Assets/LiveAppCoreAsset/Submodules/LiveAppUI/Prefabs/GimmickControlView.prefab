@@ -670,7 +670,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7508893754215366920}
   m_HandleRect: {fileID: 774687273829762940}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1118,9 +1118,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.GimmickControlView
   _resourceButtonRoot: {fileID: 3666964421500211362}
   _resourceButtonPrefab: {fileID: 1015371451934999421, guid: 111d045492320cb4683390d24db60350, type: 3}
-  _resourceTitle: {fileID: 0}
+  _resourceTitle: {fileID: 5582611703776815893}
   _gimmickContentRoot: {fileID: 6178252411535086323}
-  _groupPrefab: {fileID: 0}
+  _groupPrefab: {fileID: 8311660136079144661, guid: 8bff72eb2dc769d4bacd69a02931e9bb, type: 3}
   _buttonPrefab: {fileID: 2211848259903913426, guid: 5d1debcb220e92342a13d41d786e0691, type: 3}
   _togglePrefab: {fileID: 6523040456156847337, guid: 89002f33e8e66f94dbd6d23bd0a5a93d, type: 3}
   _inputPrefab: {fileID: 290451417391104348, guid: 8faaedac8a1eb6b42b1062bed9c0f1bc, type: 3}
@@ -1651,7 +1651,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1030894206616796977}
   m_HandleRect: {fileID: 3596708917500776995}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

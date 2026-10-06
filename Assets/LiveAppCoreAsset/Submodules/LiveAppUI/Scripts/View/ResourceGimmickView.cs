@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace LiveAppUI.View
 {
-    public class GimmickControlView : MonoBehaviour, IResourceGimmickView
+    public class ResourceGimmickView : MonoBehaviour, IResourceGimmickView
     {
         [Header("Left Side")]
         [SerializeField] private Transform _resourceButtonRoot = null;
