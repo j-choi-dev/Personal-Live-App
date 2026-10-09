@@ -11,6 +11,7 @@ namespace StudioResourceSDK.Domain
         Character,
         BackGround,
         Prop,
+        Gimmick,
         Media,
     }
 
