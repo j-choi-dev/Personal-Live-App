@@ -32,7 +32,7 @@ namespace LiveAppCore.Editor.Infrastructure
                 _guids.Clear();
                 _buildMap.Clear();
 
-                _guids = AssetDatabase.FindAssets( "t:Prefab", new[] { BuildPath.OriginalCharacterBundleRoot, BuildPath.OriginalBackGroundBundleRoot } ).ToList();
+                _guids = AssetDatabase.FindAssets( "t:Prefab", new[] { BuildPath.OriginalCharacterBundleRoot, BuildPath.OriginalBackGroundBundleRoot, BuildPath.OriginalPropBundleRoot } ).ToList();
 
                 foreach( string guid in _guids )
                 {
@@ -60,6 +60,15 @@ namespace LiveAppCore.Editor.Infrastructure
                         build.assetNames = new[] { assetPath };
                         _buildMap.Add( build );
                         Debug.Log( $"{prefab.name} :: {assetPath}, {build.assetBundleName}" );
+                    }
+                    var prop = prefab.GetComponent<IProp>();
+                    if (prop != null)
+                    {
+                        var build = new AssetBundleBuild();
+                        build.assetBundleName = Path.Combine(ResourceType.Prop.ToString(), prefab.name + ".ab").ToLower();
+                        build.assetNames = new[] { assetPath };
+                        _buildMap.Add(build);
+                        Debug.Log($"{prefab.name} :: {assetPath}, {build.assetBundleName}");
                     }
                 }
 

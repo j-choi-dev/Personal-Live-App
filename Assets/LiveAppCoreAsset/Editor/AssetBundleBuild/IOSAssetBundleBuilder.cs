@@ -31,9 +31,9 @@ namespace LiveAppCore.Editor.View
             {
                 _guids.Clear();
                 _buildMap.Clear();
-                _guids = AssetDatabase.FindAssets( "t:Prefab", new[] { BuildPath.OriginalCharacterBundleRoot, BuildPath.OriginalBackGroundBundleRoot } ).ToList();
+                _guids = AssetDatabase.FindAssets("t:Prefab", new[] { BuildPath.OriginalCharacterBundleRoot, BuildPath.OriginalBackGroundBundleRoot, BuildPath.OriginalPropBundleRoot }).ToList();
 
-                foreach(var guid in _guids)
+                foreach (var guid in _guids)
                 {
                     var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
@@ -58,6 +58,15 @@ namespace LiveAppCore.Editor.View
                         build.assetNames = new[] { assetPath };
                         _buildMap.Add( build );
                         Debug.Log( $"{prefab.name} :: {assetPath}, {build.assetBundleName}" );
+                    }
+                    var prop = prefab.GetComponent<IProp>();
+                    if (prop != null)
+                    {
+                        var build = new AssetBundleBuild();
+                        build.assetBundleName = Path.Combine(ResourceType.Prop.ToString(), prefab.name + ".ab").ToLower();
+                        build.assetNames = new[] { assetPath };
+                        _buildMap.Add(build);
+                        Debug.Log($"{prefab.name} :: {assetPath}, {build.assetBundleName}");
                     }
                 }
 

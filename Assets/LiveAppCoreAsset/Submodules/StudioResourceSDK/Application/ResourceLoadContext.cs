@@ -93,6 +93,19 @@ namespace StudioResourceSDK.Application
                         _sceneResourceListDomain.AddBackGround(bg);
                         _sceneResourceLifecycleContext.RegisterGimmick(resourceId, bgRawObj);
                         break;
+                    case Domain.ResourceType.Prop:
+                        GameObject propRawObj = UnityEngine.Object.Instantiate(prefab, Vector3.zero, Quaternion.identity, _objectPivot.Transform);
+                        propRawObj.transform.localScale = Vector3.one;
+                        var prop = propRawObj.GetComponent<IProp>();
+                        prop.SetID(resourceId);
+
+                        _sceneResourceListDomain.AddProp(prop);
+                        if (propRawObj.GetComponent<EventCollection>() != null)
+                        {
+                            _sceneResourceLifecycleContext.RegisterGimmick(resourceId, propRawObj);
+                        }
+                        _sceneResourceLifecycleContext.RegisterGimmick(resourceId, propRawObj);
+                        break;
                 }
             }
             await UniTask.NextFrame();

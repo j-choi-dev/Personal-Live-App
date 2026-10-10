@@ -11,8 +11,12 @@ namespace StudioResourceSDK.Domain
     {
         private List<ICharacter> _characterList = new List<ICharacter>();
         public IReadOnlyList<ICharacter> CharacterList => _characterList;
+
         private List<IBackground> _backGroundList = new List<IBackground>();
         public IReadOnlyList<IBackground> BackGroundList => _backGroundList;
+
+        private List<IProp> _propList = new List<IProp>();
+        public IReadOnlyList<IProp> PropList => _propList;
 
 
         private Subject<IReadOnlyList<ICharacter>> _onChangedCharacterList = new Subject<IReadOnlyList<ICharacter>>();
@@ -21,15 +25,22 @@ namespace StudioResourceSDK.Domain
         private Subject<IReadOnlyList<IBackground>> _onChangedBackGroundList = new Subject<IReadOnlyList<IBackground>>();
         public System.IObservable<IReadOnlyList<IBackground>> OnChangedBackGroundList => _onChangedBackGroundList;
 
+        private Subject<IReadOnlyList<IProp>> _onChangedPropList = new Subject<IReadOnlyList<IProp>>();
+        public System.IObservable<IReadOnlyList<IProp>> OnChangedPropList => _onChangedPropList;
+
 
         public ICharacter CurrentSelectedCharacter { get; private set; }
         public IBackground CurrentSelectedBackGround { get; private set; }
+        public IProp CurrentSelectedProp { get; private set; }
 
         private Subject<ICharacter> _onCurrentCharacterChanged = new Subject<ICharacter>();
         public System.IObservable<ICharacter> OnCurrentCharacterChanged => _onCurrentCharacterChanged;
 
         private Subject<IBackground> _onCurrentBackGroundChanged = new Subject<IBackground>();
         public System.IObservable<IBackground> OnCurrentBackGroundChanged => _onCurrentBackGroundChanged;
+
+        private Subject<IProp> _onCurrentPropChanged = new Subject<IProp>();
+        public IObservable<IProp> OnCurrentPropChanged => _onCurrentPropChanged;
 
         public void AddCharacter( ICharacter character )
         {
@@ -103,6 +114,32 @@ namespace StudioResourceSDK.Domain
             }
             CurrentSelectedBackGround = target;
             _onCurrentBackGroundChanged.OnNext( CurrentSelectedBackGround );
+        }
+
+        public void AddProp(IProp prop)
+        {
+            _propList.Add(prop);
+            _onChangedPropList.OnNext(_propList);
+            SetCurrentSelectedProp(prop.ID);
+        }
+
+        public void SetCurrentSelectedProp(string id)
+        {
+            var target = _propList.FirstOrDefault(arg => arg.ID.Equals(id));
+            if (target == null)
+            {
+                ResetCurrentSelectedBackGround();
+                return;
+            }
+            CurrentSelectedProp = target;
+            _onCurrentPropChanged.OnNext(CurrentSelectedProp);
+        }
+
+        public void ResetCurrentSelectedProp()
+        {
+            CurrentSelectedProp = null;
+            _onCurrentPropChanged.OnNext(CurrentSelectedProp);
+            UnityEngine.Debug.Log($"CurrentSelectedProp = NULL");
         }
     }
 }
