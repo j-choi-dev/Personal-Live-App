@@ -25,6 +25,10 @@ namespace LiveAppUI.View
         public string EndPoint => _endPointInput.Text;
         public string AgentToken => _agentTokenInput.Text;
 
+        public IObservable<Unit> OnClickClose => throw new NotImplementedException();
+
+        public IObservable<Unit> OnClickCancle => throw new NotImplementedException();
+
         public void SetLogText(string text)
             => _statusText.text = text;
 

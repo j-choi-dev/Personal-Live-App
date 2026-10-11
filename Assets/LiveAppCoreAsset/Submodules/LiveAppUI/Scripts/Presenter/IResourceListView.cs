@@ -14,14 +14,6 @@ namespace LiveAppUI.Presenter
         /// </summary>
         IObservable<int> OnServerChange { get; }
         /// <summary>
-        /// 닫기 버튼 클릭 이벤트
-        /// </summary>
-        IObservable<Unit> OnClickClose { get; }
-        /// <summary>
-        /// 취소 버튼 클릭
-        /// </summary>
-        IObservable<Unit> OnClickCancle { get; }
-        /// <summary>
         /// Load Button Click
         /// </summary>
         IObservable<Unit> OnClickLoad { get; }

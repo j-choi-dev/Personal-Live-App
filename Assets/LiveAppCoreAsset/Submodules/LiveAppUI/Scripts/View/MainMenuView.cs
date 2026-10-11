@@ -23,6 +23,10 @@ namespace LiveAppUI.View
 
         public bool IsActive => gameObject.activeSelf;
 
+        public IObservable<Unit> OnClickClose => throw new NotImplementedException();
+
+        public IObservable<Unit> OnClickCancle => throw new NotImplementedException();
+
         [Inject]
         public void Initialize( IServerModalView loginView,
             IRoomModalView roomView )

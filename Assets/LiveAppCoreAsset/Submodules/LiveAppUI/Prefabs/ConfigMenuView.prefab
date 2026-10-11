@@ -1114,6 +1114,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d78d26455a79b68468fec7429cff4f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ConfigMenuView
+  _closeButton: {fileID: 283793332165715857}
+  _cancleButton: {fileID: 0}
   _obsViewPair: {fileID: 6462043192989771993}
   _youtubeViewPair: {fileID: 5059491513687705839}
 --- !u!1 &551654491288554249

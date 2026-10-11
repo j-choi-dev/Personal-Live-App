@@ -10,13 +10,13 @@ namespace LiveApp.UI
     public class ListView : MonoBehaviour, IListView
     {
         [SerializeField] private CellView _prefab = null;
-        [SerializeField] private List<CellView> _staticCells = null;
+        [SerializeField] private List<CellView> _staticCells = new List<CellView>();
         [SerializeField] private Transform _contents = null;
 
-        private List<ICellView> _cells = null;
+        public List<ICellView> _cells = null;
         private HashSet<ICellView> _staticCellSet = null;
 
-        private ReactiveCollection<ICellView> _onCellChanged;
+        private ReactiveCollection<ICellView> _onCellChanged = new ReactiveCollection<ICellView>();
         public IReactiveCollection<ICellView> OnCellChanged => _onCellChanged;
 
         public IReadOnlyList<ICellView> Cells => _cells;
@@ -31,12 +31,15 @@ namespace LiveApp.UI
         private void Awake()
         {
             _cells = new List<ICellView>();
-            for ( var i = 0 ; i < _staticCells.Count ; i++ )
+            if (_staticCells != null || _staticCells.Count > 0)
             {
-                _staticCells[ i ].SetIdIfNull( $"default_{i}" );
+                for (var i = 0; i < _staticCells.Count; i++)
+                {
+                    _staticCells[i].SetIdIfNull($"default_{i}");
+                }
+                _cells.AddRange(_staticCells);
+                _staticCellSet = new HashSet<ICellView>(_staticCells);
             }
-            _cells.AddRange( _staticCells );
-            _staticCellSet = new HashSet<ICellView>( _staticCells );
             _onCellChanged = new ReactiveCollection<ICellView>( _cells );
         }
 

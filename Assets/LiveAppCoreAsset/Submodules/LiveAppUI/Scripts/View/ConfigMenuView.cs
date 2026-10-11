@@ -1,4 +1,5 @@
 using LiveAppUI.Presenter;
+using System;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
@@ -7,12 +8,18 @@ namespace LiveAppUI.View
 {
     public class ConfigMenuView : MonoBehaviour, IConfigMenuView
     {
+        [SerializeField] protected ObservableButton _closeButton = null;
+        [SerializeField] protected ObservableButton _cancleButton = null;
         [SerializeField] private ButtonViewPair _obsViewPair = null;
         [SerializeField] private ButtonViewPair _youtubeViewPair = null;
 
         private int _selectedIndex = -1;
 
-        public bool IsActive => throw new System.NotImplementedException();
+        public IObservable<Unit> OnClickClose => _closeButton.OnClick;
+
+        public IObservable<Unit> OnClickCancle => _cancleButton.OnClick;
+
+        public bool IsActive => gameObject.activeSelf;
 
         private void Awake()
         {

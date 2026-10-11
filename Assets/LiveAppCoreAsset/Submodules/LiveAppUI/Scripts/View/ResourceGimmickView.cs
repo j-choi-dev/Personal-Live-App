@@ -11,6 +11,9 @@ namespace LiveAppUI.View
 {
     public class ResourceGimmickView : MonoBehaviour, IResourceGimmickView
     {
+        [SerializeField] protected ObservableButton _closeButton = null;
+        [SerializeField] protected ObservableButton _cancleButton = null;
+
         [Header("Left Side")]
         [SerializeField] private Transform _resourceButtonRoot = null;
         [SerializeField] private GimmickResourceButtonView _resourceButtonPrefab = null;
@@ -27,6 +30,9 @@ namespace LiveAppUI.View
 
         private readonly Dictionary<string, GimmickResourceButtonView> _resourceButtons =
             new Dictionary<string, GimmickResourceButtonView>();
+
+        public IObservable<Unit> OnClickClose => _closeButton.OnClick;
+        public IObservable<Unit> OnClickCancle => _cancleButton.OnClick;
 
         private readonly Subject<string> _onSelectResource = new Subject<string>();
         public IObservable<string> OnSelectResource => _onSelectResource;
