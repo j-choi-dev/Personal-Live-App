@@ -43,6 +43,15 @@ namespace LiveAppUI.Presenter
                 } )
                 .AddTo( this );
 
+            _mainMenuView.OnGimmickButtonClick
+                .Subscribe(x =>
+                {
+                    CloaseAllTab();
+                    _mainMenuView.SetActive(true);
+                    _resourceGimmickView.SetActive(true);
+                })
+                .AddTo(this);
+
             _resourceMenuView.OnBackButtonClick
                 .Subscribe( x =>
                 {

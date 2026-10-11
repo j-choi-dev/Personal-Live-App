@@ -59,6 +59,21 @@ namespace LiveAppUI.View
 
         public bool IsActive => gameObject.activeSelf;
 
+        private void Awake()
+        {
+            _closeButton.OnClick
+                .Subscribe(arg => gameObject.SetActive(false))
+                .AddTo(this);
+
+            if (_cancleButton == null)
+            {
+                return;
+            }
+            _cancleButton.OnClick
+                .Subscribe(arg => gameObject.SetActive(false))
+                .AddTo(this);
+        }
+
         public void SetActive(bool isActive)
         {
             gameObject.SetActive(isActive);

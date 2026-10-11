@@ -2653,9 +2653,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   _loginButton: {fileID: 5996666955647136586}
   _resourceButton: {fileID: 4104282745670962405}
-  _configButton: {fileID: 3764348796579081262}
   _resourceView: {fileID: 8650190506562560564}
+  _configButton: {fileID: 3764348796579081262}
   _configView: {fileID: 6440177634885763678}
+  _gimmickButton: {fileID: 1065952597168302999}
+  _resourceGimmickView: {fileID: 2523207430167152788}
 --- !u!1 &1492727545455706084
 GameObject:
   m_ObjectHideFlags: 0
@@ -17094,7 +17096,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 656183482706214175, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
       propertyPath: m_Size
-      value: 0.99999505
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 774687273829762940, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
       propertyPath: m_AnchorMax.x
@@ -17118,11 +17120,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3666964421500211362, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000042075855
+      value: 0.00014270651
       objectReference: {fileID: 0}
     - target: {fileID: 5075478487411197923, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
       propertyPath: m_Name
       value: GimmickControlView
+      objectReference: {fileID: 0}
+    - target: {fileID: 5605429227802368897, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5605429227802368897, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5605429227802368897, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5711362329736231858, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
       propertyPath: m_Pivot.x
@@ -17212,6 +17226,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7955541374190052496, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7955541374190052496, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7955541374190052496, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17226,6 +17252,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6428549045261481176}
   m_SourcePrefab: {fileID: 100100000, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
+--- !u!114 &2523207430167152788 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2160067418286373777, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
+  m_PrefabInstance: {fileID: 4539102949576012549}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 381a2d60f38c14c448d8a4b7e171a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.GimmickControlView
 --- !u!224 &8195697903274969271 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5711362329736231858, guid: 4c88ba4b4cda0f24eaaaab6ce9a75431, type: 3}
@@ -17316,7 +17353,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6001617012728296596, guid: 4a1008b2e0d5e9e499c2bb3344a6a762, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000062962536
+      value: 0.000059568465
       objectReference: {fileID: 0}
     - target: {fileID: 6076467107186056843, guid: 4a1008b2e0d5e9e499c2bb3344a6a762, type: 3}
       propertyPath: m_AnchorMax.x
@@ -17412,7 +17449,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9028077450721356845, guid: 4a1008b2e0d5e9e499c2bb3344a6a762, type: 3}
       propertyPath: m_Size
-      value: 0.9999939
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -37,6 +37,18 @@ namespace LiveAppUI.View
                     _youtubeViewPair.view.SetActive( true );
                 } )
                 .AddTo( this );
+
+            _closeButton.OnClick
+                .Subscribe(arg => gameObject.SetActive(false))
+                .AddTo(this);
+
+            if (_cancleButton == null)
+            {
+                return;
+            }
+            _cancleButton.OnClick
+                .Subscribe(arg => gameObject.SetActive(false))
+                .AddTo(this);
         }
 
         private void Start()
