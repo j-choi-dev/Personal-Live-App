@@ -528,6 +528,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4574414447134373784}
   - component: {fileID: 290451417391104348}
+  - component: {fileID: 2225825136475261519}
   m_Layer: 5
   m_Name: GimmickInputField - Template
   m_TagString: Untagged
@@ -570,6 +571,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.GimmickInputItemView
   _displayName: {fileID: 5374041331058777995}
   _inputField: {fileID: 5835591526131574417}
+--- !u!114 &2225825136475261519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5554956400421178130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: 36
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &8532641310597841398
 GameObject:
   m_ObjectHideFlags: 0

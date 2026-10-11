@@ -32,7 +32,7 @@ namespace LiveAppUI.View
             new Dictionary<string, GimmickResourceButtonView>();
 
         public IObservable<Unit> OnClickClose => _closeButton.OnClick;
-        public IObservable<Unit> OnClickCancle => _cancleButton.OnClick;
+        public IObservable<Unit> OnClickCancle => throw new NotImplementedException();
 
         private readonly Subject<string> _onSelectResource = new Subject<string>();
         public IObservable<string> OnSelectResource => _onSelectResource;
