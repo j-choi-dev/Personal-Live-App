@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEditor.Events;
 
 namespace StudioResourceSDK.Editor
 {
@@ -42,7 +43,7 @@ namespace StudioResourceSDK.Editor
             EventCollectionList eventList = Undo.AddComponent<EventCollectionList>(listObject);
             collection.SetEditorList(eventList);
 
-            CreateDefaultEvents(eventList, listObject.transform, usedIDs);
+            CreateDefaultEvents(eventList, listObject.transform, usedIDs, boolEmitter);
 
             eventList.Refresh();
 
@@ -100,7 +101,7 @@ namespace StudioResourceSDK.Editor
             return element;
         }
 
-        private static void CreateDefaultEvents(EventCollectionList eventList, Transform parent, HashSet<int> usedIDs)
+        private static void CreateDefaultEvents(EventCollectionList eventList, Transform parent, HashSet<int> usedIDs, BoolEmitter boolEmitter)
         {
             GameObject defaultGroupObject = CreateObject("Default Event Group", parent);
 
@@ -111,6 +112,9 @@ namespace StudioResourceSDK.Editor
 
             ToggleEvent toggleEvent = Undo.AddComponent<ToggleEvent>(toggleObject);
             toggleEvent.SetEditorIdentity(EventCollectionIdUtility.GenerateUniqueID(usedIDs), "Toggle");
+
+            UnityEventTools.AddPersistentListener(toggleEvent.OnValueChanged, boolEmitter.Emit);
+            EditorUtility.SetDirty(toggleEvent);
 
             GameObject transformObject = CreateObject("Transform Event", defaultGroupObject.transform);
 

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &648503913829269157
+--- !u!1 &860704189021043637
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,389 +8,11 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7613526456368878912}
-  - component: {fileID: 4105522994634958213}
-  m_Layer: 0
-  m_Name: EventCollectionList
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7613526456368878912
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 648503913829269157}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5245260045284649641}
-  m_Father: {fileID: 2176575936838996069}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4105522994634958213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 648503913829269157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6bbcde1dcbe0e64a8a48c9aaf80db70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.EventCollectionList
-  items:
-  - {fileID: 4117653049774485382}
---- !u!1 &1204212557820182081
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7811442906989294204}
-  - component: {fileID: 5118244212311659753}
-  - component: {fileID: 446805509470292246}
-  - component: {fileID: 2407294718357146450}
-  - component: {fileID: 2381411791275370214}
-  m_Layer: 0
-  m_Name: Rotation
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7811442906989294204
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204212557820182081}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4717200960241620713}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5118244212311659753
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204212557820182081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fb53d881bac8094cb9e59854d3ac082, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.EventCollectionGroup
-  groupID: 1167339117
-  displayName: Rotation
-  items:
-  - {fileID: 446805509470292246}
-  - {fileID: 2407294718357146450}
-  - {fileID: 2381411791275370214}
---- !u!114 &446805509470292246
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204212557820182081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
-  eventID: 112896613
-  eventDisplayName: Rotation X
-  onValueChanged:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 235338109505254316}
-        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
-        m_MethodName: SetLocalRotationX
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &2407294718357146450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204212557820182081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
-  eventID: 417534180
-  eventDisplayName: Rotation Y
-  onValueChanged:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 235338109505254316}
-        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
-        m_MethodName: SetLocalRotationY
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &2381411791275370214
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204212557820182081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
-  eventID: 1736945491
-  eventDisplayName: Rotation Z
-  onValueChanged:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 235338109505254316}
-        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
-        m_MethodName: SetLocalRotationZ
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!1 &5188454967474428548
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7487639520007465077}
-  - component: {fileID: 2610688998477267318}
-  - component: {fileID: 5297577960757179731}
-  - component: {fileID: 1452343776895510715}
-  - component: {fileID: 1029336301337425758}
-  m_Layer: 0
-  m_Name: Scale
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7487639520007465077
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5188454967474428548}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4717200960241620713}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2610688998477267318
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5188454967474428548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fb53d881bac8094cb9e59854d3ac082, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.EventCollectionGroup
-  groupID: 376220836
-  displayName: Scale
-  items:
-  - {fileID: 5297577960757179731}
-  - {fileID: 1452343776895510715}
-  - {fileID: 1029336301337425758}
---- !u!114 &5297577960757179731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5188454967474428548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
-  eventID: 1193601301
-  eventDisplayName: Scale X
-  onValueChanged:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 235338109505254316}
-        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
-        m_MethodName: SetLocalScaleX
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &1452343776895510715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5188454967474428548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
-  eventID: 1896821156
-  eventDisplayName: Scale Y
-  onValueChanged:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 235338109505254316}
-        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
-        m_MethodName: SetLocalScaleY
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &1029336301337425758
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5188454967474428548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
-  eventID: 1429212121
-  eventDisplayName: Scale Z
-  onValueChanged:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 235338109505254316}
-        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
-        m_MethodName: SetLocalScaleZ
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!1 &5476811543049734657
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5245260045284649641}
-  - component: {fileID: 4117653049774485382}
-  m_Layer: 0
-  m_Name: Default Event Group
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5245260045284649641
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5476811543049734657}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 8715115846006714280}
-  - {fileID: 4717200960241620713}
-  m_Father: {fileID: 7613526456368878912}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4117653049774485382
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5476811543049734657}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fb53d881bac8094cb9e59854d3ac082, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.EventCollectionGroup
-  groupID: 679691145
-  displayName: Default Event Group
-  items:
-  - {fileID: 4767069240122581024}
-  - {fileID: 474323980485316432}
---- !u!1 &6534058244031399160
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1051546464161936701}
-  - component: {fileID: 2463596207216324744}
-  - component: {fileID: 1240912168907525452}
-  - component: {fileID: 2359045334010630932}
-  - component: {fileID: 5983630288022555659}
+  - component: {fileID: 8763748929228594110}
+  - component: {fileID: 484947100366271520}
+  - component: {fileID: 362563179936289534}
+  - component: {fileID: 6724111532657325742}
+  - component: {fileID: 7152373052763570449}
   m_Layer: 0
   m_Name: Position
   m_TagString: Untagged
@@ -398,57 +20,57 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1051546464161936701
+--- !u!4 &8763748929228594110
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6534058244031399160}
+  m_GameObject: {fileID: 860704189021043637}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4717200960241620713}
+  m_Father: {fileID: 9032768897081803809}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2463596207216324744
+--- !u!114 &484947100366271520
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6534058244031399160}
+  m_GameObject: {fileID: 860704189021043637}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fb53d881bac8094cb9e59854d3ac082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.EventCollectionGroup
-  groupID: 1174990395
+  groupID: 74975957
   displayName: Position
   items:
-  - {fileID: 1240912168907525452}
-  - {fileID: 2359045334010630932}
-  - {fileID: 5983630288022555659}
---- !u!114 &1240912168907525452
+  - {fileID: 362563179936289534}
+  - {fileID: 6724111532657325742}
+  - {fileID: 7152373052763570449}
+--- !u!114 &362563179936289534
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6534058244031399160}
+  m_GameObject: {fileID: 860704189021043637}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
-  eventID: 344852445
-  eventDisplayName: Position X
+  eventID: 2035092237
+  eventDisplayName: X
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 235338109505254316}
+      - m_Target: {fileID: 1147412861050929003}
         m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
         m_MethodName: SetLocalPositionX
         m_Mode: 0
@@ -460,24 +82,24 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &2359045334010630932
+--- !u!114 &6724111532657325742
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6534058244031399160}
+  m_GameObject: {fileID: 860704189021043637}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
-  eventID: 1426666461
-  eventDisplayName: Position Y
+  eventID: 176631922
+  eventDisplayName: Y
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 235338109505254316}
+      - m_Target: {fileID: 1147412861050929003}
         m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
         m_MethodName: SetLocalPositionY
         m_Mode: 0
@@ -489,24 +111,24 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &5983630288022555659
+--- !u!114 &7152373052763570449
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6534058244031399160}
+  m_GameObject: {fileID: 860704189021043637}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
-  eventID: 563005256
-  eventDisplayName: Position Z
+  eventID: 1317827499
+  eventDisplayName: Z
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 235338109505254316}
+      - m_Target: {fileID: 1147412861050929003}
         m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
         m_MethodName: SetLocalPositionZ
         m_Mode: 0
@@ -518,7 +140,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!1 &6754095626759343450
+--- !u!1 &1683224206057805702
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -526,68 +148,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5680332415701717676}
-  - component: {fileID: 235338109505254316}
-  - component: {fileID: 7625524964275727849}
-  m_Layer: 0
-  m_Name: Transform Pivot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5680332415701717676
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6754095626759343450}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4119366292338153208}
-  m_Father: {fileID: 2176575936838996069}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &235338109505254316
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6754095626759343450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55bccbb4ab8d1344398163b1bdd8b985, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformEmitter
-  target: {fileID: 0}
---- !u!114 &7625524964275727849
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6754095626759343450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b792be4c11b2f874186f40631223cd44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.BoolEmitter
-  targetObject: {fileID: 0}
---- !u!1 &8058918986418298019
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4717200960241620713}
-  - component: {fileID: 474323980485316432}
+  - component: {fileID: 9032768897081803809}
+  - component: {fileID: 4607940794601129954}
   m_Layer: 0
   m_Name: Transform Event
   m_TagString: Untagged
@@ -595,43 +157,43 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4717200960241620713
+--- !u!4 &9032768897081803809
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8058918986418298019}
+  m_GameObject: {fileID: 1683224206057805702}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1051546464161936701}
-  - {fileID: 7811442906989294204}
-  - {fileID: 7487639520007465077}
-  m_Father: {fileID: 5245260045284649641}
+  - {fileID: 8763748929228594110}
+  - {fileID: 2754773008858866347}
+  - {fileID: 2377265014491710418}
+  m_Father: {fileID: 4655483295948554280}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &474323980485316432
+--- !u!114 &4607940794601129954
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8058918986418298019}
+  m_GameObject: {fileID: 1683224206057805702}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fb53d881bac8094cb9e59854d3ac082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.EventCollectionGroup
-  groupID: 551248797
+  groupID: 946078093
   displayName: Transform
   items:
-  - {fileID: 2463596207216324744}
-  - {fileID: 5118244212311659753}
-  - {fileID: 2610688998477267318}
---- !u!1 &8324922694830392623
+  - {fileID: 484947100366271520}
+  - {fileID: 5778840662752928092}
+  - {fileID: 8351371507740912131}
+--- !u!1 &3730866281395176536
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -639,50 +201,71 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8715115846006714280}
-  - component: {fileID: 4767069240122581024}
+  - component: {fileID: 2377265014491710418}
+  - component: {fileID: 8351371507740912131}
+  - component: {fileID: 5145622536868710339}
+  - component: {fileID: 119759601921764797}
+  - component: {fileID: 3636291771268927051}
   m_Layer: 0
-  m_Name: Toggle Event
+  m_Name: Scale
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8715115846006714280
+--- !u!4 &2377265014491710418
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8324922694830392623}
+  m_GameObject: {fileID: 3730866281395176536}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5245260045284649641}
+  m_Father: {fileID: 9032768897081803809}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4767069240122581024
+--- !u!114 &8351371507740912131
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8324922694830392623}
+  m_GameObject: {fileID: 3730866281395176536}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a035579f4c0f214d9aa6051c8d35d94, type: 3}
+  m_Script: {fileID: 11500000, guid: 2fb53d881bac8094cb9e59854d3ac082, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.ToggleEvent
-  eventID: 2091027838
-  eventDisplayName: Toggle
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.EventCollectionGroup
+  groupID: 1262520176
+  displayName: Scale
+  items:
+  - {fileID: 5145622536868710339}
+  - {fileID: 119759601921764797}
+  - {fileID: 3636291771268927051}
+--- !u!114 &5145622536868710339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3730866281395176536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
+  eventID: 1105356447
+  eventDisplayName: X
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7625524964275727849}
-        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.BoolEmitter, Assembly-CSharp
-        m_MethodName: SetActive
+      - m_Target: {fileID: 1147412861050929003}
+        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
+        m_MethodName: SetLocalScaleX
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -692,7 +275,65 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!1 &8527637500100824364
+--- !u!114 &119759601921764797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3730866281395176536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
+  eventID: 1444120284
+  eventDisplayName: Y
+  onValueChanged:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1147412861050929003}
+        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
+        m_MethodName: SetLocalScaleY
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &3636291771268927051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3730866281395176536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
+  eventID: 1854059971
+  eventDisplayName: Z
+  onValueChanged:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1147412861050929003}
+        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
+        m_MethodName: SetLocalScaleZ
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!1 &4594201217178744670
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -700,9 +341,59 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2176575936838996069}
-  - component: {fileID: 6996187528549491806}
-  - component: {fileID: 3063865724016721401}
+  - component: {fileID: 4655483295948554280}
+  - component: {fileID: 6970225507203534245}
+  m_Layer: 0
+  m_Name: Default Event Group
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4655483295948554280
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4594201217178744670}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1072008884440873210}
+  - {fileID: 9032768897081803809}
+  m_Father: {fileID: 4997822305359879248}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6970225507203534245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4594201217178744670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fb53d881bac8094cb9e59854d3ac082, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.EventCollectionGroup
+  groupID: 633637101
+  displayName: Default Event Group
+  items:
+  - {fileID: 8491795846065887519}
+  - {fileID: 4607940794601129954}
+--- !u!1 &5157067293847973742
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 512020122230775628}
+  - component: {fileID: 6096584570162647615}
   m_Layer: 0
   m_Name: Gimmick_Sakura_001
   m_TagString: Untagged
@@ -710,74 +401,396 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2176575936838996069
+--- !u!4 &512020122230775628
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8527637500100824364}
+  m_GameObject: {fileID: 5157067293847973742}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5680332415701717676}
-  - {fileID: 7613526456368878912}
+  - {fileID: 1586304896038173424}
+  - {fileID: 4997822305359879248}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6996187528549491806
+--- !u!114 &6096584570162647615
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8527637500100824364}
+  m_GameObject: {fileID: 5157067293847973742}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a16f6c03e1b4a5d4abb128bcc60660a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.EventCollection
-  collectionID: 692716234
+  collectionID: 54952244
   displayName: Gimmick_Sakura_001
-  transformPivot: {fileID: 5680332415701717676}
-  eventCollectionList: {fileID: 4105522994634958213}
---- !u!114 &3063865724016721401
+  transformPivot: {fileID: 1586304896038173424}
+  eventCollectionList: {fileID: 3778969996532030802}
+--- !u!1 &5770478793144532498
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1586304896038173424}
+  - component: {fileID: 1147412861050929003}
+  - component: {fileID: 8273212835189012845}
+  m_Layer: 0
+  m_Name: Transform Pivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1586304896038173424
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5770478793144532498}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6061488335985157690}
+  m_Father: {fileID: 512020122230775628}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1147412861050929003
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8527637500100824364}
+  m_GameObject: {fileID: 5770478793144532498}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 998fabca602736e40938f889900e5001, type: 3}
+  m_Script: {fileID: 11500000, guid: 55bccbb4ab8d1344398163b1bdd8b985, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Infrastructure.PropResource
---- !u!1001 &4124056805567217340
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformEmitter
+  target: {fileID: 1586304896038173424}
+--- !u!114 &8273212835189012845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5770478793144532498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b792be4c11b2f874186f40631223cd44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.BoolEmitter
+  _trueMethod:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6055442124362163824}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+  _falseMethod:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6055442124362163824}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!1 &6092016860984675625
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4997822305359879248}
+  - component: {fileID: 3778969996532030802}
+  m_Layer: 0
+  m_Name: EventCollectionList
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4997822305359879248
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6092016860984675625}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4655483295948554280}
+  m_Father: {fileID: 512020122230775628}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3778969996532030802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6092016860984675625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6bbcde1dcbe0e64a8a48c9aaf80db70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.EventCollectionList
+  items:
+  - {fileID: 6970225507203534245}
+--- !u!1 &6681416017356416392
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2754773008858866347}
+  - component: {fileID: 5778840662752928092}
+  - component: {fileID: 7307242114315380544}
+  - component: {fileID: 827364282165936412}
+  - component: {fileID: 8925717481930542110}
+  m_Layer: 0
+  m_Name: Rotation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2754773008858866347
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6681416017356416392}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9032768897081803809}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5778840662752928092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6681416017356416392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fb53d881bac8094cb9e59854d3ac082, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.EventCollectionGroup
+  groupID: 935756840
+  displayName: Rotation
+  items:
+  - {fileID: 7307242114315380544}
+  - {fileID: 827364282165936412}
+  - {fileID: 8925717481930542110}
+--- !u!114 &7307242114315380544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6681416017356416392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
+  eventID: 1250241973
+  eventDisplayName: X
+  onValueChanged:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1147412861050929003}
+        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
+        m_MethodName: SetLocalRotationX
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &827364282165936412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6681416017356416392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
+  eventID: 847252588
+  eventDisplayName: Y
+  onValueChanged:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1147412861050929003}
+        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
+        m_MethodName: SetLocalRotationY
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &8925717481930542110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6681416017356416392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58e96d4851e84fe40804938b6e2f8829, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.TransformFloatEvent
+  eventID: 189566049
+  eventDisplayName: Z
+  onValueChanged:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1147412861050929003}
+        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.TransformEmitter, Assembly-CSharp
+        m_MethodName: SetLocalRotationZ
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!1 &6734900555226538457
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1072008884440873210}
+  - component: {fileID: 8491795846065887519}
+  m_Layer: 0
+  m_Name: Toggle Event
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1072008884440873210
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6734900555226538457}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4655483295948554280}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8491795846065887519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6734900555226538457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a035579f4c0f214d9aa6051c8d35d94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Domain.ToggleEvent
+  eventID: 97695104
+  eventDisplayName: Active
+  _defaultValue: 0
+  onValueChanged:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8273212835189012845}
+        m_TargetAssemblyTypeName: StudioResourceSDK.Domain.BoolEmitter, Assembly-CSharp
+        m_MethodName: Emit
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!1001 &6057272809657503358
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 5680332415701717676}
+    m_TransformParent: {fileID: 1586304896038173424}
     m_Modifications:
     - target: {fileID: 1830688534800398, guid: 9dca676f2ff988a45a505d56f3bd0bb6, type: 3}
       propertyPath: m_Name
       value: Petals Prefab 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1830688534800398, guid: 9dca676f2ff988a45a505d56f3bd0bb6, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4919222737381444, guid: 9dca676f2ff988a45a505d56f3bd0bb6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 843.9793
       objectReference: {fileID: 0}
     - target: {fileID: 4919222737381444, guid: 9dca676f2ff988a45a505d56f3bd0bb6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1114.8203
       objectReference: {fileID: 0}
     - target: {fileID: 4919222737381444, guid: 9dca676f2ff988a45a505d56f3bd0bb6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -816,8 +829,13 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9dca676f2ff988a45a505d56f3bd0bb6, type: 3}
---- !u!4 &4119366292338153208 stripped
+--- !u!1 &6055442124362163824 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1830688534800398, guid: 9dca676f2ff988a45a505d56f3bd0bb6, type: 3}
+  m_PrefabInstance: {fileID: 6057272809657503358}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6061488335985157690 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4919222737381444, guid: 9dca676f2ff988a45a505d56f3bd0bb6, type: 3}
-  m_PrefabInstance: {fileID: 4124056805567217340}
+  m_PrefabInstance: {fileID: 6057272809657503358}
   m_PrefabAsset: {fileID: 0}

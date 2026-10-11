@@ -1,30 +1,24 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace StudioResourceSDK.Domain
 {
     [DisallowMultipleComponent]
     public class BoolEmitter : MonoBehaviour
     {
-        [SerializeField] private GameObject targetObject;
+        [SerializeField] private UnityEvent _trueMethod = new UnityEvent();
+        [SerializeField] private UnityEvent _falseMethod = new UnityEvent();
 
-        public GameObject TargetObject => targetObject;
-
-        public void SetActive(bool value)
+        public void Emit(bool value)
         {
-            if (targetObject == null)
+            if (value)
             {
-                Debug.LogWarning($"BoolEmitter TargetObject가 없습니다. Object={name}", this);
-                return;
+                _trueMethod.Invoke();
             }
-
-            targetObject.SetActive(value);
+            else
+            {
+                _falseMethod.Invoke();
+            }
         }
-
-#if UNITY_EDITOR
-        public void SetEditorTarget(GameObject target)
-        {
-            targetObject = target;
-        }
-#endif
     }
 }

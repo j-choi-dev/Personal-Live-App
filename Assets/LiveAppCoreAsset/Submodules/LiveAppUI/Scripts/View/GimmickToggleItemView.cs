@@ -22,9 +22,10 @@ namespace LiveAppUI.View
                 .AddTo(this);
         }
 
-        public void Initialize(string displayName)
+        public void Initialize(string displayName, bool currentValue)
         {
             _displayName.text = displayName;
+            _toggle.SetIsOnWithoutNotify(currentValue);
         }
 
         private void OnDestroy()

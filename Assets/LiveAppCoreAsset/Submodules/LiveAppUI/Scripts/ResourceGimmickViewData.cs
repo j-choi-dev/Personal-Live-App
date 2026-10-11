@@ -16,7 +16,6 @@ namespace LiveAppUI.Domain
         public string ResourceID;
         public string ResourceName;
         public int CollectionID;
-
         public readonly List<GimmickViewEntry> Entries = new List<GimmickViewEntry>();
     }
 
@@ -40,5 +39,6 @@ namespace LiveAppUI.Domain
         public int EventID;
         public string DisplayName;
         public GimmickControlType ControlType;
+        public bool CurrentBoolValue;
     }
 }
