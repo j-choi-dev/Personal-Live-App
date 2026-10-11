@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 362563179936289534}
   - component: {fileID: 6724111532657325742}
   - component: {fileID: 7152373052763570449}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Position
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -150,7 +150,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9032768897081803809}
   - component: {fileID: 4607940794601129954}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Transform Event
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -206,7 +206,7 @@ GameObject:
   - component: {fileID: 5145622536868710339}
   - component: {fileID: 119759601921764797}
   - component: {fileID: 3636291771268927051}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Scale
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -343,7 +343,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4655483295948554280}
   - component: {fileID: 6970225507203534245}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Default Event Group
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -395,7 +395,7 @@ GameObject:
   - component: {fileID: 512020122230775628}
   - component: {fileID: 1929131237194119203}
   - component: {fileID: 6096584570162647615}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Gimmick_Sakura_001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -458,7 +458,7 @@ GameObject:
   - component: {fileID: 1586304896038173424}
   - component: {fileID: 1147412861050929003}
   - component: {fileID: 8273212835189012845}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Transform Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -546,7 +546,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4997822305359879248}
   - component: {fileID: 3778969996532030802}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: EventCollectionList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -596,7 +596,7 @@ GameObject:
   - component: {fileID: 7307242114315380544}
   - component: {fileID: 827364282165936412}
   - component: {fileID: 8925717481930542110}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Rotation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -733,7 +733,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1072008884440873210}
   - component: {fileID: 8491795846065887519}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Toggle Event
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -796,6 +796,10 @@ PrefabInstance:
     - target: {fileID: 1830688534800398, guid: 9dca676f2ff988a45a505d56f3bd0bb6, type: 3}
       propertyPath: m_Name
       value: Petals Prefab 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1830688534800398, guid: 9dca676f2ff988a45a505d56f3bd0bb6, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 4919222737381444, guid: 9dca676f2ff988a45a505d56f3bd0bb6, type: 3}
       propertyPath: m_LocalPosition.x
