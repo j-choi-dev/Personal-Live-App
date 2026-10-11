@@ -219,7 +219,7 @@ namespace LiveAppUI.View
         private void CreateBool(ResourceGimmickViewData resource, GimmickEventViewData eventData, Transform parent)
         {
             GimmickToggleItemView item = Instantiate(_togglePrefab, parent);
-            item.Initialize(eventData.DisplayName);
+            item.Initialize(eventData.DisplayName, eventData.CurrentBoolValue);
 
             item.OnValueChanged
                 .Subscribe(value =>
