@@ -84,7 +84,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     passTag: GimmickFrontPass
-    Event: 150
+    Event: 550
     filterSettings:
       RenderQueueType: 1
       LayerMask:
