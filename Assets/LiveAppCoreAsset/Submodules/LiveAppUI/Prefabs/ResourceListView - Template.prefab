@@ -619,9 +619,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ee532a76ab4da40882058bb4de3ff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  _title: {fileID: 315592039423907815}
-  _cancleButton: {fileID: 6710907831832170918}
   _closeButton: {fileID: 1662057895540676280}
+  _cancleButton: {fileID: 6710907831832170918}
+  _title: {fileID: 315592039423907815}
   _server: {fileID: 4818404523122179448}
   _listView: {fileID: 7846080204569820727}
   _loadButton: {fileID: 5970483796736906682}
@@ -2931,7 +2931,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5798857613200188301, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00002539791
+      value: -0.000006175512
       objectReference: {fileID: 0}
     - target: {fileID: 6296131257481431442, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_AnchorMax.x
@@ -2948,6 +2948,10 @@ PrefabInstance:
     - target: {fileID: 7095147422945966710, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8057301226550339886, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
+      propertyPath: _staticCells.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9113460719809231668, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_Size

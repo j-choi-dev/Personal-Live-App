@@ -13,5 +13,6 @@ namespace LiveAppUI.Presenter
         /// </summary>
         IObservable<Unit> OnResourceButtonClick { get; }
         IObservable<Unit> OnConfigButtonClick { get; }
+        IObservable<Unit> OnGimmickButtonClick { get; }
     }
 }

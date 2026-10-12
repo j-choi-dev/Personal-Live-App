@@ -21,6 +21,10 @@ namespace LiveAppUI.View
 
         public IObservable<Unit> OnClickProp => _propButton.OnClick;
 
+        public IObservable<Unit> OnClickClose => throw new NotImplementedException();
+
+        public IObservable<Unit> OnClickCancle => throw new NotImplementedException();
+
         private void Awake()
         {
             _backButton.OnClick

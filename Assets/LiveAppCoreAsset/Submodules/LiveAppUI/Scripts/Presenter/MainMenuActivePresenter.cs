@@ -10,15 +10,18 @@ namespace LiveAppUI.Presenter
         private IMainMenuView _mainMenuView;
         private IResourceMenuView _resourceMenuView;
         private IConfigMenuView _configMenuView;
+        private IResourceGimmickView _resourceGimmickView;
 
         [Inject]
         public void Initialize( IMainMenuView mainMenuView,
             IResourceMenuView resourceMenuView,
-            IConfigMenuView configMenuView )
+            IConfigMenuView configMenuView,
+            IResourceGimmickView resourceGimmickView)
         {
             _mainMenuView = mainMenuView;
             _resourceMenuView = resourceMenuView;
             _configMenuView = configMenuView;
+            _resourceGimmickView = resourceGimmickView;
         }
 
         private void Awake()
@@ -39,6 +42,15 @@ namespace LiveAppUI.Presenter
                     _configMenuView.SetActive( true );
                 } )
                 .AddTo( this );
+
+            _mainMenuView.OnGimmickButtonClick
+                .Subscribe(x =>
+                {
+                    CloaseAllTab();
+                    _mainMenuView.SetActive(true);
+                    _resourceGimmickView.SetActive(true);
+                })
+                .AddTo(this);
 
             _resourceMenuView.OnBackButtonClick
                 .Subscribe( x =>
@@ -64,6 +76,7 @@ namespace LiveAppUI.Presenter
             _mainMenuView.SetActive( false );
             _resourceMenuView.SetActive( false );
             _configMenuView.SetActive( false );
+            _resourceGimmickView.SetActive(false);
         }
     }
 }
