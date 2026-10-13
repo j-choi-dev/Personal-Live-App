@@ -41,7 +41,8 @@ namespace LiveAppCore.Google.Infrastructure
         {
             _cachedToken = LoadTokenFromPrefs();
             if( _cachedToken != null &&
-                _cachedToken.HasValidAccessToken() )
+                _cachedToken.HasValidAccessToken() &&
+                _cachedToken.HasSheetsReadPermission())
             {
                 return _cachedToken.accessToken;
             }
@@ -330,6 +331,30 @@ namespace LiveAppCore.Google.Infrastructure
             string json = JsonUtility.ToJson(token);
             PlayerPrefsUtil.SetStringValueByKey( _playerPrefsKey, json );
         }
+        public void InvalidateToken()
+        {
+            _cachedToken = null;
+
+            if (!string.IsNullOrEmpty(_playerPrefsKey))
+            {
+                PlayerPrefs.DeleteKey(_playerPrefsKey);
+                PlayerPrefs.Save();
+            }
+        }
+
+        public async UniTask<string> ReauthorizeAsync(CancellationToken cancellationToken = default)
+        {
+            InvalidateToken();
+
+            var token = await RunAuthorizationCodeFlowAsync(cancellationToken);
+
+            ValidateTokenForSheets(token);
+
+            _cachedToken = token;
+            SaveTokenToPrefs(token);
+
+            return token.accessToken;
+        }
 
         public void ClearAllPrefs()
         {
@@ -340,6 +365,19 @@ namespace LiveAppCore.Google.Infrastructure
         {
             PlayerPrefs.DeleteKey( _playerPrefsKey );
             PlayerPrefs.Save();
+        }
+
+        private static void ValidateTokenForSheets(GoogleOAuthToken token)
+        {
+            if (token == null || !token.HasValidAccessToken())
+            {
+                throw new InvalidOperationException("사용 가능한 Google 토큰을 발급받지 못했습니다.");
+            }
+
+            if (!token.HasSheetsReadPermission())
+            {
+                throw new InvalidOperationException("Google Sheets 읽기 권한을 승인해야 합니다.");
+            }
         }
 
         private static int GetRandomUnusedPort()

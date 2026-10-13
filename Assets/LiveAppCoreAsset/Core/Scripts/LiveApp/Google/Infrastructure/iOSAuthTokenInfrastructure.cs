@@ -63,5 +63,15 @@ namespace LiveAppCore.Google.Infrastructure
         {
             PlayerPrefs.DeleteAll();
         }
+
+        public UniTask<string> ReauthorizeAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InvalidateToken()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
