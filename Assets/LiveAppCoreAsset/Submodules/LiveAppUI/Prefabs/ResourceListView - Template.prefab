@@ -619,9 +619,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ee532a76ab4da40882058bb4de3ff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  _closeButton: {fileID: 1662057895540676280}
-  _cancleButton: {fileID: 6710907831832170918}
   _title: {fileID: 315592039423907815}
+  _cancleButton: {fileID: 6710907831832170918}
+  _closeButton: {fileID: 1662057895540676280}
   _server: {fileID: 4818404523122179448}
   _listView: {fileID: 7846080204569820727}
   _loadButton: {fileID: 5970483796736906682}
@@ -1569,7 +1569,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -18, y: 0}
+  m_SizeDelta: {x: -17, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &4166627303021759201
 MonoBehaviour:
@@ -2267,7 +2267,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 5786272182382678051}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.2
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2457,7 +2457,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4281479730
   m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -2470,7 +2470,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -2553,7 +2553,7 @@ RectTransform:
   m_Father: {fileID: 394335375457601056}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0.2}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2825,6 +2825,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ListView - Template
       objectReference: {fileID: 0}
+    - target: {fileID: 1032508205638657748, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1257070583762321640, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2905,6 +2909,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2220465127704414632, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3774949801429827620, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2931,7 +2939,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5798857613200188301, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000006175512
+      value: 0.00029963293
       objectReference: {fileID: 0}
     - target: {fileID: 6296131257481431442, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_AnchorMax.x
