@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using LiveApp.Util;
 using LiveAppUI.Model;
+using LiveAppUI.View;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -14,6 +15,7 @@ namespace LiveAppUI.Presenter
     {
         private IServerModalView _loginView;
         private IRoomModalView _roomView;
+        private INoticeModalView _noticeModalView;
 
         private ILogInModel _loginModel;
         private IOAuthTokenModel _authTokenModel;
@@ -22,11 +24,13 @@ namespace LiveAppUI.Presenter
         [Inject]
         public void Initialize( IServerModalView loginView,
             IRoomModalView roomView,
+            INoticeModalView noticeModalView,
             ILogInModel loginModel,
-            IOAuthTokenModel authTokenModel )
+            IOAuthTokenModel authTokenModel)
         {
             _loginView = loginView;
             _roomView = roomView;
+            _noticeModalView = noticeModalView;
             _loginModel = loginModel;
             _authTokenModel = authTokenModel;
         }
@@ -39,6 +43,7 @@ namespace LiveAppUI.Presenter
 
         private async void Start()
         {
+            _noticeModalView.SetActive(false);
             // TODO Infra층에 가져가야함.(ObsAgentController의 NonLazy,  new ReplaySubject<string>( 1 ) 참고) Refactor 대상 @Choi 26.09.01
             var id = PlayerPrefsUtil.GetStringValueByKey("Server.ID");
             if( string.IsNullOrWhiteSpace( id ) == false )
@@ -105,6 +110,25 @@ namespace LiveAppUI.Presenter
                 } )
                 .AddTo( this );
 
+            _noticeModalView.OnClickYes
+                .Subscribe(async x => 
+                {
+                    _noticeModalView.SetActive(false);
+                    var result = await _authTokenModel.InitilizeAuthProcess();
+
+                    if (result == false)
+                    {
+                        return;
+                    }
+                })
+                .AddTo(this);
+
+
+            _noticeModalView.OnClickCancle
+                .Merge(_noticeModalView.OnClickClose)
+                .Subscribe( x => Application.Quit(1))
+                .AddTo(this);
+
             _loginView.SetServerList( _loginModel.ServerList );
             _roomView.SetRoomList( _loginModel.RoomList );
         }
@@ -150,8 +174,12 @@ namespace LiveAppUI.Presenter
             }
             else
             {
-                Debug.Log( $"Application Quit" );
-                Application.Quit( 1 );
+                _noticeModalView.SetActive(true);
+                _noticeModalView.SetHeaderTitle("구글 인증 실패");
+                _noticeModalView.SetMainMessage("구글 인증에 실패했습니다.\n다시 시도하겠습니까?");
+                _noticeModalView.SetSubMessage("YES : 재시도\nNO : 앱 종료");
+                //Debug.Log( $"Application Quit" );
+                //Application.Quit( 1 );
             }
         }
     }
