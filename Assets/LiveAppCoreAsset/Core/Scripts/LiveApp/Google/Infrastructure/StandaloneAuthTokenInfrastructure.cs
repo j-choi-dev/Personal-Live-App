@@ -10,6 +10,8 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using Unity.VisualScripting;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -52,22 +54,35 @@ namespace LiveAppCore.Google.Infrastructure
             {
                 try
                 {
-                    _cachedToken = await RefreshAccessTokenAsync( _cachedToken.refreshToken, cancellationToken );
-
-                    SaveTokenToPrefs( _cachedToken );
+                    var refreshedToken = await RefreshAccessTokenAsync( _cachedToken.refreshToken, cancellationToken );
+                    ValidateTokenForSheets(refreshedToken);
+                    _cachedToken = refreshedToken;
+                    SaveTokenToPrefs(refreshedToken);
                     return _cachedToken.accessToken;
                 }
-                catch( Exception e )
+                //catch( Exception e )
+                //{
+                //    UnityEngine.Debug.LogError( $"[GoogleOAuth] Refresh failed. Re-auth required. {e.Message}" );
+                //    ClearPrefs();
+                //}
+                catch (OAuthTokenRequestException e)
+                when (e.ErrorCode == "invalid_grant")
                 {
-                    UnityEngine.Debug.LogError( $"[GoogleOAuth] Refresh failed. Re-auth required. {e.Message}" );
-                    ClearPrefs();
+                    InvalidateToken();
                 }
             }
 
-            _cachedToken = await RunAuthorizationCodeFlowAsync( cancellationToken );
-            SaveTokenToPrefs( _cachedToken );
+            if (_cachedToken != null &&
+                _cachedToken.HasSheetsReadPermission() == false)
+            {
+                InvalidateToken();
+            }
 
-            return _cachedToken.accessToken;
+            //_cachedToken = await RunAuthorizationCodeFlowAsync( cancellationToken );
+            //SaveTokenToPrefs( _cachedToken );
+
+            //return _cachedToken.accessToken;
+            return await ReauthorizeAsync(cancellationToken);
         }
         private GoogleOAuthToken LoadTokenFromPrefs()
         {
@@ -116,6 +131,7 @@ namespace LiveAppCore.Google.Infrastructure
 
         private async UniTask<GoogleOAuthToken> RefreshAccessTokenAsync(
             string refreshToken,
+            string grantedScope,
             CancellationToken cancellationToken
         )
         {
@@ -133,7 +149,7 @@ namespace LiveAppCore.Google.Infrastructure
 
             var json = await PostFormAsync(OAuthConstValue.TokenEndpoint, form, cancellationToken);
 
-            return ParseTokenResponse( json, keepRefreshToken: refreshToken );
+            return ParseTokenResponse( json, keepRefreshToken: refreshToken, keepScope: grantedScope);
         }
 
         private async UniTask<GoogleOAuthToken> RunAuthorizationCodeFlowAsync( CancellationToken cancellationToken )
@@ -267,26 +283,38 @@ namespace LiveAppCore.Google.Infrastructure
 
             using UnityWebRequest request = UnityWebRequest.Post(url, form);
             request.timeout = 30;
-
-            await request.SendWebRequest().ToUniTask( cancellationToken: cancellationToken );
-
-            var body = request.downloadHandler != null
-                ? request.downloadHandler.text
-                : string.Empty;
-
-            if( request.result != UnityWebRequest.Result.Success )
+            try
             {
-                throw new Exception(
-                    $"Token request failed. HTTP: {request.responseCode}, Error: {request.error}, Body: {body}"
-                );
-            }
 
-            return body;
+                await request.SendWebRequest().ToUniTask(cancellationToken: cancellationToken);
+
+
+                var body = request.downloadHandler != null
+                    ? request.downloadHandler.text
+                    : string.Empty;
+
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    throw new Exception(
+                        $"Token request failed. HTTP: {request.responseCode}, Error: {request.error}, Body: {body}"
+                    );
+                }
+
+                return body;
+            }
+            catch (UnityWebRequestException e)
+            {
+                if (request.result != UnityWebRequest.Result.ProtocolError)
+                {
+                    throw;
+                }
+            }
         }
 
         private GoogleOAuthToken ParseTokenResponse(
             string json,
-            string keepRefreshToken
+            string keepRefreshToken,
+            string keepScope = null
         )
         {
             var root = JSON.Parse(json);
@@ -302,8 +330,11 @@ namespace LiveAppCore.Google.Infrastructure
             var expiresIn = root["expires_in"].AsInt;
             var tokenType = root["token_type"].Value;
             var scope = root["scope"].Value;
-
-            if( string.IsNullOrEmpty( accessToken ) )
+            if (string.IsNullOrWhiteSpace(scope))
+            {
+                scope = keepScope;
+            }
+            if ( string.IsNullOrEmpty( accessToken ) )
             {
                 throw new Exception( "access_token is empty." );
             }
