@@ -50,12 +50,38 @@ namespace StudioSystemSDK.Infrastructure
 
         public IReadOnlyCollection<PropResourceItem> ParsePropData( string rawData )
         {
-            throw new System.NotImplementedException();
+            var list = new List<PropResourceItem>();
+            //UnityEngine.Debug.Log( rawData );// TODO 지울것 @Choi 26.07.28
+            var rows = rawData.Split("\n");
+            for (var i = HeaderCount; i < rows.Length; ++i)
+            {
+                var cols = rows[i].Split(",");
+                var id = cols[0];
+                var displayName = cols[1];
+                // TODO enum을 Flag 타입으로 수정 후 전용 파싱 로직 구현 필요 @Choi 26.07.07
+                var item = new PropResourceItem(id, displayName);
+                list.Add(item);
+            }
+            _onPropListChanged.OnNext(list);
+            return list;
         }
 
         public IReadOnlyCollection<StageResourceItem> ParseStageData( string rawData )
         {
-            throw new System.NotImplementedException();
+            var list = new List<StageResourceItem>();
+            //UnityEngine.Debug.Log( rawData );// TODO 지울것 @Choi 26.07.28
+            var rows = rawData.Split("\n");
+            for (var i = HeaderCount; i < rows.Length; ++i)
+            {
+                var cols = rows[i].Split(",");
+                var id = cols[0];
+                var displayName = cols[1];
+                // TODO enum을 Flag 타입으로 수정 후 전용 파싱 로직 구현 필요 @Choi 26.07.07
+                var item = new StageResourceItem(id, displayName);
+                list.Add(item);
+            }
+            _onStageListChanged.OnNext(list);
+            return list;
         }
     }
 }

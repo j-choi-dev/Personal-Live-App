@@ -41,7 +41,7 @@ namespace StudioResourceSDK.Application
             return await LoadResourceTableCoreAsync( type, serverType, tableUrl, reauthorize: true);
         }
 
-        private async UniTask<bool> LoadResourceTableCoreAsync(    ResourceType type,
+        private async UniTask<bool> LoadResourceTableCoreAsync( ResourceType type,
             string serverType,
             string tableUrl,
             bool reauthorize)
@@ -65,6 +65,18 @@ namespace StudioResourceSDK.Application
                         ? ResourceTableFailureKind.PermissionDenied : ResourceTableFailureKind.Other;
 
                 throw new ResourceTableLoadException( kind, e.StatusCode, e);
+            }
+            catch (GoogleNetworkException e)
+            {
+                throw new ResourceTableLoadException( ResourceTableFailureKind.Network, 0, e);
+            }
+            catch (OAuthAuthorizationDeniedException e)
+            {
+                throw new ResourceTableLoadException( ResourceTableFailureKind.AuthorizationCancelled, 0, e);
+            }
+            catch (OAuthBrowserClosedException e)
+            {
+                throw new ResourceTableLoadException( ResourceTableFailureKind.AuthorizationCancelled, 0, e);
             }
             catch (Exception e)
             {
@@ -96,8 +108,20 @@ namespace StudioResourceSDK.Application
 
             Debug.Log($"LoadResourceTableProcess :: {type} / {serverType}");
 
-            var result = _resourceDataParseDomain.ParseCharacterData(tableText);
-            return true;
+            switch(type)
+            {
+                case ResourceType.Character:
+                    var characterListResult = _resourceDataParseDomain.ParseCharacterData(tableText);
+                    return true;
+                case ResourceType.BackGround:
+                    var stageListResult = _resourceDataParseDomain.ParseStageData(tableText);
+                    return true;
+                case ResourceType.Prop:
+                    var propListResult = _resourceDataParseDomain.ParsePropData(tableText);
+                    return true;
+                default: 
+                    return false;
+            }
         }
 
 

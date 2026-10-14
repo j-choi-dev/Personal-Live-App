@@ -17,6 +17,9 @@ namespace LiveAppUI.Model
         private IResourceServerConfigContext _resourceConfigContext;
         private IResourceTableContext _resourceTableContext;
         private IResourceLoadContext _resourceLoadContext;
+        private bool _configurationReady;
+        private bool _isLoading;
+
         private CompositeDisposable _disposable = new CompositeDisposable();
 
         private Dictionary<ResourceType, ServerType> _serverTypeDic = new Dictionary<ResourceType, ServerType>();
@@ -28,6 +31,7 @@ namespace LiveAppUI.Model
         private readonly Subject<ResourceListFailureData> _onLoadFailed = new Subject<ResourceListFailureData>();
 
         public IObservable<ResourceListFailureData> OnLoadFailed => _onLoadFailed;
+        public bool IsLoading => _isLoading;
 
         public ResourceListModel( IResourceServerConfigContext resourceConfigContext,
             IResourceTableContext resourceTableContext,
@@ -62,6 +66,7 @@ namespace LiveAppUI.Model
 
         public async UniTask<bool> InitializeServerConfig()
         {
+            _configurationReady = false;
             try
             {
                 var cloudConfigTask = await _resourceConfigContext.LoadCloudConfig();
@@ -76,12 +81,17 @@ namespace LiveAppUI.Model
                     UnityEngine.Debug.LogError("Resource 서버 설정을 불러오지 못했습니다.");
                     return false;
                 }
-                _serverConfigs =  serverConfigTask.ToList();
+                _serverConfigs = serverConfigTask.ToList();
+                _configurationReady = true;
                 return true;
             }
-            catch( Exception ex )
+            catch (OperationCanceledException)
             {
-                UnityEngine.Debug.LogError( ex.Message ); 
+                throw;
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogException(ex);
                 return false;
             }
             // 리소스 & 구글 시트 링크 보존 -> Context 통해서 DataClass로 ...? @Choi
@@ -91,11 +101,32 @@ namespace LiveAppUI.Model
         {
             await GetResourceListCoreAsync( resourceType, serverType, reauthorize: false);
         }
-        private async UniTask GetResourceListCoreAsync( ResourceType resourceType, ServerType serverType, bool reauthorize )
+        private async UniTask GetResourceListCoreAsync(
+    ResourceType resourceType,
+    ServerType serverType,
+    bool reauthorize)
         {
+            if (_isLoading)
+                return;
+
+            _isLoading = true;
+
             try
             {
-                // 기존 89~93줄의 설정 검색을 이동합니다.
+                if (!_configurationReady)
+                {
+                    var initialized = await InitializeServerConfig();
+
+                    if (!initialized)
+                    {
+                        PublishFailure(
+                            ResourceListFailureKind.ConfigurationInitializationFailed,
+                            resourceType,
+                            serverType);
+                        return;
+                    }
+                }
+
                 var resource = ConvertResourceType(resourceType);
                 var server = ConvertServerType(serverType);
 
@@ -103,24 +134,31 @@ namespace LiveAppUI.Model
                     arg => arg.resourceType == resource &&
                            arg.serverType == server);
 
-                // 추가: 설정을 찾지 못한 경우
                 if (config == null)
                 {
-                    PublishFailure( ResourceListFailureKind.MissingConfiguration, resourceType, serverType );
+                    PublishFailure(
+                        ResourceListFailureKind.MissingConfiguration,
+                        resourceType,
+                        serverType);
                     return;
                 }
 
-                // 기존 95줄의 조회 호출을 두 경로로 분리합니다.
                 var loaded = reauthorize
-                    ? await _resourceTableContext.ReauthorizeAndLoadResourceTableProcess( config.resourceType,
-                            server.ToString(),
-                            config.tableUrl)
-                    : await _resourceTableContext .LoadResourceTableProcess( config.resourceType,                            server.ToString(), config.tableUrl);
+                    ? await _resourceTableContext.ReauthorizeAndLoadResourceTableProcess(
+                        config.resourceType,
+                        server.ToString(),
+                        config.tableUrl)
+                    : await _resourceTableContext.LoadResourceTableProcess(
+                        config.resourceType,
+                        server.ToString(),
+                        config.tableUrl);
 
-                // 기존 NoticeViewMessageData 생성 대신 실패 데이터 통지
                 if (!loaded)
                 {
-                    PublishFailure( ResourceListFailureKind.SheetOrTabNotFound, resourceType, serverType);
+                    PublishFailure(
+                        ResourceListFailureKind.SheetOrTabNotFound,
+                        resourceType,
+                        serverType);
                 }
             }
             catch (OperationCanceledException)
@@ -141,18 +179,37 @@ namespace LiveAppUI.Model
                         kind = ResourceListFailureKind.PermissionDenied;
                         break;
 
+                    case ResourceTableFailureKind.Network:
+                        kind = ResourceListFailureKind.Network;
+                        break;
+
+                    case ResourceTableFailureKind.AuthorizationCancelled:
+                        kind = ResourceListFailureKind.AuthorizationCancelled;
+                        break;
+
                     default:
                         kind = ResourceListFailureKind.Other;
                         break;
                 }
 
-                PublishFailure( kind, resourceType, serverType, e.StatusCode);
+                PublishFailure(
+                    kind,
+                    resourceType,
+                    serverType,
+                    e.StatusCode);
             }
             catch (Exception e)
             {
                 UnityEngine.Debug.LogException(e);
 
-                PublishFailure( ResourceListFailureKind.Other, resourceType, serverType);
+                PublishFailure(
+                    ResourceListFailureKind.Other,
+                    resourceType,
+                    serverType);
+            }
+            finally
+            {
+                _isLoading = false;
             }
         }
 

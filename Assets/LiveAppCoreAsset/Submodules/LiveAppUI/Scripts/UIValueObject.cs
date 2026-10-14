@@ -32,7 +32,9 @@ namespace LiveAppUI
         Unauthorized,
         PermissionDenied,
         Network,
-        Other
+        Other,
+        ConfigurationInitializationFailed,
+        AuthorizationCancelled
     }
 
     public sealed class ResourceListFailureData

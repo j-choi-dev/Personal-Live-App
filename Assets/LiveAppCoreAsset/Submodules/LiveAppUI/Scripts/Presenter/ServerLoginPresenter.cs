@@ -225,6 +225,16 @@ namespace LiveAppUI.Presenter
                     reauthorize = false;
                     break;
 
+                case ResourceListFailureKind.ConfigurationInitializationFailed:
+                    message = "리소스 설정을 불러오지 못했습니다.\nYES를 누르면 설정 읽기부터 다시 시도합니다.";
+                    reauthorize = false;
+                    break;
+
+                case ResourceListFailureKind.AuthorizationCancelled:
+                    message = "Google 인증을 거절했거나 인증 창을 닫았습니다.\n다시 인증하시겠습니까?";
+                    reauthorize = true;
+                    break;
+
                 default:
                     message = "리소스 조회에 실패했습니다. 설정과 로그를 확인해 주세요.";
                     reauthorize = false;
@@ -237,13 +247,15 @@ namespace LiveAppUI.Presenter
 
             ShowNotice( "리소스 리스트 취득 실패", message, 
                 reauthorize
-                    ? "YES：다시 인증절차 실행\nNO：종료"
-                    : "YES：다시 인증정보 취득\nNO：종료");
+                    ? "YES : 다시 인증 후 조회\nNO : 닫기"
+                    : "YES : 다시 조회\nNO : 닫기");
         }
 
         private async UniTask HandleNoticeYesAsync()
         {
-            if (_noticeActionRunning || _noticePurpose == NoticePurpose.None)
+            if (_noticeActionRunning ||
+                _resourceListModel.IsLoading || 
+                _noticePurpose == NoticePurpose.None)
             {
                 return;
             }

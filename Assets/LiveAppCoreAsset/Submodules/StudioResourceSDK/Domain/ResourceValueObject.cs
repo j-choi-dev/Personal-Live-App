@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.Audio;
 
 namespace StudioResourceSDK.Domain
 {
@@ -6,7 +7,9 @@ namespace StudioResourceSDK.Domain
     {
         Unauthorized,
         PermissionDenied,
-        Other
+        Other,
+        Network,
+        AuthorizationCancelled
     }
 
     public enum ResourceType
@@ -76,14 +79,18 @@ namespace StudioResourceSDK.Domain
         }
     }
 
-    public class StageResourceItem
+    public class StageResourceItem : ResourceItemBase
     {
-
+        public StageResourceItem(string id, string displayName) : base(id, displayName)
+        {
+        }
     }
 
-    public class PropResourceItem
+    public class PropResourceItem : ResourceItemBase
     {
-
+        public PropResourceItem(string id, string displayName) : base(id, displayName)
+        {
+        }
     }
 
     public class CloudConfigData
@@ -112,5 +119,19 @@ namespace StudioResourceSDK.Domain
         }
     }
 
+    public sealed class GoogleNetworkException : Exception
+    {
+        public GoogleNetworkException(Exception innerException)
+            : base("Google 요청 중 통신 오류가 발생했습니다.", innerException)
+        {
+        }
+    }
 
+    public sealed class OAuthAuthorizationDeniedException : Exception
+    {
+        public OAuthAuthorizationDeniedException()
+            : base("사용자가 Google 인증을 거절했습니다.")
+        {
+        }
+    }
 }

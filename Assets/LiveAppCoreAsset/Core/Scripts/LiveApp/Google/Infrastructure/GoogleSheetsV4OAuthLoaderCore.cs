@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using LiveAppCore.Google.Domain;
 using SimpleJSON;
+using StudioResourceSDK.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -165,7 +166,7 @@ namespace LiveAppCore.Google.Infrastructure
             {
                 if (request.result != UnityWebRequest.Result.ProtocolError)
                 {
-                    throw;
+                    throw new GoogleNetworkException(e);
                 }
             }
 
@@ -173,18 +174,6 @@ namespace LiveAppCore.Google.Infrastructure
                 ? request.downloadHandler.text
                 : string.Empty;
 
-            //if( request.responseCode == 401 )
-            //{
-            //    throw new UnauthorizedAccessException( $"Google access token was rejected. HTTP 401. Body: {body}" );
-            //}
-
-
-            //if( request.result != UnityWebRequest.Result.Success )
-            //{
-            //    throw new Exception(
-            //        $"HTTP Error: {request.responseCode}, Result: {request.result}, Error: {request.error}, Body: {body}"
-            //    );
-            //}
             cancellationToken.ThrowIfCancellationRequested();
 
             if (request.result != UnityWebRequest.Result.Success)

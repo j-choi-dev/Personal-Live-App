@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using LiveApp.Util;
 using LiveAppCore.Google.Domain;
 using SimpleJSON;
+using StudioResourceSDK.Domain;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -225,21 +226,25 @@ namespace LiveAppCore.Google.Infrastructure
 
                 Dictionary<string, string> query = ParseQueryFromHttpRequest(requestText);
 
-                if( query.TryGetValue( "error", out string error ) )
+                if (query.TryGetValue("error", out string error))
                 {
-                    await WriteHttpResponseAsync( client, OAuthResponseMessage.AUTH_FAILED, linkedCts.Token );
-                    throw new Exception( $"OAuth authorization error: {error}" );
+                    await WriteHttpResponseAsync( client, OAuthResponseMessage.AUTH_FAILED, linkedCts.Token);
+
+                    if (error == "access_denied")
+                    {
+                        throw new OAuthAuthorizationDeniedException();
+                    }
+
+                    throw new InvalidOperationException( $"OAuth authorization error: {error}");
                 }
 
-                if( query.TryGetValue( "state", out string receivedState ) == false ||
-                    receivedState != state )
+                if ( query.TryGetValue( "state", out string receivedState ) == false || receivedState != state )
                 {
                     await WriteHttpResponseAsync( client, OAuthResponseMessage.INVALID_AUTH, linkedCts.Token );
                     throw new Exception( "Invalid OAuth state." );
                 }
 
-                if( query.TryGetValue( "code", out string code ) == false ||
-                    string.IsNullOrEmpty( code ) )
+                if( query.TryGetValue( "code", out string code ) == false || string.IsNullOrEmpty( code ) )
                 {
                     await WriteHttpResponseAsync( client, OAuthResponseMessage.CODE_NOT_FOUND, linkedCts.Token );
                     throw new Exception( "Authorization code not found." );
@@ -247,12 +252,7 @@ namespace LiveAppCore.Google.Infrastructure
 
                 await WriteHttpResponseAsync( client, OAuthResponseMessage.COMPLETE, linkedCts.Token );
 
-                return await ExchangeCodeForTokenAsync(
-                    code,
-                    redirectUri,
-                    codeVerifier,
-                    linkedCts.Token
-                );
+                return await ExchangeCodeForTokenAsync( code, redirectUri, codeVerifier, linkedCts.Token );
             }
             catch( OperationCanceledException )
             {
@@ -286,12 +286,11 @@ namespace LiveAppCore.Google.Infrastructure
                 await request.SendWebRequest()
                     .ToUniTask(cancellationToken: cancellationToken);
             }
-            catch (UnityWebRequestException)
+            catch (UnityWebRequestException e)
             {
-                // HTTP 오류는 아래에서 분류, 연결 실패 등은 그대로 전달.
                 if (request.result != UnityWebRequest.Result.ProtocolError)
                 {
-                    throw;
+                    throw new GoogleNetworkException(e);
                 }
             }
 
@@ -527,7 +526,7 @@ namespace LiveAppCore.Google.Infrastructure
                 { "code_challenge_method", "S256" },
                 { "state", state },
                 { "access_type", "offline" },
-                { "prompt", "consent" }
+                { "prompt", "select_account consent" }
             };
 
             return OAuthConstValue.AuthEndpoint + "?" + BuildFormUrlEncoded( query );

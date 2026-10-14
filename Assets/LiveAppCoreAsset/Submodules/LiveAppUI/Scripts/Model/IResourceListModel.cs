@@ -20,6 +20,8 @@ namespace LiveAppUI.Model
         /// <returns></returns>
         ServerType GetCurrentServerType( ResourceType resourceType );
 
+        bool IsLoading { get; }
+
         /// <summary>
         /// Server Config 정보 취득을 위한 초기화 작업
         /// </summary>
