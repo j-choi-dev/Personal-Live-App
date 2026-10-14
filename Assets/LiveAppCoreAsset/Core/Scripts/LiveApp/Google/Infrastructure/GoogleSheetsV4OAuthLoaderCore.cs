@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using LiveAppCore.Google.Domain;
 using SimpleJSON;
+using StudioResourceSDK.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -77,7 +78,7 @@ namespace LiveAppCore.Google.Infrastructure
             catch( Exception e )
             {
                 Debug.LogError( $"[GoogleSheetsV4OAuthLoader] Exists check failed. {e.Message}" );
-                return false;
+                throw;
             }
         }
 
@@ -157,23 +158,27 @@ namespace LiveAppCore.Google.Infrastructure
             request.timeout = 30;
             request.SetRequestHeader( "Authorization", $"Bearer {accessToken}" );
 
-            await request.SendWebRequest().ToUniTask( cancellationToken: cancellationToken );
+            try
+            {
+                await request.SendWebRequest().ToUniTask(cancellationToken: cancellationToken);
+            }
+            catch (UnityWebRequestException e)
+            {
+                if (request.result != UnityWebRequest.Result.ProtocolError)
+                {
+                    throw new GoogleNetworkException(e);
+                }
+            }
 
             var body = request.downloadHandler != null
                 ? request.downloadHandler.text
                 : string.Empty;
 
-            if( request.responseCode == 401 )
-            {
-                throw new UnauthorizedAccessException( $"Google access token was rejected. HTTP 401. Body: {body}" );
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
-
-            if( request.result != UnityWebRequest.Result.Success )
+            if (request.result != UnityWebRequest.Result.Success)
             {
-                throw new Exception(
-                    $"HTTP Error: {request.responseCode}, Result: {request.result}, Error: {request.error}, Body: {body}"
-                );
+                throw new GoogleSheetsRequestException( request.responseCode, body );
             }
 
             return body;

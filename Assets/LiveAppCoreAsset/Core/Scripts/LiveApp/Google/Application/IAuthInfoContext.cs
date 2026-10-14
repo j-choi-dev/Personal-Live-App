@@ -22,6 +22,6 @@ namespace LiveAppCore.Google.Application
         /// 인증을 위한 초기화 작업 수행
         /// </summary>
         /// <returns>인증을 위한 초기화 작업</returns>
-        UniTask<bool> InitilizeAuthProcess();
+        UniTask<bool> InitilizeAuthProcess( bool forceReauthorize = false );
     }
 }

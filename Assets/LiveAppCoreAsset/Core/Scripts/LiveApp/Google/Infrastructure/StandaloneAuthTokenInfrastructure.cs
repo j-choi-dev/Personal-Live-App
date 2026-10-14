@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using LiveApp.Util;
 using LiveAppCore.Google.Domain;
 using SimpleJSON;
+using StudioResourceSDK.Domain;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,6 +11,8 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using Unity.VisualScripting;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -39,9 +42,16 @@ namespace LiveAppCore.Google.Infrastructure
 
         public async UniTask<string> GetAccessTokenAsync( CancellationToken cancellationToken = default )
         {
+            cancellationToken.ThrowIfCancellationRequested();
             _cachedToken = LoadTokenFromPrefs();
-            if( _cachedToken != null &&
-                _cachedToken.HasValidAccessToken() )
+            if (_cachedToken != null &&
+                _cachedToken.HasSheetsReadPermission() == false)
+            {
+                InvalidateToken();
+            }
+            if ( _cachedToken != null &&
+                _cachedToken.HasValidAccessToken() &&
+                _cachedToken.HasSheetsReadPermission())
             {
                 return _cachedToken.accessToken;
             }
@@ -51,22 +61,29 @@ namespace LiveAppCore.Google.Infrastructure
             {
                 try
                 {
-                    _cachedToken = await RefreshAccessTokenAsync( _cachedToken.refreshToken, cancellationToken );
-
-                    SaveTokenToPrefs( _cachedToken );
+                    var refreshedToken = await RefreshAccessTokenAsync( _cachedToken.refreshToken, _cachedToken.scope, cancellationToken );
+                    ValidateTokenForSheets(refreshedToken);
+                    _cachedToken = refreshedToken;
+                    SaveTokenToPrefs(refreshedToken);
                     return _cachedToken.accessToken;
                 }
-                catch( Exception e )
+                //catch( Exception e )
+                //{
+                //    UnityEngine.Debug.LogError( $"[GoogleOAuth] Refresh failed. Re-auth required. {e.Message}" );
+                //    ClearPrefs();
+                //}
+                catch (OAuthTokenRequestException e)
+                when (e.ErrorCode == "invalid_grant")
                 {
-                    UnityEngine.Debug.LogError( $"[GoogleOAuth] Refresh failed. Re-auth required. {e.Message}" );
-                    ClearPrefs();
+                    InvalidateToken();
                 }
             }
 
-            _cachedToken = await RunAuthorizationCodeFlowAsync( cancellationToken );
-            SaveTokenToPrefs( _cachedToken );
+            //_cachedToken = await RunAuthorizationCodeFlowAsync( cancellationToken );
+            //SaveTokenToPrefs( _cachedToken );
 
-            return _cachedToken.accessToken;
+            //return _cachedToken.accessToken;
+            return await ReauthorizeAsync(cancellationToken);
         }
         private GoogleOAuthToken LoadTokenFromPrefs()
         {
@@ -115,6 +132,7 @@ namespace LiveAppCore.Google.Infrastructure
 
         private async UniTask<GoogleOAuthToken> RefreshAccessTokenAsync(
             string refreshToken,
+            string grantedScope,
             CancellationToken cancellationToken
         )
         {
@@ -132,7 +150,7 @@ namespace LiveAppCore.Google.Infrastructure
 
             var json = await PostFormAsync(OAuthConstValue.TokenEndpoint, form, cancellationToken);
 
-            return ParseTokenResponse( json, keepRefreshToken: refreshToken );
+            return ParseTokenResponse( json, keepRefreshToken: refreshToken, keepScope: grantedScope);
         }
 
         private async UniTask<GoogleOAuthToken> RunAuthorizationCodeFlowAsync( CancellationToken cancellationToken )
@@ -208,21 +226,25 @@ namespace LiveAppCore.Google.Infrastructure
 
                 Dictionary<string, string> query = ParseQueryFromHttpRequest(requestText);
 
-                if( query.TryGetValue( "error", out string error ) )
+                if (query.TryGetValue("error", out string error))
                 {
-                    await WriteHttpResponseAsync( client, OAuthResponseMessage.AUTH_FAILED, linkedCts.Token );
-                    throw new Exception( $"OAuth authorization error: {error}" );
+                    await WriteHttpResponseAsync( client, OAuthResponseMessage.AUTH_FAILED, linkedCts.Token);
+
+                    if (error == "access_denied")
+                    {
+                        throw new OAuthAuthorizationDeniedException();
+                    }
+
+                    throw new InvalidOperationException( $"OAuth authorization error: {error}");
                 }
 
-                if( query.TryGetValue( "state", out string receivedState ) == false ||
-                    receivedState != state )
+                if ( query.TryGetValue( "state", out string receivedState ) == false || receivedState != state )
                 {
                     await WriteHttpResponseAsync( client, OAuthResponseMessage.INVALID_AUTH, linkedCts.Token );
                     throw new Exception( "Invalid OAuth state." );
                 }
 
-                if( query.TryGetValue( "code", out string code ) == false ||
-                    string.IsNullOrEmpty( code ) )
+                if( query.TryGetValue( "code", out string code ) == false || string.IsNullOrEmpty( code ) )
                 {
                     await WriteHttpResponseAsync( client, OAuthResponseMessage.CODE_NOT_FOUND, linkedCts.Token );
                     throw new Exception( "Authorization code not found." );
@@ -230,12 +252,7 @@ namespace LiveAppCore.Google.Infrastructure
 
                 await WriteHttpResponseAsync( client, OAuthResponseMessage.COMPLETE, linkedCts.Token );
 
-                return await ExchangeCodeForTokenAsync(
-                    code,
-                    redirectUri,
-                    codeVerifier,
-                    linkedCts.Token
-                );
+                return await ExchangeCodeForTokenAsync( code, redirectUri, codeVerifier, linkedCts.Token );
             }
             catch( OperationCanceledException )
             {
@@ -258,34 +275,64 @@ namespace LiveAppCore.Google.Infrastructure
         private static async UniTask<string> PostFormAsync(
             string url,
             Dictionary<string, string> form,
-            CancellationToken cancellationToken
-        )
+            CancellationToken cancellationToken)
         {
-            var hasSecretKey = form.ContainsKey("client_secret");
-            var secretValue = hasSecretKey ? form["client_secret"] : null;
-
             using UnityWebRequest request = UnityWebRequest.Post(url, form);
             request.timeout = 30;
 
-            await request.SendWebRequest().ToUniTask( cancellationToken: cancellationToken );
-
-            var body = request.downloadHandler != null
-                ? request.downloadHandler.text
-                : string.Empty;
-
-            if( request.result != UnityWebRequest.Result.Success )
+            // 1. 요청만 실행.
+            try
             {
-                throw new Exception(
-                    $"Token request failed. HTTP: {request.responseCode}, Error: {request.error}, Body: {body}"
-                );
+                await request.SendWebRequest()
+                    .ToUniTask(cancellationToken: cancellationToken);
+            }
+            catch (UnityWebRequestException e)
+            {
+                if (request.result != UnityWebRequest.Result.ProtocolError)
+                {
+                    throw new GoogleNetworkException(e);
+                }
             }
 
+            // 2. 성공·HTTP 실패 모두 여기에서 응답을 확인.
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var body = request.downloadHandler?.text ?? string.Empty;
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                var errorCode = "unknown_error";
+
+                try
+                {
+                    var root = JSON.Parse(body);
+
+                    if (root != null)
+                    {
+                        var parsedError = root["error"].Value;
+
+                        if (!string.IsNullOrWhiteSpace(parsedError))
+                        {
+                            errorCode = parsedError;
+                        }
+                    }
+                }
+                catch
+                {
+                    // 오류 응답이 JSON이 아닌 경우 기본 코드 유지
+                }
+
+                throw new OAuthTokenRequestException( request.responseCode, errorCode );
+            }
+
+            // 3. 성공한 경우에만 반환.
             return body;
         }
 
         private GoogleOAuthToken ParseTokenResponse(
             string json,
-            string keepRefreshToken
+            string keepRefreshToken,
+            string keepScope = null
         )
         {
             var root = JSON.Parse(json);
@@ -301,8 +348,11 @@ namespace LiveAppCore.Google.Infrastructure
             var expiresIn = root["expires_in"].AsInt;
             var tokenType = root["token_type"].Value;
             var scope = root["scope"].Value;
-
-            if( string.IsNullOrEmpty( accessToken ) )
+            if (string.IsNullOrWhiteSpace(scope))
+            {
+                scope = keepScope;
+            }
+            if ( string.IsNullOrEmpty( accessToken ) )
             {
                 throw new Exception( "access_token is empty." );
             }
@@ -330,6 +380,30 @@ namespace LiveAppCore.Google.Infrastructure
             string json = JsonUtility.ToJson(token);
             PlayerPrefsUtil.SetStringValueByKey( _playerPrefsKey, json );
         }
+        public void InvalidateToken()
+        {
+            _cachedToken = null;
+
+            if (!string.IsNullOrEmpty(_playerPrefsKey))
+            {
+                PlayerPrefs.DeleteKey(_playerPrefsKey);
+                PlayerPrefs.Save();
+            }
+        }
+
+        public async UniTask<string> ReauthorizeAsync(CancellationToken cancellationToken = default)
+        {
+            InvalidateToken();
+
+            var token = await RunAuthorizationCodeFlowAsync(cancellationToken);
+
+            ValidateTokenForSheets(token);
+
+            _cachedToken = token;
+            SaveTokenToPrefs(token);
+
+            return token.accessToken;
+        }
 
         public void ClearAllPrefs()
         {
@@ -340,6 +414,19 @@ namespace LiveAppCore.Google.Infrastructure
         {
             PlayerPrefs.DeleteKey( _playerPrefsKey );
             PlayerPrefs.Save();
+        }
+
+        private static void ValidateTokenForSheets(GoogleOAuthToken token)
+        {
+            if (token == null || !token.HasValidAccessToken())
+            {
+                throw new InvalidOperationException("사용 가능한 Google 토큰을 발급받지 못했습니다.");
+            }
+
+            if (!token.HasSheetsReadPermission())
+            {
+                throw new InvalidOperationException("Google Sheets 읽기 권한을 승인해야 합니다.");
+            }
         }
 
         private static int GetRandomUnusedPort()
@@ -439,7 +526,7 @@ namespace LiveAppCore.Google.Infrastructure
                 { "code_challenge_method", "S256" },
                 { "state", state },
                 { "access_type", "offline" },
-                { "prompt", "consent" }
+                { "prompt", "select_account consent" }
             };
 
             return OAuthConstValue.AuthEndpoint + "?" + BuildFormUrlEncoded( query );

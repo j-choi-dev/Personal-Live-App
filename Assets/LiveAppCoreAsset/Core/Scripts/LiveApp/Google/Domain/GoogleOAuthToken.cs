@@ -27,5 +27,28 @@ namespace LiveAppCore.Google.Domain
             var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             return expiresAtUnixTime > now + OAuthConstValue.TimeSpanSecond;
         }
+
+        public bool HasSheetsReadPermission()
+        {
+            if (string.IsNullOrWhiteSpace(scope))
+                return false;
+
+            var scopes = scope.Split(
+                new[] { ' ', '\t', '\r', '\n' },
+                StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var grantedScope in scopes)
+            {
+                if (grantedScope ==
+                        "https://www.googleapis.com/auth/spreadsheets.readonly" ||
+                    grantedScope ==
+                        "https://www.googleapis.com/auth/spreadsheets")
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

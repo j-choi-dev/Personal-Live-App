@@ -10,6 +10,7 @@ namespace LiveAppUI.Installer
 {
     public class LiveAppUIInstaller : MonoInstaller
     {
+        [SerializeField] private NoticeModalView _noticeModalView;
         [SerializeField] private MainMenuView _mainMenuView;
         [SerializeField] private ResourceMenuView _resourceMenuView;
         [SerializeField] private ServerModalView _serverModalView;
@@ -55,6 +56,9 @@ namespace LiveAppUI.Installer
             Container
                 .Bind<IResourceGimmickView>()
                 .FromInstance(_gimmickControlView);
+            Container
+                .Bind<INoticeModalView>()
+                .FromInstance(_noticeModalView);
         }
 
         private void ModelBinding()

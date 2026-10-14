@@ -15,9 +15,9 @@ namespace LiveAppUI.Model
             _context = context;
         }
 
-        public async UniTask<bool> InitilizeAuthProcess()
+        public async UniTask<bool> InitilizeAuthProcess(bool forceReauthorize = false)
         {
-            return await _context.InitilizeAuthProcess();
+            return await _context.InitilizeAuthProcess(forceReauthorize);
         }
     }
 }

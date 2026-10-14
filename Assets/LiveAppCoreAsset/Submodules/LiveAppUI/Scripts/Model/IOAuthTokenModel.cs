@@ -18,6 +18,6 @@ namespace LiveAppUI.Model
         /// </summary>
         /// <returns>취득 성공 여부</returns>
         /// <remarks>Start 타이밍에서 호출 필수</remarks>
-        UniTask<bool> InitilizeAuthProcess();
+        UniTask<bool> InitilizeAuthProcess(bool forceReauthorize = false);
     }
 }

@@ -20,11 +20,16 @@ namespace LiveAppUI.Model
         /// <returns></returns>
         ServerType GetCurrentServerType( ResourceType resourceType );
 
+        bool IsLoading { get; }
+
         /// <summary>
         /// Server Config 정보 취득을 위한 초기화 작업
         /// </summary>
         /// <returns></returns>
         UniTask<bool> InitializeServerConfig();
+
+        IObservable<ResourceListFailureData> OnLoadFailed { get; }
+
         /// <summary>
         /// 선택한 리소스 및 서버 타입의 리스트
         /// </summary>
@@ -49,5 +54,7 @@ namespace LiveAppUI.Model
         UniTask<bool> LoadResourceProcess( ResourceType resourceType, 
             ServerType serverType, 
             IReadOnlyList<string> list );
+
+        UniTask ReauthorizeAndGetResourceList( ResourceType resourceType, ServerType serverType);
     }
 }
