@@ -1,5 +1,15 @@
+using LiveAppUI;
+using System;
+
 namespace StudioResourceSDK.Domain
 {
+    public enum ResourceTableFailureKind
+    {
+        Unauthorized,
+        PermissionDenied,
+        Other
+    }
+
     public class ResourceConstValue
     {
         public static readonly string BinFileName = "ResourceInfo.bin"; // TODO 리팩터링 대상 @Choi 26.07.04
@@ -87,7 +97,18 @@ namespace StudioResourceSDK.Domain
             AccessKey = accessKey;
             SecretAccessKey = secretAccessKey;
         }
+    }
 
+    public sealed class ResourceTableLoadException : Exception
+    {
+        public ResourceTableFailureKind Kind { get; }
+        public long StatusCode { get; }
 
+        public ResourceTableLoadException(ResourceTableFailureKind kind, long statusCode, Exception innerException)
+            : base("리소스 테이블 조회에 실패했습니다.", innerException)
+        {
+            Kind = kind;
+            StatusCode = statusCode;
+        }
     }
 }

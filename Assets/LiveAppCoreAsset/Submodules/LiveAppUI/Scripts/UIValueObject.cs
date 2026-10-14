@@ -1,3 +1,5 @@
+using System;
+
 namespace LiveAppUI
 {
     public enum ResourceType
@@ -23,6 +25,13 @@ namespace LiveAppUI
         Unauthorized,
         PermissionDenied,
         Network,
+        Other
+    }
+
+    public enum ResourceTableFailureKind
+    {
+        Unauthorized,
+        PermissionDenied,
         Other
     }
 
@@ -79,5 +88,18 @@ namespace LiveAppUI
 
         public void SetSubMessage(string msg)
             =>  SubMessage = msg;
+    }
+
+    public sealed class ResourceTableLoadException : Exception
+    {
+        public ResourceTableFailureKind Kind { get; }
+        public long StatusCode { get; }
+
+        public ResourceTableLoadException( ResourceTableFailureKind kind, long statusCode, Exception innerException )
+            : base("리소스 테이블 조회에 실패했습니다.", innerException)
+        {
+            Kind = kind;
+            StatusCode = statusCode;
+        }
     }
 }

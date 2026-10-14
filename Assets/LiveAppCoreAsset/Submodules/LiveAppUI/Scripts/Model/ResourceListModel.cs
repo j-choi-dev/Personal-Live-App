@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using StudioNetworkSDK.Domain;
 using StudioResourceSDK.Application;
+using StudioResourceSDK.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,16 +93,81 @@ namespace LiveAppUI.Model
                 .FirstOrDefault(arg => arg.resourceType == resource &&
                 arg.serverType == server);
 
-            var loadResult = await _resourceTableContext.LoadResourceTableProcess(
-                config.resourceType,
-                server.ToString(),
-                config.tableUrl );
-            if(loadResult == false)
+            await GetResourceListCoreAsync( resourceType, serverType, reauthorize: false);
+        }
+        private async UniTask GetResourceListCoreAsync( ResourceType resourceType, ServerType serverType, bool reauthorize )
+        {
+            try
             {
-                var noticeData = new NoticeViewMessageData();
-                noticeData.SetMainMessage("시트와 탭 설정 확인 필요");
-                _onLoadResultChanged.OnNext(noticeData);
+                // 기존 89~93줄의 설정 검색을 이동합니다.
+                var resource = ConvertResourceType(resourceType);
+                var server = ConvertServerType(serverType);
+
+                var config = _serverConfigs.FirstOrDefault(
+                    arg => arg.resourceType == resource &&
+                           arg.serverType == server);
+
+                // 추가: 설정을 찾지 못한 경우
+                if (config == null)
+                {
+                    PublishFailure( ResourceListFailureKind.MissingConfiguration, resourceType, serverType );
+                    return;
+                }
+
+                // 기존 95줄의 조회 호출을 두 경로로 분리합니다.
+                var loaded = reauthorize
+                    ? await _resourceTableContext.ReauthorizeAndLoadResourceTableProcess( config.resourceType,
+                            server.ToString(),
+                            config.tableUrl)
+                    : await _resourceTableContext .LoadResourceTableProcess( config.resourceType,                            server.ToString(), config.tableUrl);
+
+                // 기존 NoticeViewMessageData 생성 대신 실패 데이터 통지
+                if (!loaded)
+                {
+                    PublishFailure( ResourceListFailureKind.SheetOrTabNotFound, resourceType, serverType);
+                }
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (ResourceTableLoadException e)
+            {
+                ResourceListFailureKind kind;
+
+                switch (e.Kind)
+                {
+                    case ResourceTableFailureKind.Unauthorized:
+                        kind = ResourceListFailureKind.Unauthorized;
+                        break;
+
+                    case ResourceTableFailureKind.PermissionDenied:
+                        kind = ResourceListFailureKind.PermissionDenied;
+                        break;
+
+                    default:
+                        kind = ResourceListFailureKind.Other;
+                        break;
+                }
+
+                PublishFailure( kind, resourceType, serverType, e.StatusCode);
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogException(e);
+
+                PublishFailure( ResourceListFailureKind.Other, resourceType, serverType);
+            }
+        }
+
+        private void PublishFailure( ResourceListFailureKind kind, ResourceType resourceType, ServerType serverType, long statusCode = 0)
+        {
+            _onLoadFailed.OnNext( new ResourceListFailureData( kind, resourceType, serverType, statusCode ));
+        }
+
+        public async UniTask ReauthorizeAndGetResourceList( ResourceType resourceType, ServerType serverType )
+        {
+            await GetResourceListCoreAsync( resourceType, serverType, reauthorize: true );
         }
 
         public ServerType GetCurrentServerType( ResourceType resourceType )
@@ -134,6 +200,9 @@ namespace LiveAppUI.Model
         {
             _disposable.Dispose();
             _disposable = null;
+
+            _onCharacterListChanged.Dispose();
+            _onLoadFailed.Dispose();
         }
     }
 }
