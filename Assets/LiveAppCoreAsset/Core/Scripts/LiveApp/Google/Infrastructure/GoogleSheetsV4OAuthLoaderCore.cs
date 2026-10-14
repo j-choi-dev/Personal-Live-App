@@ -162,7 +162,7 @@ namespace LiveAppCore.Google.Infrastructure
             {
                 await request.SendWebRequest().ToUniTask(cancellationToken: cancellationToken);
             }
-            catch (UnityWebRequestException)
+            catch (UnityWebRequestException e)
             {
                 if (request.result != UnityWebRequest.Result.ProtocolError)
                 {
