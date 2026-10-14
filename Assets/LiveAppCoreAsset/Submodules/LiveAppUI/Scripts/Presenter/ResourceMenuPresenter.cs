@@ -133,6 +133,26 @@ namespace LiveAppUI.Presenter
                     }
                 } )
                 .AddTo( this );
+            _resourceListModel.OnBackStageListChanged
+                .Subscribe(list =>
+                {
+                    _resourceListView.ClearList();
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        _resourceListView.AddListItem(list[i].id, list[i].displayName);
+                    }
+                })
+                .AddTo(this);
+            _resourceListModel.OnPropListChanged
+                .Subscribe(list =>
+                {
+                    _resourceListView.ClearList();
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        _resourceListView.AddListItem(list[i].id, list[i].displayName);
+                    }
+                })
+                .AddTo(this);
         }
 
         private void UpdateResourceList( ResourceType resourceType, ServerType serverType)

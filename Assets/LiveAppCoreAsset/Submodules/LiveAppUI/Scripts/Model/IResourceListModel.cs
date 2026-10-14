@@ -13,6 +13,8 @@ namespace LiveAppUI.Model
         /// 로직에 의한 캐릭터 리스트 변경 이벤트
         /// </summary>
         IObservable <IReadOnlyList<(string id, string displayName)>> OnCharacterListChanged { get; }
+        IObservable<IReadOnlyList<(string id, string displayName)>> OnBackStageListChanged { get; }
+        IObservable<IReadOnlyList<(string id, string displayName)>> OnPropListChanged { get; }
         /// <summary>
         /// 현재 선택한 리소스의 서버 타입
         /// </summary>
