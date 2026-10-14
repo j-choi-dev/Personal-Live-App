@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using LiveAppUI.Model;
+using LiveAppUI.View;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
@@ -15,6 +16,7 @@ namespace LiveAppUI.Presenter
     {
         private IResourceMenuView _resourceMenuView;
         private IResourceListView _resourceListView;
+        private INoticeModalView _noticeModalView;
         private IResourceListModel _resourceListModel;
 
         private ResourceType _currentResourceType;
@@ -26,10 +28,12 @@ namespace LiveAppUI.Presenter
         public void Initialize(
             IResourceMenuView resourceMenuView,
             IResourceListView resourceListView,
+            INoticeModalView noticeModalView,
             IResourceListModel resourceListModel)
         {
             _resourceMenuView = resourceMenuView;
             _resourceListView = resourceListView;
+            _noticeModalView = noticeModalView; 
             _resourceListModel = resourceListModel;
         }
 
@@ -40,21 +44,18 @@ namespace LiveAppUI.Presenter
             SubscribeModel();
         }
 
-        private async void Start()
+        private void Start()
         {
-            var result = await _resourceListModel.InitializeServerConfig();
-            if(result == false)
-            {
-                return;
-            }
             _currentResourceType = ResourceType.None;
             _currentResourceServerType = ServerType.Develop;
 
-            _resourceListView.SetServerItem( GetServerIndex( ServerType.Develop ) );
-            _resourceListModel.SetCurrentServerType( ResourceType.Character, ServerType.Develop );
-            _resourceListModel.SetCurrentServerType( ResourceType.BackGround, ServerType.Develop );
-            _resourceListModel.SetCurrentServerType( ResourceType.Prop, ServerType.Develop );
-            await _resourceListModel.GetResourceList( ResourceType.Character, _currentResourceServerType );
+            _resourceListView.SetServerItem( GetServerIndex(ServerType.Develop));
+
+            _resourceListModel.SetCurrentServerType( ResourceType.Character, ServerType.Develop);
+
+            _resourceListModel.SetCurrentServerType( ResourceType.BackGround, ServerType.Develop);
+
+            _resourceListModel.SetCurrentServerType( ResourceType.Prop, ServerType.Develop);
         }
 
         private void SubscribeView()
@@ -64,42 +65,39 @@ namespace LiveAppUI.Presenter
                 .AddTo( this );
 
             _resourceMenuView.OnClickAvatar
-                .Subscribe( _ =>
-                {
-                    _currentResourceServerType = _resourceListModel.GetCurrentServerType( ResourceType.Character );
-                    _resourceListView.SetServerItem( GetServerIndex( _currentResourceServerType ) );
-                    UpdateResourceList(
-                        ResourceType.Character,
-                        _resourceListModel.GetCurrentServerType( ResourceType.Character ) );
-                } )
-                .AddTo( this );
+                .Subscribe(_ => UpdateResourceList( ResourceType.Character, _resourceListModel.GetCurrentServerType(ResourceType.Character)))
+                .AddTo(this);
+
             _resourceMenuView.OnClickStage
-                .Subscribe( _ =>
-                {
-                    _currentResourceServerType = _resourceListModel.GetCurrentServerType( ResourceType.BackGround );
-                    _resourceListView.SetServerItem( GetServerIndex( _currentResourceServerType ) );
-                    UpdateResourceList(
-                        ResourceType.BackGround,
-                    _resourceListModel.GetCurrentServerType( ResourceType.BackGround ) );
-                } )
-                .AddTo( this );
+                .Subscribe(_ => UpdateResourceList( ResourceType.BackGround, _resourceListModel.GetCurrentServerType(ResourceType.BackGround)))
+                .AddTo(this);
+
             _resourceMenuView.OnClickProp
-                .Subscribe( _ =>
-                {
-                    _currentResourceServerType = _resourceListModel.GetCurrentServerType( ResourceType.Prop );
-                    _resourceListView.SetServerItem( GetServerIndex( _currentResourceServerType ) );
-                    UpdateResourceList(
-                        ResourceType.Prop,
-                        _resourceListModel.GetCurrentServerType( ResourceType.Prop ) );
-                } )
-                .AddTo( this );
+                .Subscribe(_ => UpdateResourceList( ResourceType.Prop, _resourceListModel.GetCurrentServerType(ResourceType.Prop)))
+                .AddTo(this);
 
             _resourceListView.OnServerChange
-                .Subscribe( server =>
+                .Subscribe(index =>
                 {
-                    UpdateResourceList( _currentResourceType, GetServerType( server ) );
-                } )
-                .AddTo( this );
+                    if (_resourceListModel.IsLoading)
+                    {
+                        var currentIndex =
+                            GetServerIndex(_currentResourceServerType);
+
+                        if (index != currentIndex)
+                            _resourceListView.SetServerItem(currentIndex);
+
+                        return;
+                    }
+
+                    var serverType = GetServerType(index);
+
+                    if (serverType == _currentResourceServerType)
+                        return;
+
+                    UpdateResourceList(_currentResourceType, serverType);
+                })
+                .AddTo(this);
 
             _resourceListView.OnClickLoad
                 .Subscribe(arg => _resourceListModel.LoadResourceProcess( _currentResourceType, 
@@ -124,22 +122,66 @@ namespace LiveAppUI.Presenter
                 .AddTo( this );
         }
 
-        private void UpdateResourceList( ResourceType resourceType, ServerType serverType )
+        private void UpdateResourceList( ResourceType resourceType, ServerType serverType)
         {
-            var isSameResourceType = _currentResourceType == resourceType;
-            var isSameServerType = _currentResourceServerType == serverType;
-            if( isSameResourceType && _resourceListView.IsActive && isSameServerType )
+            UpdateResourceListAsync(resourceType, serverType).Forget(Debug.LogException);
+        }
+
+        private async UniTask UpdateResourceListAsync( ResourceType resourceType, ServerType serverType)
+        {
+            if (_resourceListModel.IsLoading)
             {
-                CloseResourceListView();
                 return;
             }
-            _currentResourceType = resourceType; 
+
+            if (resourceType == ResourceType.None)
+            {
+                return;
+            }
+
+            var isSameResourceType = _currentResourceType == resourceType;
+            var isSameServerType = _currentResourceServerType == serverType;
+
+            if (isSameResourceType &&
+                _resourceListView.IsActive &&
+                isSameServerType)
+            {
+                CloseResourceListView();
+                {
+                    return;
+                }
+            }
+
+            _currentResourceType = resourceType;
             _currentResourceServerType = serverType;
-            _resourceListModel.SetCurrentServerType( _currentResourceType, _currentResourceServerType );
-            _resourceListView.SetTitle( _currentResourceType.ToString() );
-            _resourceListModel.GetResourceList( _currentResourceType, _currentResourceServerType ).Forget();
-            _resourceListView.SetActive( true );
+
+            _resourceListModel.SetCurrentServerType( resourceType, serverType);
+
+            _resourceListView.SetTitle(resourceType.ToString());
+            _resourceListView.SetActive(true);
+
+            var loadTask = _resourceListModel.GetResourceList( resourceType, serverType);
+            _resourceListView.SetServerItem(GetServerIndex(serverType));
+
+            await loadTask;
         }
+
+        //private void UpdateResourceList( ResourceType resourceType, ServerType serverType )
+        //{
+        //    var isSameResourceType = _currentResourceType == resourceType;
+        //    var isSameServerType = _currentResourceServerType == serverType;
+        //    if( isSameResourceType && _resourceListView.IsActive && isSameServerType )
+        //    {
+        //        CloseResourceListView();
+        //        return;
+        //    }
+        //    _currentResourceType = resourceType; 
+        //    _currentResourceServerType = serverType;
+        //    _resourceListModel.SetCurrentServerType( _currentResourceType, _currentResourceServerType );
+        //    _resourceListView.SetTitle( _currentResourceType.ToString() );
+        //    _resourceListModel.GetResourceList( _currentResourceType, _currentResourceServerType ).Forget();
+        //    _resourceListView.SetActive( true );
+        //}
 
         private void CloseResourceListView()
         {

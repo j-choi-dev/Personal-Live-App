@@ -42,7 +42,7 @@ namespace LiveAppCore.Google.Application
 
         public string Token => _googleAuthDomain.Token;
 
-        public async UniTask<bool> InitilizeAuthProcess()
+        public async UniTask<bool> InitilizeAuthProcess(bool forceReauthorize = false)
         {
             try
             {
@@ -69,7 +69,8 @@ namespace LiveAppCore.Google.Application
                 var isEqulaFile = sourceBytes.SequenceEqual( destBytes );
                 if( isEqulaFile == false )
                 {
-                    _fileSystemDomain.CopyFile( originPath, destPath, true );
+                    _fileSystemDomain.CopyFile(originPath, destPath, true);
+                    destBytes = await _fileSystemDomain.LoadBinaryFile(destPath);
                 }
 
                 var rawData = Encoding.Default.GetString(destBytes);
@@ -78,7 +79,9 @@ namespace LiveAppCore.Google.Application
 
                 _googleAuthInfoStorage.SetOAuthSettings( oauthSettings );
                 _googleAuthDomain.SetAuthValue( oauthSettings );
-                var token = await _googleAuthDomain.GetAccessTokenAsync();
+                var token = forceReauthorize
+                    ? await _googleAuthDomain.ReauthorizeAsync()
+                    : await _googleAuthDomain.GetAccessTokenAsync();
                 _googleAuthInfoStorage.SetOAuthToken( token );
                 _onCompleteTokenProcess.OnNext( true );
                 return true;

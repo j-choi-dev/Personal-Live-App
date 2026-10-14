@@ -1,17 +1,30 @@
+using System;
+using UnityEngine.Audio;
+
 namespace StudioResourceSDK.Domain
 {
-    public class ResourceConstValue
+    public enum ResourceTableFailureKind
     {
-        public static readonly string BinFileName = "ResourceInfo.bin"; // TODO 리팩터링 대상 @Choi 26.07.04
-        public static readonly string ReosurceCloudConfigFille = "awsConfig.bin";
+        Unauthorized,
+        PermissionDenied,
+        Other,
+        Network,
+        AuthorizationCancelled
     }
-        public enum ResourceType
+
+    public enum ResourceType
     {
         None = 0,
         Character,
         BackGround,
         Prop,
         Media,
+    }
+
+    public class ResourceConstValue
+    {
+        public static readonly string BinFileName = "ResourceInfo.bin"; // TODO 리팩터링 대상 @Choi 26.07.04
+        public static readonly string ReosurceCloudConfigFille = "awsConfig.bin";
     }
 
     public class ResourceTableData
@@ -66,14 +79,18 @@ namespace StudioResourceSDK.Domain
         }
     }
 
-    public class StageResourceItem
+    public class StageResourceItem : ResourceItemBase
     {
-
+        public StageResourceItem(string id, string displayName) : base(id, displayName)
+        {
+        }
     }
 
-    public class PropResourceItem
+    public class PropResourceItem : ResourceItemBase
     {
-
+        public PropResourceItem(string id, string displayName) : base(id, displayName)
+        {
+        }
     }
 
     public class CloudConfigData
@@ -87,7 +104,34 @@ namespace StudioResourceSDK.Domain
             AccessKey = accessKey;
             SecretAccessKey = secretAccessKey;
         }
+    }
 
+    public sealed class ResourceTableLoadException : Exception
+    {
+        public ResourceTableFailureKind Kind { get; }
+        public long StatusCode { get; }
 
+        public ResourceTableLoadException(ResourceTableFailureKind kind, long statusCode, Exception innerException)
+            : base("리소스 테이블 조회에 실패했습니다.", innerException)
+        {
+            Kind = kind;
+            StatusCode = statusCode;
+        }
+    }
+
+    public sealed class GoogleNetworkException : Exception
+    {
+        public GoogleNetworkException(Exception innerException)
+            : base("Google 요청 중 통신 오류가 발생했습니다.", innerException)
+        {
+        }
+    }
+
+    public sealed class OAuthAuthorizationDeniedException : Exception
+    {
+        public OAuthAuthorizationDeniedException()
+            : base("사용자가 Google 인증을 거절했습니다.")
+        {
+        }
     }
 }
