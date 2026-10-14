@@ -67,22 +67,12 @@ namespace LiveAppCore.Google.Infrastructure
                     SaveTokenToPrefs(refreshedToken);
                     return _cachedToken.accessToken;
                 }
-                //catch( Exception e )
-                //{
-                //    UnityEngine.Debug.LogError( $"[GoogleOAuth] Refresh failed. Re-auth required. {e.Message}" );
-                //    ClearPrefs();
-                //}
                 catch (OAuthTokenRequestException e)
                 when (e.ErrorCode == "invalid_grant")
                 {
                     InvalidateToken();
                 }
             }
-
-            //_cachedToken = await RunAuthorizationCodeFlowAsync( cancellationToken );
-            //SaveTokenToPrefs( _cachedToken );
-
-            //return _cachedToken.accessToken;
             return await ReauthorizeAsync(cancellationToken);
         }
         private GoogleOAuthToken LoadTokenFromPrefs()

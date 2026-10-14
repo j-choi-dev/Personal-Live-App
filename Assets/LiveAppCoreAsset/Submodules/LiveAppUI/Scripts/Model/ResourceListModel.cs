@@ -102,9 +102,9 @@ namespace LiveAppUI.Model
             await GetResourceListCoreAsync( resourceType, serverType, reauthorize: false);
         }
         private async UniTask GetResourceListCoreAsync(
-    ResourceType resourceType,
-    ServerType serverType,
-    bool reauthorize)
+            ResourceType resourceType,
+            ServerType serverType,
+            bool reauthorize)
         {
             if (_isLoading)
                 return;
