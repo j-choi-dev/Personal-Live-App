@@ -28,6 +28,12 @@ namespace LiveAppUI.Model
         private Subject<IReadOnlyList<(string id, string displayName)>> _onCharacterListChanged = new Subject<IReadOnlyList<(string id, string displayName)>>();
         public IObservable<IReadOnlyList<(string id, string displayName)>> OnCharacterListChanged => _onCharacterListChanged;
 
+        private Subject<IReadOnlyList<(string id, string displayName)>> _onBackStageListChanged = new Subject<IReadOnlyList<(string id, string displayName)>>();
+        public IObservable<IReadOnlyList<(string id, string displayName)>> OnBackStageListChanged => _onBackStageListChanged;
+
+        private Subject<IReadOnlyList<(string id, string displayName)>> _onPropListChanged = new Subject<IReadOnlyList<(string id, string displayName)>>();
+        public IObservable<IReadOnlyList<(string id, string displayName)>> OnPropListChanged => _onPropListChanged;
+
         private readonly Subject<ResourceListFailureData> _onLoadFailed = new Subject<ResourceListFailureData>();
 
         public IObservable<ResourceListFailureData> OnLoadFailed => _onLoadFailed;
@@ -49,6 +55,24 @@ namespace LiveAppUI.Model
                     _onCharacterListChanged.OnNext( result );
                 } )
                 .AddTo( _disposable );
+
+            _resourceTableContext.OnStageListChanged
+                .Subscribe(list =>
+                {
+                    var result = list.Select(arg => (arg.ID, arg.DisplayName))
+                        .ToList();
+                    _onBackStageListChanged.OnNext(result);
+                })
+                .AddTo(_disposable);
+
+            _resourceTableContext.OnPropListChanged
+                .Subscribe(list =>
+                {
+                    var result = list.Select(arg => (arg.ID, arg.DisplayName))
+                        .ToList();
+                    _onPropListChanged.OnNext(result);
+                })
+                .AddTo(_disposable);
 
             // TODO Refactor 대상(별도 유틸 스크립트화) @Choi 26.07.06
             var resourceTypeList = Enum.GetValues(typeof(ResourceType))

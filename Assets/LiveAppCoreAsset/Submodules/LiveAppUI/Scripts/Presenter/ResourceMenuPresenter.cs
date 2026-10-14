@@ -120,6 +120,26 @@ namespace LiveAppUI.Presenter
                     }
                 } )
                 .AddTo( this );
+            _resourceListModel.OnBackStageListChanged
+                .Subscribe(list =>
+                {
+                    _resourceListView.ClearList();
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        _resourceListView.AddListItem(list[i].id, list[i].displayName);
+                    }
+                })
+                .AddTo(this);
+            _resourceListModel.OnPropListChanged
+                .Subscribe(list =>
+                {
+                    _resourceListView.ClearList();
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        _resourceListView.AddListItem(list[i].id, list[i].displayName);
+                    }
+                })
+                .AddTo(this);
         }
 
         private void UpdateResourceList( ResourceType resourceType, ServerType serverType)
@@ -165,23 +185,6 @@ namespace LiveAppUI.Presenter
 
             await loadTask;
         }
-
-        //private void UpdateResourceList( ResourceType resourceType, ServerType serverType )
-        //{
-        //    var isSameResourceType = _currentResourceType == resourceType;
-        //    var isSameServerType = _currentResourceServerType == serverType;
-        //    if( isSameResourceType && _resourceListView.IsActive && isSameServerType )
-        //    {
-        //        CloseResourceListView();
-        //        return;
-        //    }
-        //    _currentResourceType = resourceType; 
-        //    _currentResourceServerType = serverType;
-        //    _resourceListModel.SetCurrentServerType( _currentResourceType, _currentResourceServerType );
-        //    _resourceListView.SetTitle( _currentResourceType.ToString() );
-        //    _resourceListModel.GetResourceList( _currentResourceType, _currentResourceServerType ).Forget();
-        //    _resourceListView.SetActive( true );
-        //}
 
         private void CloseResourceListView()
         {
