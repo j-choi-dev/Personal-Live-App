@@ -26,6 +26,9 @@ namespace LiveAppUI.Model
         private Subject<IReadOnlyList<(string id, string displayName)>> _onCharacterListChanged = new Subject<IReadOnlyList<(string id, string displayName)>>();
         public IObservable<IReadOnlyList<(string id, string displayName)>> OnCharacterListChanged => _onCharacterListChanged;
 
+        private Subject<NoticeViewMessageData> _onLoadResultChanged = new Subject<NoticeViewMessageData>();
+        public IObservable<NoticeViewMessageData> OnLoadResultChanged => _onLoadResultChanged;
+
         public ResourceListModel( IResourceServerConfigContext resourceConfigContext,
             IResourceTableContext resourceTableContext,
             IResourceLoadContext resourceLoadContext )
@@ -94,6 +97,12 @@ namespace LiveAppUI.Model
                 config.resourceType,
                 server.ToString(),
                 config.tableUrl );
+            if(loadResult == false)
+            {
+                var noticeData = new NoticeViewMessageData();
+                noticeData.SetMainMessage("시트와 탭 설정 확인 필요");
+                _onLoadResultChanged.OnNext(noticeData);
+            }
         }
 
         public ServerType GetCurrentServerType( ResourceType resourceType )

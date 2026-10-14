@@ -157,7 +157,17 @@ namespace LiveAppCore.Google.Infrastructure
             request.timeout = 30;
             request.SetRequestHeader( "Authorization", $"Bearer {accessToken}" );
 
-            await request.SendWebRequest().ToUniTask( cancellationToken: cancellationToken );
+            try
+            {
+                await request.SendWebRequest().ToUniTask(cancellationToken: cancellationToken);
+            }
+            catch (UnityWebRequestException)
+            {
+                if (request.result != UnityWebRequest.Result.ProtocolError)
+                {
+                    throw;
+                }
+            }
 
             var body = request.downloadHandler != null
                 ? request.downloadHandler.text

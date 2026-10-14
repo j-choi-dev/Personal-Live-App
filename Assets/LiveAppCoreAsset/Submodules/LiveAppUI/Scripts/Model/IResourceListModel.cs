@@ -25,6 +25,9 @@ namespace LiveAppUI.Model
         /// </summary>
         /// <returns></returns>
         UniTask<bool> InitializeServerConfig();
+
+        IObservable<NoticeViewMessageData> OnLoadResultChanged { get; } 
+
         /// <summary>
         /// 선택한 리소스 및 서버 타입의 리스트
         /// </summary>

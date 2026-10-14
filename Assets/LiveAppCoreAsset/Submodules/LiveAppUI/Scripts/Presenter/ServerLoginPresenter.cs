@@ -114,7 +114,7 @@ namespace LiveAppUI.Presenter
                 .Subscribe(async x => 
                 {
                     _noticeModalView.SetActive(false);
-                    var result = await _authTokenModel.InitilizeAuthProcess();
+                    var result = await _authTokenModel.InitilizeAuthProcess(forceReauthorize: true);
 
                     if (result == false)
                     {

@@ -52,7 +52,7 @@ namespace StudioResourceSDK.Application
                 return false;
             }
             string tableText = await _resourceTableLoadDomain.LoadVariableRangeAsStringAsync(
-                _tokenDomain.Token,
+                accessToken,
                 tableUrl,
                 serverType,
                 columnDelimiter: ",",
