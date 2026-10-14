@@ -34,39 +34,78 @@ namespace StudioResourceSDK.Application
 
         public async UniTask<bool> LoadResourceTableProcess( ResourceType type, string serverType, string tableUrl )
         {
+
             var accessToken = await _tokenDomain.GetAccessTokenAsync();
 
-            if( string.IsNullOrWhiteSpace( accessToken ) )
+            return await LoadTableWithTokenAsync( type, serverType, tableUrl, accessToken);
+
+            //if ( string.IsNullOrWhiteSpace( accessToken ) )
+            //{
+            //    Debug.LogError( "[GoogleSheets] Access token is empty." );
+            //    return false;
+            //}
+            //var isExists = await _resourceTableLoadDomain.ExistsSheetAndTabAsync(
+            //    tableUrl,
+            //    serverType,
+            //    accessToken
+            //);
+            //if( isExists == false )
+            //{
+            //    Debug.LogError( $"Google Sheet or tab not found, or permission denied. Sheet: {tableUrl}, Tab: {serverType}" );
+            //    return false;
+            //}
+            //string tableText = await _resourceTableLoadDomain.LoadVariableRangeAsStringAsync(
+            //    accessToken,
+            //    tableUrl,
+            //    serverType,
+            //    columnDelimiter: ",",
+            //    rowDelimiter: "\n",
+            //    escapeCellLineBreaks: true
+            //);
+            //Debug.Log( $"LoadResourceTableProcess :: {type} / {serverType}" );
+            //var result = _resourceDataParseDomain.ParseCharacterData( tableText );
+            //return true;
+        }
+        public async UniTask<bool> ReauthorizeAndLoadResourceTableProcess( ResourceType type, string serverType, string tableUrl)
+        {
+            var accessToken = await _tokenDomain.ReauthorizeAsync();
+
+            return await LoadTableWithTokenAsync( type, serverType, tableUrl, accessToken );
+        }
+
+        private async UniTask<bool> LoadTableWithTokenAsync( ResourceType type, string serverType, string tableUrl, string accessToken)
+        {
+            if (string.IsNullOrWhiteSpace(accessToken))
             {
-                Debug.LogError( "[GoogleSheets] Access token is empty." );
+                throw new InvalidOperationException( "Google access token is empty." );
+            }
+
+            var isExists = await _resourceTableLoadDomain.ExistsSheetAndTabAsync( tableUrl, serverType, accessToken );
+
+            if (isExists == false )
+            {
                 return false;
             }
-            var isExists = await _resourceTableLoadDomain.ExistsSheetAndTabAsync(
-                tableUrl,
-                serverType,
-                accessToken
-            );
-            if( isExists == false )
-            {
-                Debug.LogError( $"Google Sheet or tab not found, or permission denied. Sheet: {tableUrl}, Tab: {serverType}" );
-                return false;
-            }
-            string tableText = await _resourceTableLoadDomain.LoadVariableRangeAsStringAsync(
-                accessToken,
-                tableUrl,
-                serverType,
-                columnDelimiter: ",",
-                rowDelimiter: "\n",
-                escapeCellLineBreaks: true
-            );
-            Debug.Log( $"LoadResourceTableProcess :: {type} / {serverType}" );
-            var result = _resourceDataParseDomain.ParseCharacterData( tableText );
+
+            var tableText = await _resourceTableLoadDomain.LoadVariableRangeAsStringAsync(
+                    accessToken,
+                    tableUrl,
+                    serverType,
+                    columnDelimiter: ",",
+                    rowDelimiter: "\n",
+                    escapeCellLineBreaks: true );
+
+            Debug.Log($"LoadResourceTableProcess :: {type} / {serverType}");
+
+            var result = _resourceDataParseDomain.ParseCharacterData(tableText);
             return true;
         }
+
 
         public async UniTask<bool> InitProcess()
         {
             return true;
         }
+
     }
 }

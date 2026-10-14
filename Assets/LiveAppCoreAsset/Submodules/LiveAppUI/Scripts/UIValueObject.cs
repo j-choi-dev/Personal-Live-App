@@ -16,6 +16,36 @@ namespace LiveAppUI
         Master,
     }
 
+    public enum ResourceListFailureKind
+    {
+        MissingConfiguration,
+        SheetOrTabNotFound,
+        Unauthorized,
+        PermissionDenied,
+        Network,
+        Other
+    }
+
+    public sealed class ResourceListFailureData
+    {
+        public ResourceListFailureKind Kind { get; }
+        public ResourceType ResourceType { get; }
+        public ServerType ServerType { get; }
+        public long StatusCode { get; }
+
+        public ResourceListFailureData(
+            ResourceListFailureKind kind,
+            ResourceType resourceType,
+            ServerType serverType,
+            long statusCode = 0)
+        {
+            Kind = kind;
+            ResourceType = resourceType;
+            ServerType = serverType;
+            StatusCode = statusCode;
+        }
+    }
+
     public class NoticeViewMessageData
     {
         public string HeaderTitle { get; private set; } = "NOTICE";

@@ -26,7 +26,7 @@ namespace LiveAppUI.Model
         /// <returns></returns>
         UniTask<bool> InitializeServerConfig();
 
-        IObservable<NoticeViewMessageData> OnLoadResultChanged { get; } 
+        IObservable<ResourceListFailureData> OnLoadFailed { get; }
 
         /// <summary>
         /// 선택한 리소스 및 서버 타입의 리스트
@@ -52,5 +52,7 @@ namespace LiveAppUI.Model
         UniTask<bool> LoadResourceProcess( ResourceType resourceType, 
             ServerType serverType, 
             IReadOnlyList<string> list );
+
+        UniTask ReauthorizeAndGetResourceList( ResourceType resourceType, ServerType serverType);
     }
 }

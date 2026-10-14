@@ -77,7 +77,7 @@ namespace LiveAppCore.Google.Infrastructure
             catch( Exception e )
             {
                 Debug.LogError( $"[GoogleSheetsV4OAuthLoader] Exists check failed. {e.Message}" );
-                return false;
+                throw;
             }
         }
 
@@ -173,17 +173,23 @@ namespace LiveAppCore.Google.Infrastructure
                 ? request.downloadHandler.text
                 : string.Empty;
 
-            if( request.responseCode == 401 )
-            {
-                throw new UnauthorizedAccessException( $"Google access token was rejected. HTTP 401. Body: {body}" );
-            }
+            //if( request.responseCode == 401 )
+            //{
+            //    throw new UnauthorizedAccessException( $"Google access token was rejected. HTTP 401. Body: {body}" );
+            //}
 
 
-            if( request.result != UnityWebRequest.Result.Success )
+            //if( request.result != UnityWebRequest.Result.Success )
+            //{
+            //    throw new Exception(
+            //        $"HTTP Error: {request.responseCode}, Result: {request.result}, Error: {request.error}, Body: {body}"
+            //    );
+            //}
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (request.result != UnityWebRequest.Result.Success)
             {
-                throw new Exception(
-                    $"HTTP Error: {request.responseCode}, Result: {request.result}, Error: {request.error}, Body: {body}"
-                );
+                throw new GoogleSheetsRequestException( request.responseCode, body );
             }
 
             return body;

@@ -1,10 +1,8 @@
 using Cysharp.Threading.Tasks;
 using StudioNetworkSDK.Domain;
 using StudioResourceSDK.Application;
-using StudioSystemSDK.Application;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using UniRx;
 
@@ -26,8 +24,9 @@ namespace LiveAppUI.Model
         private Subject<IReadOnlyList<(string id, string displayName)>> _onCharacterListChanged = new Subject<IReadOnlyList<(string id, string displayName)>>();
         public IObservable<IReadOnlyList<(string id, string displayName)>> OnCharacterListChanged => _onCharacterListChanged;
 
-        private Subject<NoticeViewMessageData> _onLoadResultChanged = new Subject<NoticeViewMessageData>();
-        public IObservable<NoticeViewMessageData> OnLoadResultChanged => _onLoadResultChanged;
+        private readonly Subject<ResourceListFailureData> _onLoadFailed = new Subject<ResourceListFailureData>();
+
+        public IObservable<ResourceListFailureData> OnLoadFailed => _onLoadFailed;
 
         public ResourceListModel( IResourceServerConfigContext resourceConfigContext,
             IResourceTableContext resourceTableContext,
