@@ -1375,7 +1375,7 @@ GameObject:
   - component: {fileID: 3113974337687787202}
   - component: {fileID: 8930704864376581759}
   - component: {fileID: 5249504405440615854}
-  - component: {fileID: 8020600870104570239}
+  - component: {fileID: 2933754315986123512}
   m_Layer: 5
   m_Name: ResourceInspectorView
   m_TagString: Untagged
@@ -1443,7 +1443,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8020600870104570239
+--- !u!114 &2933754315986123512
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1452,15 +1452,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 4934915322703172057}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8ee532a76ab4da40882058bb4de3ff1, type: 3}
+  m_Script: {fileID: 11500000, guid: 643bfdec552567b448ee75d2e06bedb8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
+  m_EditorClassIdentifier: Assembly-CSharp::LiveApp.UI.ResourceInpectorView
   _title: {fileID: 1048132599426455929}
-  _cancleButton: {fileID: 0}
   _closeButton: {fileID: 2115540161498124738}
-  _server: {fileID: 2670990565532147961}
-  _listView: {fileID: 1321509965549157775}
-  _loadButton: {fileID: 0}
+  _removeButton: {fileID: 2908921888957851193}
+  _filters: {fileID: 2670990565532147961}
+  _listView: {fileID: 0}
 --- !u!1 &5126945708823293940
 GameObject:
   m_ObjectHideFlags: 0
@@ -2708,7 +2707,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8057301226550339886, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: _staticCells.Array.size
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8057301226550339886, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: '_staticCells.Array.data[0]'
@@ -2846,7 +2845,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5798857613200188301, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000054833323
+      value: 0.0009944693
       objectReference: {fileID: 0}
     - target: {fileID: 6296131257481431442, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
       propertyPath: m_AnchorMax.x
@@ -2881,17 +2880,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
---- !u!114 &1321509965549157775 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8057301226550339886, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
-  m_PrefabInstance: {fileID: 9045403476039308449}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ab86c0f0346e4116ad17542f7353ed7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LiveApp.UI.ListView
 --- !u!224 &7851385486103221321 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1257070583762321640, guid: 12dc5e5e411a1e4469a6480ad707eb79, type: 3}
