@@ -6,7 +6,7 @@ using UniRx;
 
 namespace LiveApp.UI.Presenter
 {
-    public interface IResourceInspectorView : IViewBase
+    public interface IResourceRemoveView : IViewBase
     {
 
         /// <summary>

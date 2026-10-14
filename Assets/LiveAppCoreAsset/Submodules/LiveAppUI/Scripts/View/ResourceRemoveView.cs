@@ -11,7 +11,7 @@ using LiveAppUI.View;
 
 namespace LiveApp.UI
 {
-    public class ResourceInpectorView : MonoBehaviour, IResourceInspectorView
+    public class ResourceRemoveView : MonoBehaviour, IResourceRemoveView
     {
         //----------------members-------------------------------
         [SerializeField] private TMP_Text _title = null;
