@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using LiveAppUI.Model;
+using LiveAppUI.View;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
@@ -15,6 +16,7 @@ namespace LiveAppUI.Presenter
     {
         private IResourceMenuView _resourceMenuView;
         private IResourceListView _resourceListView;
+        private INoticeModalView _noticeModalView;
         private IResourceListModel _resourceListModel;
 
         private ResourceType _currentResourceType;
@@ -26,10 +28,12 @@ namespace LiveAppUI.Presenter
         public void Initialize(
             IResourceMenuView resourceMenuView,
             IResourceListView resourceListView,
+            INoticeModalView noticeModalView,
             IResourceListModel resourceListModel)
         {
             _resourceMenuView = resourceMenuView;
             _resourceListView = resourceListView;
+            _noticeModalView = noticeModalView; 
             _resourceListModel = resourceListModel;
         }
 
@@ -122,6 +126,14 @@ namespace LiveAppUI.Presenter
                     }
                 } )
                 .AddTo( this );
+
+            _resourceListModel.OnLoadFailed
+                .Subscribe( data =>
+                {
+                    _
+                })
+                .AddTo(this);
+
         }
 
         private void UpdateResourceList( ResourceType resourceType, ServerType serverType )

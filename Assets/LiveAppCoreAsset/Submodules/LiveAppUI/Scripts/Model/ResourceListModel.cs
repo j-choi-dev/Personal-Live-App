@@ -65,14 +65,16 @@ namespace LiveAppUI.Model
             try
             {
                 var cloudConfigTask = await _resourceConfigContext.LoadCloudConfig();
-                if(cloudConfigTask == null)
+                if (cloudConfigTask == null)
                 {
-                    UnityEngine.Debug.Log( $"cloudConfigTask == null" );
+                    UnityEngine.Debug.LogError("Cloud 설정을 불러오지 못했습니다.");
+                    return false;
                 }
                 var serverConfigTask = await _resourceConfigContext.LoadServerConfig();
-                if( serverConfigTask == null )
+                if (serverConfigTask == null)
                 {
-                    UnityEngine.Debug.Log( $"serverConfigTask == null" );
+                    UnityEngine.Debug.LogError("Resource 서버 설정을 불러오지 못했습니다.");
+                    return false;
                 }
                 _serverConfigs =  serverConfigTask.ToList();
                 return true;
@@ -87,12 +89,6 @@ namespace LiveAppUI.Model
 
         public async UniTask GetResourceList( ResourceType resourceType, ServerType serverType )
         {
-            var resource = ConvertResourceType(resourceType);
-            var server = ConvertServerType(serverType);
-            var config = _serverConfigs
-                .FirstOrDefault(arg => arg.resourceType == resource &&
-                arg.serverType == server);
-
             await GetResourceListCoreAsync( resourceType, serverType, reauthorize: false);
         }
         private async UniTask GetResourceListCoreAsync( ResourceType resourceType, ServerType serverType, bool reauthorize )

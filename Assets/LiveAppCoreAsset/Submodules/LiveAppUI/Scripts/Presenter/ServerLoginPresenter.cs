@@ -19,6 +19,17 @@ namespace LiveAppUI.Presenter
 
         private ILogInModel _loginModel;
         private IOAuthTokenModel _authTokenModel;
+        private enum NoticePurpose
+        {
+            None,
+            InitialOAuth,
+            ResourceRetry,
+            ResourceReauthorize
+        }
+
+        private NoticePurpose _noticePurpose;
+        private ResourceListFailureData _pendingFailure;
+        private bool _noticeActionRunning;
 
 
         [Inject]
