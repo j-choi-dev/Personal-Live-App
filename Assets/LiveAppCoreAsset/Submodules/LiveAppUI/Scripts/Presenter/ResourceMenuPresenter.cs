@@ -115,9 +115,9 @@ namespace LiveAppUI.Presenter
                 .Subscribe(_ => CloseResourceInpectorView())
                 .AddTo(this);
 
-            _resourceInspectorView.OnFilterChanged
-                .Subscribe(_ => UpdateResourceInspectorList(_currentResourceType))
-                .AddTo(this);
+            //_resourceInspectorView.OnFilterChanged
+            //    .Subscribe(_ => UpdateResourceInspectorList(_currentResourceType))
+            //    .AddTo(this);
 
         }
 
