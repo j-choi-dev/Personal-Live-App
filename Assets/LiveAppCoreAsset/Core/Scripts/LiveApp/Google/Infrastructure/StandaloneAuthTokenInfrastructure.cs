@@ -41,8 +41,14 @@ namespace LiveAppCore.Google.Infrastructure
 
         public async UniTask<string> GetAccessTokenAsync( CancellationToken cancellationToken = default )
         {
+            cancellationToken.ThrowIfCancellationRequested();
             _cachedToken = LoadTokenFromPrefs();
-            if( _cachedToken != null &&
+            if (_cachedToken != null &&
+                _cachedToken.HasSheetsReadPermission() == false)
+            {
+                InvalidateToken();
+            }
+            if ( _cachedToken != null &&
                 _cachedToken.HasValidAccessToken() &&
                 _cachedToken.HasSheetsReadPermission())
             {
@@ -54,7 +60,7 @@ namespace LiveAppCore.Google.Infrastructure
             {
                 try
                 {
-                    var refreshedToken = await RefreshAccessTokenAsync( _cachedToken.refreshToken, cancellationToken );
+                    var refreshedToken = await RefreshAccessTokenAsync( _cachedToken.refreshToken, _cachedToken.scope, cancellationToken );
                     ValidateTokenForSheets(refreshedToken);
                     _cachedToken = refreshedToken;
                     SaveTokenToPrefs(refreshedToken);
@@ -70,12 +76,6 @@ namespace LiveAppCore.Google.Infrastructure
                 {
                     InvalidateToken();
                 }
-            }
-
-            if (_cachedToken != null &&
-                _cachedToken.HasSheetsReadPermission() == false)
-            {
-                InvalidateToken();
             }
 
             //_cachedToken = await RunAuthorizationCodeFlowAsync( cancellationToken );
@@ -275,40 +275,59 @@ namespace LiveAppCore.Google.Infrastructure
         private static async UniTask<string> PostFormAsync(
             string url,
             Dictionary<string, string> form,
-            CancellationToken cancellationToken
-        )
+            CancellationToken cancellationToken)
         {
-            var hasSecretKey = form.ContainsKey("client_secret");
-            var secretValue = hasSecretKey ? form["client_secret"] : null;
-
             using UnityWebRequest request = UnityWebRequest.Post(url, form);
             request.timeout = 30;
+
+            // 1. 요청만 실행.
             try
             {
-
-                await request.SendWebRequest().ToUniTask(cancellationToken: cancellationToken);
-
-
-                var body = request.downloadHandler != null
-                    ? request.downloadHandler.text
-                    : string.Empty;
-
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    throw new Exception(
-                        $"Token request failed. HTTP: {request.responseCode}, Error: {request.error}, Body: {body}"
-                    );
-                }
-
-                return body;
+                await request.SendWebRequest()
+                    .ToUniTask(cancellationToken: cancellationToken);
             }
-            catch (UnityWebRequestException e)
+            catch (UnityWebRequestException)
             {
+                // HTTP 오류는 아래에서 분류, 연결 실패 등은 그대로 전달.
                 if (request.result != UnityWebRequest.Result.ProtocolError)
                 {
                     throw;
                 }
             }
+
+            // 2. 성공·HTTP 실패 모두 여기에서 응답을 확인.
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var body = request.downloadHandler?.text ?? string.Empty;
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                var errorCode = "unknown_error";
+
+                try
+                {
+                    var root = JSON.Parse(body);
+
+                    if (root != null)
+                    {
+                        var parsedError = root["error"].Value;
+
+                        if (!string.IsNullOrWhiteSpace(parsedError))
+                        {
+                            errorCode = parsedError;
+                        }
+                    }
+                }
+                catch
+                {
+                    // 오류 응답이 JSON이 아닌 경우 기본 코드 유지
+                }
+
+                throw new OAuthTokenRequestException( request.responseCode, errorCode );
+            }
+
+            // 3. 성공한 경우에만 반환.
+            return body;
         }
 
         private GoogleOAuthToken ParseTokenResponse(
