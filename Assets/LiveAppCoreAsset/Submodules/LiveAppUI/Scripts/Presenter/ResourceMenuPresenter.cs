@@ -58,7 +58,7 @@ namespace LiveAppUI.Presenter
             _resourceListModel.SetCurrentServerType( ResourceType.Character, ServerType.Develop );
             _resourceListModel.SetCurrentServerType( ResourceType.BackGround, ServerType.Develop );
             _resourceListModel.SetCurrentServerType( ResourceType.Prop, ServerType.Develop );
-            await _resourceListModel.GetResourceList( ResourceType.Character, _currentResourceServerType );
+            //await _resourceListModel.GetResourceList( ResourceType.Character, _currentResourceServerType );
         }
 
         private void SubscribeView()
@@ -126,14 +126,6 @@ namespace LiveAppUI.Presenter
                     }
                 } )
                 .AddTo( this );
-
-            _resourceListModel.OnLoadFailed
-                .Subscribe( data =>
-                {
-                    _
-                })
-                .AddTo(this);
-
         }
 
         private void UpdateResourceList( ResourceType resourceType, ServerType serverType )

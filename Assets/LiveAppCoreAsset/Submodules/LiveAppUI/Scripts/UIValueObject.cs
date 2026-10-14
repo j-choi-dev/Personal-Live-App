@@ -10,12 +10,29 @@ namespace LiveAppUI
         Prop,
     }
 
+    public enum NoticePurpose
+    {
+        None,
+        InitialOAuth,
+        ResourceRetry,
+        ResourceReauthorize
+    }
+
     public enum ServerType
     {
         None = 0,
         Develop,
         Staging,
         Master,
+    }
+    public enum ResourceListFailureKind
+    {
+        MissingConfiguration,
+        SheetOrTabNotFound,
+        Unauthorized,
+        PermissionDenied,
+        Network,
+        Other
     }
 
     public sealed class ResourceListFailureData
