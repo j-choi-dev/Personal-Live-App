@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
+using LiveApp.UI.Presenter;
 using LiveAppUI.Model;
-using LiveAppUI.View;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
@@ -17,6 +17,7 @@ namespace LiveAppUI.Presenter
         private IResourceMenuView _resourceMenuView;
         private IResourceListView _resourceListView;
         private INoticeModalView _noticeModalView;
+        private IResourceInspectorView _resourceInspectorView;
         private IResourceListModel _resourceListModel;
 
         private ResourceType _currentResourceType;
@@ -28,18 +29,21 @@ namespace LiveAppUI.Presenter
         public void Initialize(
             IResourceMenuView resourceMenuView,
             IResourceListView resourceListView,
+            IResourceInspectorView resourceInspectorView,
             INoticeModalView noticeModalView,
             IResourceListModel resourceListModel)
         {
             _resourceMenuView = resourceMenuView;
             _resourceListView = resourceListView;
-            _noticeModalView = noticeModalView; 
+            _noticeModalView = noticeModalView;
+            _resourceInspectorView = resourceInspectorView;
             _resourceListModel = resourceListModel;
         }
 
         private void Awake()
         {
             _resourceListView.SetActive( false );
+            _resourceInspectorView.SetActive( false );
             SubscribeView();
             SubscribeModel();
         }
@@ -61,8 +65,8 @@ namespace LiveAppUI.Presenter
         private void SubscribeView()
         {
             _resourceListView.OnClickClose
-                .Subscribe( _ => CloseResourceListView() )
-                .AddTo( this );
+                .Subscribe(_ => CloseResourceListView())
+                .AddTo(this);
 
             _resourceMenuView.OnClickAvatar
                 .Subscribe(_ => UpdateResourceList( ResourceType.Character, _resourceListModel.GetCurrentServerType(ResourceType.Character)))
@@ -100,12 +104,21 @@ namespace LiveAppUI.Presenter
                 .AddTo(this);
 
             _resourceListView.OnClickLoad
-                .Subscribe(arg => _resourceListModel.LoadResourceProcess( _currentResourceType, 
-                    _currentResourceServerType, 
-                    _resourceListView.CurrentSelectedItemList.ToList() 
+                .Subscribe(arg => _resourceListModel.LoadResourceProcess(_currentResourceType,
+                    _currentResourceServerType,
+                    _resourceListView.CurrentSelectedItemList.ToList()
                 )
-                .Forget() )
-                .AddTo ( this );
+                .Forget())
+                .AddTo(this);
+
+            _resourceInspectorView.OnClickClose
+                .Subscribe(_ => CloseResourceInpectorView())
+                .AddTo(this);
+
+            _resourceInspectorView.OnFilterChanged
+                .Subscribe(_ => UpdateResourceInspectorList(_currentResourceType))
+                .AddTo(this);
+
         }
 
         private void SubscribeModel()
@@ -166,26 +179,14 @@ namespace LiveAppUI.Presenter
             await loadTask;
         }
 
-        //private void UpdateResourceList( ResourceType resourceType, ServerType serverType )
-        //{
-        //    var isSameResourceType = _currentResourceType == resourceType;
-        //    var isSameServerType = _currentResourceServerType == serverType;
-        //    if( isSameResourceType && _resourceListView.IsActive && isSameServerType )
-        //    {
-        //        CloseResourceListView();
-        //        return;
-        //    }
-        //    _currentResourceType = resourceType; 
-        //    _currentResourceServerType = serverType;
-        //    _resourceListModel.SetCurrentServerType( _currentResourceType, _currentResourceServerType );
-        //    _resourceListView.SetTitle( _currentResourceType.ToString() );
-        //    _resourceListModel.GetResourceList( _currentResourceType, _currentResourceServerType ).Forget();
-        //    _resourceListView.SetActive( true );
-        //}
-
         private void CloseResourceListView()
         {
             _resourceListView.SetActive( false );
+        }
+
+        private void CloseResourceInpectorView()
+        {
+            _resourceInspectorView.SetActive(false);
         }
 
         private int GetServerIndex( ServerType type ) 
