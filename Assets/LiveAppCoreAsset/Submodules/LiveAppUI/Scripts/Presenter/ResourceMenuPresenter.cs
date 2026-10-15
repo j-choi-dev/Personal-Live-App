@@ -19,11 +19,15 @@ namespace LiveAppUI.Presenter
         private INoticeModalView _noticeModalView;
         private IResourceRemoveView _resourceRemoveView;
         private IResourceListModel _resourceListModel;
+        private IResourceRemoveModel _resourceRemoveModel;
 
         private ResourceType _currentResourceType;
+        private ResourceType _currentRemoveFilter = ResourceType.None;
         private ServerType _currentResourceServerType;
 
         private List<string> _resources = new List<string>();
+        private readonly Dictionary<string, (ResourceType type, string id)> _removeCellMap
+            = new Dictionary<string, (ResourceType type, string id)>();
 
         [Inject]
         public void Initialize(
@@ -31,13 +35,15 @@ namespace LiveAppUI.Presenter
             IResourceListView resourceListView,
             IResourceRemoveView resourceRemoveView,
             INoticeModalView noticeModalView,
-            IResourceListModel resourceListModel)
+            IResourceListModel resourceListModel,
+            IResourceRemoveModel resourceRemoveModel)
         {
             _resourceMenuView = resourceMenuView;
             _resourceListView = resourceListView;
             _noticeModalView = noticeModalView;
             _resourceRemoveView = resourceRemoveView;
             _resourceListModel = resourceListModel;
+            _resourceRemoveModel = resourceRemoveModel;
         }
 
         private void Awake()
@@ -52,6 +58,7 @@ namespace LiveAppUI.Presenter
         {
             _currentResourceType = ResourceType.None;
             _currentResourceServerType = ServerType.Develop;
+            _currentRemoveFilter = ResourceType.None;
 
             _resourceListView.SetServerItem(GetServerIndex(ServerType.Develop));
 
@@ -82,9 +89,8 @@ namespace LiveAppUI.Presenter
                 .Subscribe(_ => UpdateResourceList(ResourceType.Prop, _resourceListModel.GetCurrentServerType(ResourceType.Prop)))
                 .AddTo(this);
 
-            //임시
             _resourceMenuView.OnClickRemove
-                .Subscribe(_ => _resourceRemoveView.SetActive(true))
+                .Subscribe(_ => UpdateRemoveList(_currentRemoveFilter) )
                 .AddTo(this);
 
             _resourceListView.OnServerChange
@@ -118,13 +124,18 @@ namespace LiveAppUI.Presenter
                 .Forget())
                 .AddTo(this);
 
-            _resourceRemoveView.OnClickClose
-                .Subscribe(_ => CloseResourceInpectorView())
+            _resourceRemoveView.OnFilterChanged
+                .Subscribe(index => UpdateRemoveList(GetResourceType(index)))
                 .AddTo(this);
 
-            //_resourceInspectorView.OnFilterChanged
-            //    .Subscribe(_ => UpdateResourceInspectorList(_currentResourceType))
-            //    .AddTo(this);
+            _resourceRemoveView.OnClickRemove
+                .Subscribe(_ => RemoveSelectedResources())
+                .AddTo(this);
+
+            _resourceRemoveView.OnClickClose
+                .Subscribe(_ => CloseResourceRemoveView())
+                .AddTo(this);
+
 
         }
 
@@ -159,6 +170,10 @@ namespace LiveAppUI.Presenter
                         _resourceListView.AddListItem(list[i].id, list[i].displayName);
                     }
                 })
+                .AddTo(this);
+
+            _resourceRemoveModel.OnSceneResourceListChanged
+                .Subscribe(list => RefreshRemoveList(list))
                 .AddTo(this);
         }
 
@@ -205,15 +220,78 @@ namespace LiveAppUI.Presenter
 
             await loadTask;
         }
+        private void UpdateRemoveList(ResourceType resourceType)
+        {
+
+            var isSameFilter = _currentRemoveFilter == resourceType;
+            _currentRemoveFilter = resourceType;
+
+            if (isSameFilter &&
+                _resourceRemoveView.IsActive)
+            {
+                CloseResourceRemoveView();
+                return;
+            }
+
+
+            _resourceRemoveView.SetActive(true);
+            _resourceRemoveView.SetFilterItem(GetResourceIndex(resourceType));
+            _resourceRemoveModel.FilterRemoveResource(resourceType);
+        }
 
         private void CloseResourceListView()
         {
             _resourceListView.SetActive( false );
         }
 
-        private void CloseResourceInpectorView()
+        private void CloseResourceRemoveView()
         {
             _resourceRemoveView.SetActive(false);
+        }
+
+        private void RefreshRemoveList(IReadOnlyList<(ResourceType type, string id, string displayName)> items)
+        {
+            if(_resourceRemoveView.IsActive == false)
+            {
+                return;
+            }
+
+            _resourceRemoveView.ClearList();
+            _removeCellMap.Clear();
+
+            for(var i = 0; i < items.Count; i++)
+            {
+                var cellId = $"{items[i].type}_{items[i].id}";
+                _resourceRemoveView.AddListItem(cellId, items[i].displayName);
+                _removeCellMap[cellId] = (items[i].type, items[i].id);
+            }
+
+        }
+
+        private void RemoveSelectedResources()
+        {
+            var selected = _resourceRemoveView.CurrSelectedItemList;
+            if(selected.Count == 0)
+            {
+                Debug.LogWarning("삭제할 리소스를 선택해주세요.");
+                return;
+            }
+
+            var targets = new List<(ResourceType type, string id)>();
+            for( var i = 0; i < selected.Count; i++)
+            {
+                if (_removeCellMap.TryGetValue(selected[i], out var target))
+                {
+                    targets.Add(target);
+                }
+            }
+
+            if(targets.Count == 0)
+            {
+                return;
+            }
+
+            _resourceRemoveModel.RemoveResourcesFromScene(targets);
         }
 
         private int GetServerIndex( ServerType type ) 

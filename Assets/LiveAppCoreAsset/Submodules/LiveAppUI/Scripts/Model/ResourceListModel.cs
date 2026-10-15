@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using StudioCharacterSDK.Domain;
 using StudioNetworkSDK.Domain;
 using StudioResourceSDK.Application;
 using StudioResourceSDK.Domain;

@@ -105,6 +105,11 @@ namespace LiveAppUI.Installer
                 .Bind<IResourceGimmickModel>()
                 .To<ResourceGimmickModel>()
                 .AsSingle();
+
+            Container
+               .Bind<IResourceRemoveModel>().
+               To<ResourceRemoveModel>()
+               .AsSingle();
         }
     }
 }
