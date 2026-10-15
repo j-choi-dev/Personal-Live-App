@@ -1077,6 +1077,7 @@ MonoBehaviour:
   _serverModalView: {fileID: 1709631918}
   _roomModalView: {fileID: 1134048622}
   _resourceListView: {fileID: 6512752416724687225}
+  _resourceRemoveView: {fileID: 6512752416724687228}
   _configMenuView: {fileID: 6512752416724687230}
   _obsConfigView: {fileID: 6512752416724687229}
   _youtubeConfigView: {fileID: 6512752416724687226}
@@ -1096,6 +1097,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 563598789}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &613069307 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5349610381294157246, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
+  m_PrefabInstance: {fileID: 6512752416724687223}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 609c878bc2ccc4fbf866e4bfd0aff87c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ObservableButtonTMPro
 --- !u!1 &685743672
 GameObject:
   m_ObjectHideFlags: 0
@@ -2725,6 +2737,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8650190506562560564, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
+      propertyPath: _removeButton
+      value: 
+      objectReference: {fileID: 613069307}
     - target: {fileID: 8699616651640128568, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2748,6 +2764,10 @@ PrefabInstance:
     - target: {fileID: 8699616651640128568, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8847691408180892591, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
+      propertyPath: m_Name
+      value: ResourceRemoveView
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -2799,6 +2819,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e02e2a016a1aed4882dd297b0d11a4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ResourceView
+--- !u!114 &6512752416724687228 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1586337040383883406, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
+  m_PrefabInstance: {fileID: 6512752416724687223}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 643bfdec552567b448ee75d2e06bedb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveApp.UI.ResourceInpectorView
 --- !u!114 &6512752416724687229 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 728779512220886318, guid: e02394aa5a55ca445a362746b27896a2, type: 3}

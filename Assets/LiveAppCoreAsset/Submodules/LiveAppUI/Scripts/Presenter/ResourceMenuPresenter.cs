@@ -17,7 +17,7 @@ namespace LiveAppUI.Presenter
         private IResourceMenuView _resourceMenuView;
         private IResourceListView _resourceListView;
         private INoticeModalView _noticeModalView;
-        private IResourceInspectorView _resourceInspectorView;
+        private IResourceRemoveView _resourceRemoveView;
         private IResourceListModel _resourceListModel;
 
         private ResourceType _currentResourceType;
@@ -29,21 +29,21 @@ namespace LiveAppUI.Presenter
         public void Initialize(
             IResourceMenuView resourceMenuView,
             IResourceListView resourceListView,
-            IResourceInspectorView resourceInspectorView,
+            IResourceRemoveView resourceRemoveView,
             INoticeModalView noticeModalView,
             IResourceListModel resourceListModel)
         {
             _resourceMenuView = resourceMenuView;
             _resourceListView = resourceListView;
             _noticeModalView = noticeModalView;
-            _resourceInspectorView = resourceInspectorView;
+            _resourceRemoveView = resourceRemoveView;
             _resourceListModel = resourceListModel;
         }
 
         private void Awake()
         {
             _resourceListView.SetActive( false );
-            _resourceInspectorView.SetActive( false );
+            _resourceRemoveView.SetActive(false);
             SubscribeView();
             SubscribeModel();
         }
@@ -53,7 +53,9 @@ namespace LiveAppUI.Presenter
             _currentResourceType = ResourceType.None;
             _currentResourceServerType = ServerType.Develop;
 
-            _resourceListView.SetServerItem( GetServerIndex(ServerType.Develop));
+            _resourceListView.SetServerItem(GetServerIndex(ServerType.Develop));
+
+            _resourceRemoveView.SetFilterItem(GetResourceIndex(ResourceType.None));
 
             _resourceListModel.SetCurrentServerType( ResourceType.Character, ServerType.Develop);
 
@@ -77,7 +79,12 @@ namespace LiveAppUI.Presenter
                 .AddTo(this);
 
             _resourceMenuView.OnClickProp
-                .Subscribe(_ => UpdateResourceList( ResourceType.Prop, _resourceListModel.GetCurrentServerType(ResourceType.Prop)))
+                .Subscribe(_ => UpdateResourceList(ResourceType.Prop, _resourceListModel.GetCurrentServerType(ResourceType.Prop)))
+                .AddTo(this);
+
+            //임시
+            _resourceMenuView.OnClickRemove
+                .Subscribe(_ => _resourceRemoveView.SetActive(true))
                 .AddTo(this);
 
             _resourceListView.OnServerChange
@@ -111,7 +118,7 @@ namespace LiveAppUI.Presenter
                 .Forget())
                 .AddTo(this);
 
-            _resourceInspectorView.OnClickClose
+            _resourceRemoveView.OnClickClose
                 .Subscribe(_ => CloseResourceInpectorView())
                 .AddTo(this);
 
@@ -206,12 +213,17 @@ namespace LiveAppUI.Presenter
 
         private void CloseResourceInpectorView()
         {
-            _resourceInspectorView.SetActive(false);
+            _resourceRemoveView.SetActive(false);
         }
 
         private int GetServerIndex( ServerType type ) 
-            => ( int )type - 1;
+            => ( int )type;
         private ServerType GetServerType( int index )
-            => ( ServerType )( index + 1 );
+            => ( ServerType )index;
+
+        private int GetResourceIndex(ResourceType type)
+            => (int)type;
+        private ResourceType GetResourceType(int index)
+            => (ResourceType)index;
     }
 }
