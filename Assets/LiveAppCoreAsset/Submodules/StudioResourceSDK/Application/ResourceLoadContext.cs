@@ -22,7 +22,7 @@ namespace StudioResourceSDK.Application
 
         private Subject<IReadOnlyList<ICharacter>> _onCharacterListChanged = new Subject<IReadOnlyList<ICharacter>>();
         public IObservable<IReadOnlyList<ICharacter>> OnCharacterListChanged => _onCharacterListChanged;
-
+       
         private Subject<ICharacter> _onLoadCharacter = new Subject<ICharacter>();
         public IObservable<ICharacter> OnLoadCharacter => _onLoadCharacter;
 

@@ -16,7 +16,9 @@ namespace StudioResourceSDK.Domain
         IObservable<IBackground> OnCurrentBackGroundChanged { get; }
         IObservable<IReadOnlyList<IProp>> OnChangedPropList { get; }
         IObservable<IProp> OnCurrentPropChanged { get; }
-
+        IObservable<ICharacter> OnCharacterRemoved { get; }
+        IObservable<IBackground> OnBackGroundRemoved { get; }
+        IObservable<IProp> OnPropRemoved { get; }
         ICharacter CurrentSelectedCharacter { get; }
         IBackground CurrentSelectedBackGround { get; }
         IProp CurrentSelectedProp{ get; }
@@ -25,6 +27,8 @@ namespace StudioResourceSDK.Domain
         void AddBackGround( IBackground background );
         void AddProp(IProp prop);
         void RemoveCharacter( string id );
+        void RemoveBackGround(string id);
+        void RemoveProp(string id);
         bool IsExist( ResourceType resourceType, string id );
         void SetCurrentSelectedCharacter( string id );
         void ResetCurrentSelectedCharacter();

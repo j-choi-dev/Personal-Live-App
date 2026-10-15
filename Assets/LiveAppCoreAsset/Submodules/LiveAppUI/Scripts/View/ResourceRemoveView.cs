@@ -20,9 +20,6 @@ namespace LiveApp.UI
         [SerializeField] private ObservableDropdown _filters = null;
         [SerializeField] private ListViewWithOneList _listView = null;
 
-        //선택된 item의 id, name만 list로 따로 저장
-        private List<(string id, string name)> _currentItemList = new List<(string id, string name)>();
-
         //---------------implements-----------------------------
         public IObservable<int> OnFilterChanged => _filters.OnValueChanged;
         public IObservable<Unit> OnClickRemove => _removeButton.OnClick;
@@ -57,11 +54,10 @@ namespace LiveApp.UI
 
         public void SetResourceItemList(IReadOnlyList<(string id, string name)> list)
         {
+            _listView.Clear();
            for (var i = 0; i < list.Count; i++)
             {
-                var item = list[i];
-                _listView.AddItem(item.id, item.name);
-                _currentItemList.Add( (item.id, item.name) );
+                _listView.AddItem(list[i].id, list[i].name);
             }
 
         }
@@ -73,25 +69,17 @@ namespace LiveApp.UI
 
         public void RemoveListItem(string id)
         {
-            if (id == null || id == "")
+            if (string.IsNullOrEmpty(id))
             {
                 Debug.LogWarning($"삭제할 리소스를 선택해주세요.");
                 return;
             }
 
-            var item = _currentItemList.FirstOrDefault(arg => arg.id == id);
-            if (item.id == null || item.name == null)
-            {
-                Debug.LogWarning($"삭제할 리소스를 찾지 못했습니다.");
-                return;
-            }
-            _currentItemList.Remove(item);
             _listView.RemoveItem( id );
         }
 
         public void ClearList()
         {
-            _currentItemList.Clear();
             _listView.Clear();
         }
 
