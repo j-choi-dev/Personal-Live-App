@@ -217,9 +217,9 @@ namespace LiveAppUI.Presenter
         }
 
         private int GetServerIndex( ServerType type ) 
-            => ( int )type;
+            => ( int )(type - 1);
         private ServerType GetServerType( int index )
-            => ( ServerType )index;
+            => ( ServerType )(index + 1);
 
         private int GetResourceIndex(ResourceType type)
             => (int)type;
