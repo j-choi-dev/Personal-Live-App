@@ -1,4 +1,5 @@
-﻿using StudioResourceSDK.Application;
+﻿using LiveAppUI.Model;
+using StudioResourceSDK.Application;
 using StudioResourceSDK.Domain;
 using StudioResourceSDK.Infrastructure;
 using StudioSystemSDK.Domain;
@@ -75,7 +76,7 @@ namespace StudioResourceSDK.Installer
             Container
                 .Bind<ISceneGimmickListDomain>()
                 .To<SceneGimmickList>()
-                .AsSingle();
+                .AsSingle();     
         }
     }
 }

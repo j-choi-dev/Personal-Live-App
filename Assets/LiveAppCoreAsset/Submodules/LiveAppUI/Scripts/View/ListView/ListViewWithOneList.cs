@@ -40,30 +40,27 @@ namespace LiveApp.UI
 
         public void AddItem(string id, string displayName)
         {
-            var obj = Instantiate(_prefab, _content);
-            obj.transform.localPosition = Vector3.zero;
-            obj.transform.localRotation = Quaternion.identity;
-            obj.transform.localScale = Vector3.one;
-
-            var tmpList = _cells.Select(arg => arg.ID).ToList();
-            var newID = IDUtil.GenerateNewId(id, tmpList, data => obj.ID);
-            obj.SetItem(newID, displayName);
-            obj.name = newID;
-
-            _cells.Add(obj);
+            AddItemInternal(id, displayName);
         }
 
         public void AddItem(string displayName)
         {
+            AddItemInternal((_cells.Count + 1).ToString(), displayName);
+        }
+
+        private void AddItemInternal(string baseId, string displayName)
+        {
+            // 기존 cellview의 id 목록으로 id중복 여부 판별
+            var existingIds = _cells.Select(arg => arg.ID).ToList();
+            var newId = IDUtil.GenerateNewId(baseId, existingIds, existing => existing);
+
             var obj = Instantiate(_prefab, _content);
             obj.transform.localPosition = Vector3.zero;
             obj.transform.localRotation = Quaternion.identity;
             obj.transform.localScale = Vector3.one;
 
-            var tmpList = _cells.Select(arg => arg.ID).ToList();
-            var newID = IDUtil.GenerateNewId( (_cells.Count + 1).ToString(), tmpList, data => obj.ID);
-            obj.SetItem(newID, displayName);
-            obj.name = newID;
+            obj.SetItem(newId, displayName);
+            obj.name = newId;
 
             _cells.Add(obj);
         }
