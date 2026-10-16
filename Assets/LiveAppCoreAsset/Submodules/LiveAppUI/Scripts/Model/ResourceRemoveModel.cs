@@ -1,17 +1,16 @@
-﻿using System;
+﻿using StudioResourceSDK.Application;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using UniRx;
-using StudioResourceSDK.Domain;
-using StudioResourceSDK.Application;
-using Unity.VisualScripting;
 using System.Linq;
+using UniRx;
+using UnityEngine;
 
 namespace LiveAppUI.Model
 {
     public class ResourceRemoveModel : IResourceRemoveModel, IDisposable
     {
-        private ISceneResourceListContext _sceneResourceListContext;
+        private readonly ISceneResourceListContext _sceneResourceListContext;
+        private readonly IRemoveResourceContext _removeResourceContext;
         private CompositeDisposable _disposables = new CompositeDisposable();
         private Subject<IReadOnlyList<(ResourceType type, string id, string displayName)>> _onSceneResourceListChanged
             = new Subject<IReadOnlyList<(ResourceType type, string id, string displayName)>>();
@@ -21,9 +20,12 @@ namespace LiveAppUI.Model
         //여러 개 삭제 시 목록 갱신은 마지막에 한 번만 하기 위한 플래그
         private bool _suppressRefresh = false;
 
-        public ResourceRemoveModel(ISceneResourceListContext sceneResourceListContext)
+        public ResourceRemoveModel(
+            ISceneResourceListContext sceneResourceListContext,
+            IRemoveResourceContext removeResourceContext)
         {
             _sceneResourceListContext = sceneResourceListContext;
+            _removeResourceContext = removeResourceContext;
 
             _sceneResourceListContext.OnChangedCharacterList
                 .Where(_ => !_suppressRefresh)
@@ -49,13 +51,25 @@ namespace LiveAppUI.Model
             {
                 for(var i = 0; i < targets.Count; i++)
                 {
-                    _sceneResourceListContext.RemoveResource(ConvertResourceType(targets[i].type), targets[i].id);
+                    try
+                    {
+                        var removed = _removeResourceContext.RemoveResource(
+                            ConvertResourceType(targets[i].type), targets[i].id);
+                        if (removed == false)
+                        {
+                            Debug.LogWarning($"[ResourceRemoveModel] 삭제 대상을 찾지 못했습니다. Type={targets[i].type}, ID={targets[i].id}");
+                        }
+                    }//inner try
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }//inner catch
                 }
-            }
+            }//outer try
             finally
             {
                 _suppressRefresh = false;
-            }
+            }//outer final
 
             Refresh();
         }

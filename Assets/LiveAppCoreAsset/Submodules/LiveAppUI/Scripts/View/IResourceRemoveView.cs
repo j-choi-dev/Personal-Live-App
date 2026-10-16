@@ -1,7 +1,6 @@
 ﻿using LiveAppUI.Presenter;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using UniRx;
 
 namespace LiveApp.UI.Presenter
