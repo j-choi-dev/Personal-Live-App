@@ -4,7 +4,6 @@ using LiveApp.UI.Presenter;
 using LiveAppUI.Model;
 using LiveAppUI.Presenter;
 using LiveAppUI.View;
-using StudioResourceSDK.Application;
 using UnityEngine;
 using Zenject;
 

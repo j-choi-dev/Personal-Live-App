@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
-using Unity.VisualScripting;
 
 namespace StudioResourceSDK.Domain
 {
@@ -41,12 +40,6 @@ namespace StudioResourceSDK.Domain
 
         private Subject<IProp> _onCurrentPropChanged = new Subject<IProp>();
         public IObservable<IProp> OnCurrentPropChanged => _onCurrentPropChanged;
-        private Subject<ICharacter> _onCharacterRemoved = new Subject<ICharacter>();
-        public IObservable<ICharacter> OnCharacterRemoved => _onCharacterRemoved;
-        private Subject<IBackground> _onBackGroundRemoved = new Subject<IBackground>();
-        public IObservable<IBackground> OnBackGroundRemoved => _onBackGroundRemoved;
-        private Subject<IProp> _onPropRemoved = new Subject<IProp>();
-        public IObservable<IProp> OnPropRemoved => _onPropRemoved;
 
         public void AddCharacter( ICharacter character )
         {
@@ -96,7 +89,6 @@ namespace StudioResourceSDK.Domain
                 ResetCurrentSelectedCharacter();
             }
             _onChangedCharacterList.OnNext( _characterList );
-            _onCharacterRemoved.OnNext(target);
 
         }
 
@@ -114,7 +106,6 @@ namespace StudioResourceSDK.Domain
                 ResetCurrentSelectedBackGround();
             }
             _onChangedBackGroundList.OnNext(_backGroundList);
-            _onBackGroundRemoved.OnNext(target);
 
         }
         public void RemoveProp(string id)
@@ -132,7 +123,6 @@ namespace StudioResourceSDK.Domain
             }
 
             _onChangedPropList.OnNext(_propList);
-            _onPropRemoved.OnNext(target);
         }
 
         public void ResetCurrentSelectedCharacter()

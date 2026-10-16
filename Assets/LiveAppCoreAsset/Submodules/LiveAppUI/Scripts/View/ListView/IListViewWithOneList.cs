@@ -6,6 +6,9 @@ using UniRx;
 
 namespace LiveApp.UI
 {
+    /// <summary>
+    /// IReadOnlyReactiveCollection 형태의 하나의 list를 사용한 listview
+    /// </summary>
     public interface IListViewWithOneList
     {
         public IReadOnlyReactiveCollection<ICellView> OnCellChanged { get; }
