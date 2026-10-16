@@ -542,6 +542,7 @@ MonoBehaviour:
   _prefab: {fileID: 2745455696008282393, guid: 0f20a7abc8ba7474ea4694223d8a48ce, type: 3}
   _staticCells: []
   _content: {fileID: 9079024336065502534}
+  _singleSelect: 1
 --- !u!1 &4097754429278736668
 GameObject:
   m_ObjectHideFlags: 0
