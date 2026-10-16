@@ -13,6 +13,7 @@ namespace LiveApp.UI
         [SerializeField] private CellView _prefab = null;
         [SerializeField] private List<CellView> _staticCells = new List<CellView>();
         [SerializeField] private Transform _content = null;
+        [SerializeField] private bool _singleSelect = true;
         private HashSet<ICellView> _staticCellSet = new HashSet<ICellView>();
 
         private ReactiveCollection<ICellView> _cells = new ReactiveCollection<ICellView>();
@@ -31,6 +32,7 @@ namespace LiveApp.UI
                 for (var i = 0; i < _staticCells.Count; i++)
                 {
                     _staticCells[i].SetIdIfNull($"default_{i}");
+                    BindCell(_staticCells[i]);
                 }
                 _cells.AddRange(_staticCells);
                 _staticCellSet = new HashSet<ICellView>(_staticCells);
@@ -62,6 +64,7 @@ namespace LiveApp.UI
             obj.name = newId;
 
             _cells.Add(obj);
+            BindCell(obj);
         }
 
         public void RemoveItem(string id)
@@ -74,6 +77,28 @@ namespace LiveApp.UI
 
             Destroy(item.Object); 
             _cells.Remove(item);
+        }
+        
+        private void BindCell(ICellView cell)
+        {
+            cell.OnSelected
+                .Subscribe(_ => OnCellSelected(cell));
+        }
+
+        private void OnCellSelected(ICellView selected)
+        {
+            if(_singleSelect == false)
+            {
+                return;
+            }
+
+            for(var i = 0; i < _cells.Count; i++)
+            {
+                if (_cells[i] != selected && _cells[i].IsSelected)
+                {
+                    _cells[i].SetSelected(false);
+                }
+            }
         }
 
         public void Clear()
