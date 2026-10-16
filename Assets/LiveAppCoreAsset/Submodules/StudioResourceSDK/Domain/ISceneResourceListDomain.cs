@@ -1,7 +1,6 @@
 using StudioCharacterSDK.Domain;
 using System;
 using System.Collections.Generic;
-using StudioResourceSDK.Domain;
 
 namespace StudioResourceSDK.Domain
 {
@@ -16,9 +15,6 @@ namespace StudioResourceSDK.Domain
         IObservable<IBackground> OnCurrentBackGroundChanged { get; }
         IObservable<IReadOnlyList<IProp>> OnChangedPropList { get; }
         IObservable<IProp> OnCurrentPropChanged { get; }
-        IObservable<ICharacter> OnCharacterRemoved { get; }
-        IObservable<IBackground> OnBackGroundRemoved { get; }
-        IObservable<IProp> OnPropRemoved { get; }
         ICharacter CurrentSelectedCharacter { get; }
         IBackground CurrentSelectedBackGround { get; }
         IProp CurrentSelectedProp{ get; }

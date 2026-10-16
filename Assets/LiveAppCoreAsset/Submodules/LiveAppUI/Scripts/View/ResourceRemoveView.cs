@@ -1,13 +1,10 @@
-﻿using System;
+﻿using LiveApp.UI.Presenter;
+using LiveAppUI.View;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using LiveApp.UI;
-using LiveApp.UI.Presenter;
-using LiveAppUI.View;
 
 namespace LiveApp.UI
 {
