@@ -27,12 +27,6 @@ namespace LiveApp.UI
         public bool IsActive => gameObject.activeSelf;
 
 
-
-        private void Awake()
-        {
-
-        }
-
         //-----------implements---------
         public void SetActive(bool IsActive)
         {
