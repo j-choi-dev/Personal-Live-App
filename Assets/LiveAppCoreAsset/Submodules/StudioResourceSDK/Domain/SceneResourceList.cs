@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
-using Unity.VisualScripting;
 
 namespace StudioResourceSDK.Domain
 {
@@ -48,6 +47,18 @@ namespace StudioResourceSDK.Domain
             _onChangedCharacterList.OnNext( _characterList );
             SetCurrentSelectedCharacter( character.ID );
         }
+        public void AddBackGround(IBackground background)
+        {
+            _backGroundList.Add(background);
+            _onChangedBackGroundList.OnNext(_backGroundList);
+            SetCurrentSelectedBackGround(background.ID);
+        }
+        public void AddProp(IProp prop)
+        {
+            _propList.Add(prop);
+            _onChangedPropList.OnNext(_propList);
+            SetCurrentSelectedProp(prop.ID);
+        }
 
         public bool IsExist( ResourceType resourceType, string id )
         {
@@ -58,7 +69,7 @@ namespace StudioResourceSDK.Domain
                 case ResourceType.BackGround:
                     return _backGroundList.Exists(arg => arg.ID.Equals(id));
                 case ResourceType.Prop:
-                    throw new NotImplementedException("Prop 미구현");
+                    return _propList.Exists(arg => arg.ID.Equals(id));
                 default: 
                     return false;
             }
@@ -67,8 +78,51 @@ namespace StudioResourceSDK.Domain
         public void RemoveCharacter( string id )
         {
             var target = _characterList.FirstOrDefault( arg => arg.ID.Equals( id ) );
+            if(target == null)
+            {
+                return;
+            }
+
             _characterList.Remove( target );
+            if( CurrentSelectedCharacter == target)
+            {
+                ResetCurrentSelectedCharacter();
+            }
             _onChangedCharacterList.OnNext( _characterList );
+
+        }
+
+        public void RemoveBackGround(string id)
+        {
+            var target = _backGroundList.FirstOrDefault(arg => arg.ID.Equals(id));
+            if (target == null)
+            {
+                return;
+            }
+
+            _backGroundList.Remove(target);
+            if(CurrentSelectedBackGround == target)
+            {
+                ResetCurrentSelectedBackGround();
+            }
+            _onChangedBackGroundList.OnNext(_backGroundList);
+
+        }
+        public void RemoveProp(string id)
+        {
+            var target = _propList.FirstOrDefault(arg => arg.ID.Equals(id));
+            if (target == null)
+            {
+                return;
+            }
+
+            _propList.Remove(target);
+            if(CurrentSelectedProp == target)
+            {
+                ResetCurrentSelectedProp();
+            }
+
+            _onChangedPropList.OnNext(_propList);
         }
 
         public void ResetCurrentSelectedCharacter()
@@ -84,12 +138,11 @@ namespace StudioResourceSDK.Domain
             _onCurrentBackGroundChanged.OnNext( CurrentSelectedBackGround );
             UnityEngine.Debug.Log( $"CurrentSelectedBackGround = NULL" );
         }
-
-        public void AddBackGround( IBackground background )
+        public void ResetCurrentSelectedProp()
         {
-            _backGroundList.Add( background );
-            _onChangedBackGroundList.OnNext( _backGroundList );
-            SetCurrentSelectedBackGround( background.ID );
+            CurrentSelectedProp = null;
+            _onCurrentPropChanged.OnNext(CurrentSelectedProp);
+            UnityEngine.Debug.Log($"CurrentSelectedProp = NULL");
         }
 
         public void SetCurrentSelectedCharacter( string id )
@@ -116,30 +169,17 @@ namespace StudioResourceSDK.Domain
             _onCurrentBackGroundChanged.OnNext( CurrentSelectedBackGround );
         }
 
-        public void AddProp(IProp prop)
-        {
-            _propList.Add(prop);
-            _onChangedPropList.OnNext(_propList);
-            SetCurrentSelectedProp(prop.ID);
-        }
-
         public void SetCurrentSelectedProp(string id)
         {
             var target = _propList.FirstOrDefault(arg => arg.ID.Equals(id));
             if (target == null)
             {
-                ResetCurrentSelectedBackGround();
+                ResetCurrentSelectedProp();
                 return;
             }
             CurrentSelectedProp = target;
             _onCurrentPropChanged.OnNext(CurrentSelectedProp);
         }
 
-        public void ResetCurrentSelectedProp()
-        {
-            CurrentSelectedProp = null;
-            _onCurrentPropChanged.OnNext(CurrentSelectedProp);
-            UnityEngine.Debug.Log($"CurrentSelectedProp = NULL");
-        }
     }
 }

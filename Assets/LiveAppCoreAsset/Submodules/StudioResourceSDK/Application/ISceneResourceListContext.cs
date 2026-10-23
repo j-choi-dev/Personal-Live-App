@@ -8,7 +8,11 @@ namespace StudioResourceSDK.Application
     public interface ISceneResourceListContext
     {
         IReadOnlyList<ICharacter> CharacterList { get; }
+        IReadOnlyList<IBackground> BackGroundList { get; }
+        IReadOnlyList<IProp> PropList { get; }
         IObservable<IReadOnlyList<ICharacter>> OnChangedCharacterList { get; }
+        IObservable<IReadOnlyList<IBackground>> OnChangedBackGroundList { get; }
+        IObservable<IReadOnlyList<IProp>> OnChangedPropList { get; }
         IObservable<ICharacter> OnCurrentCharacterChanged { get; }
 
         ICharacter CurrentSelectedCharacter { get; }
