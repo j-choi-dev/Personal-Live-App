@@ -8,7 +8,7 @@ namespace StudioResourceSDK.Domain
     public enum TransformProperty
     {
         Position,
-        Rotaion,
+        Rotation,
         Scale,
     }
 

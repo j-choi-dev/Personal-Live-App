@@ -19,6 +19,7 @@ namespace LiveApp.UI
 
         //---------------implements-----------------------------
         public IObservable<int> OnFilterChanged => _filters.OnValueChanged;
+        public IObservable<string> OnSelectedItemChanged => _listView.OnSelectedId;
         public IObservable<Unit> OnClickRemove => _removeButton.OnClick;
         public IReadOnlyList<string> CurrSelectedItemList => _listView.CurrentSelectedItemList;
         public int CurrentFilterIndex => _filters.Value;

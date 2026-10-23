@@ -50,6 +50,11 @@ namespace StudioResourceSDK.Installer
                 .AsSingle();
 
             Container
+                .Bind<ITransformInspectorContext>()
+                .To<TransformInspectorContext>()
+                .AsSingle();
+
+            Container
                 .Bind<IResourceTableLoadDomain>()
 #if !UNITY_EDITOR_WIN && (UNITY_IOS || UNITY_IPHONE) 
                 .To<iOSGoogleSheetLoader>()
@@ -81,7 +86,10 @@ namespace StudioResourceSDK.Installer
                 .Bind<IResourceDestroyDomain>()
                 .To<SceneResourceDestroyer>()
                 .AsSingle();
-
+            Container
+                .Bind<IResourceTransformDomain>()
+                .To<SceneResourceTransformer>()
+                .AsSingle();
         }
     }
 }
