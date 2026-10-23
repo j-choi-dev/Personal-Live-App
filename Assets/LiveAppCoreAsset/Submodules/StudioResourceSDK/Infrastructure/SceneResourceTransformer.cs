@@ -49,6 +49,7 @@ namespace StudioResourceSDK.Infrastructure
         /// 표시 단위 -> 로컬 단위 변환 계수 (slider value 50 -> 로컬 적용 value 0.5)
         /// </summary>
         private const float _characterPositionScale = 0.01f;
+        private const float _propPositionScale = 0.01f;
         private readonly ISceneResourceListDomain _listDomain;
         /// <summary>
         /// transform 별 상태 저장 dict
@@ -63,12 +64,22 @@ namespace StudioResourceSDK.Infrastructure
 
         private static bool IsSupported(ResourceType type, TransformProperty prop,TransformAxis axis)
         {
+            bool isPosition;
+            bool isRotation;
             switch (type)
             {
+                ///<summary>
+                /// 우선 캐릭터와 기믹prop 오브젝트의 작동 방식을 동일하게 구현
+                /// 추후 다른 작동 방식이나 background or 다른 case 추가 시 여기서 @OH 26.10.23
+                ///</summary>
                 case ResourceType.Character:
-                    return prop == TransformProperty.Position
+                case ResourceType.Prop:
+                     isPosition = prop == TransformProperty.Position
                         && (axis == TransformAxis.X || axis == TransformAxis.Y);
 
+                    isRotation = prop == TransformProperty.Rotation
+                        && axis == TransformAxis.Z;
+                    return isPosition || isRotation;
                 default:
                     return false;
             }
@@ -83,6 +94,16 @@ namespace StudioResourceSDK.Infrastructure
             ) * state.PositionScale;
 
             state.Target.localPosition = state.BasePosition + offset;
+        }
+
+        private static void ApplyRotation(TransformState state)
+        {
+            Quaternion offset = Quaternion.Euler(
+                state.GetValue(TransformProperty.Rotation, TransformAxis.X),
+                state.GetValue(TransformProperty.Rotation, TransformAxis.Y),
+                state.GetValue(TransformProperty.Rotation, TransformAxis.Z) );
+
+            state.Target.localRotation = state.BaseRotation * offset;
         }
 
         /// <summary>
@@ -120,6 +141,9 @@ namespace StudioResourceSDK.Infrastructure
                 case ResourceType.Character:
                     return TryResolveCharacter(id, out target, out positionScale);
 
+                case ResourceType.Prop:
+                    return TryResolveProp(id, out target, out positionScale);
+
                 default:
                     return false;
             }
@@ -153,6 +177,29 @@ namespace StudioResourceSDK.Infrastructure
             target = avatar.Avatar.transform;
             return true;
 
+        }
+
+        private bool TryResolveProp(string id, out Transform target, out float positionScale)
+        {
+            target = null;
+            positionScale = _propPositionScale;
+
+            IProp prop = _listDomain.PropList.FirstOrDefault(arg => arg.ID == id);
+            if(prop == null)
+            {
+                Debug.LogWarning($"[SceneResourceTransformer] Prop을 찾지 못했습니다. ID=[{id}]");
+                return false;
+            }
+
+            Component comp = prop as Component;
+            if(comp == null)
+            {
+                Debug.LogWarning($"[SceneResourceTransformer] Component가 아니거나 파괴된 Prop입니다. ID=[{id}]");
+                return false;
+            }
+
+            target = comp.transform;
+            return true;
         }
 
         private TransformState GetOrCreateState(Transform target, float positionScale)
@@ -216,7 +263,12 @@ namespace StudioResourceSDK.Infrastructure
                     ApplyPosition(state);
                     return true;
 
-                //rotation, scale
+                case TransformProperty.Rotation:
+                    state.SetValue(prop, axis, value);
+                    ApplyRotation(state);
+                    return true;
+
+                case TransformProperty.Scale:
                 default:
                     return false;
             
