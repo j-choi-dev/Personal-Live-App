@@ -13,6 +13,7 @@ namespace StudioTrackingSDK.Infrastructure
         [SerializeField] private StudioAvatar _avatar;
         [SerializeField] private GameObject _flagARKit;
         [SerializeField] private GameObject _bodyFlag;
+        [SerializeField] private int _bodyJointIndex;
 
         private void Awake()
         {
@@ -46,7 +47,7 @@ namespace StudioTrackingSDK.Infrastructure
             var bodyMessage2 = string.Empty;
             if( _bodyManager == null ||
                 _bodyManager.subsystem == null ||
-                _bodyManager.subsystem.running )
+                _bodyManager.subsystem.running == false )
             {
                 _bodyFlag.SetActive( true );
             }
@@ -73,31 +74,38 @@ namespace StudioTrackingSDK.Infrastructure
             }
         }
 
-        private void ProcessBody( ARHumanBody body )
+        private void ProcessBody(ARHumanBody body)
         {
-            int hipsIndex = ( int )HumanBodyBones.Hips;
-            if( hipsIndex < 0 || hipsIndex >= body.joints.Length )
+            if (body == null || !body.joints.IsCreated)
             {
                 return;
             }
-            var hips = body.joints[hipsIndex];
-            if( hips.tracked )
-            {
-                var posLog = $"Hips Position: {hips.anchorPose.position}\nHips Rotation: {hips.anchorPose.rotation.eulerAngles}";
 
-                UpdateBodyDirection( hips );
+            if (_bodyJointIndex < 0 || _bodyJointIndex >= body.joints.Length)
+            {
+                return;
             }
+
+            var joint = body.joints[_bodyJointIndex];
+            if ( joint.tracked == false )
+            {
+                return;
+            }
+
+            UpdateBodyDirection(joint);
         }
 
-        private void UpdateBodyDirection( XRHumanBodyJoint spine )
+        private void UpdateBodyDirection(XRHumanBodyJoint joint)
         {
-            // Live2D 연동: BodyAngleX, Y, Z
-            var bodyAngleX = spine.anchorPose.rotation.eulerAngles.x;
-            var bodyAngleY = spine.anchorPose.rotation.eulerAngles.y;
-            var bodyAngleZ = spine.anchorPose.rotation.eulerAngles.z;
-            _avatar.SetBodyAngleX( bodyAngleX );
-            _avatar.SetBodyAngleY( bodyAngleY );
-            _avatar.SetBodyAngleZ( bodyAngleZ );
+            var euler = joint.anchorPose.rotation.eulerAngles;
+
+            var x = Mathf.DeltaAngle(0f, euler.x);
+            var y = Mathf.DeltaAngle(0f, euler.y);
+            var z = Mathf.DeltaAngle(0f, euler.z);
+
+            _avatar.SetBodyAngleX(x);
+            _avatar.SetBodyAngleY(y);
+            _avatar.SetBodyAngleZ(z);
         }
     }
 }

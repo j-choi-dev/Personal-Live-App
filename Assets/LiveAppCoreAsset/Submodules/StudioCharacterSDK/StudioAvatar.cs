@@ -170,6 +170,10 @@ namespace StudioCharacterSDK.Infrastructure
 
             _mouthForm = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ ( int )AvatarPartsParameter.MouthForm ].parameter.Id );
             //_mouthOpenY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ ( int )AvatarPartsParameter.MouthOpen_Y ].parameter.Id );
+
+            _bodyAngleX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ (int)AvatarPartsParameter.BodyAngle_X].parameter.Id);
+            _bodyAngleY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ (int)AvatarPartsParameter.BodyAngle_Y].parameter.Id);
+            _bodyAngleZ = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ (int)AvatarPartsParameter.BodyAngle_Z].parameter.Id);
         }
 
         public void SetFaceAngleX( float value )
@@ -271,6 +275,10 @@ namespace StudioCharacterSDK.Infrastructure
             _eyeBallY.Value = _updateEyeballY;
 
             _mouthForm.Value = _updateMouthForm;
+
+            _bodyAngleX.Value = Mathf.Clamp( _updateBodyAngleX, _bodyAngleX.MinimumValue, _bodyAngleX.MaximumValue);
+            _bodyAngleY.Value = Mathf.Clamp( _updateBodyAngleY, _bodyAngleY.MinimumValue, _bodyAngleY.MaximumValue);
+            _bodyAngleZ.Value = Mathf.Clamp( _updateBodyAngleZ, _bodyAngleZ.MinimumValue, _bodyAngleZ.MaximumValue);
         }
 
         public void SetID( string id )
