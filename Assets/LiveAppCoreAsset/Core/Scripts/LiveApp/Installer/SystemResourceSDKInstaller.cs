@@ -50,11 +50,6 @@ namespace StudioResourceSDK.Installer
                 .AsSingle();
 
             Container
-                .Bind<IRemoveResourceContext>()
-                .To<RemoveResourceContext>()
-                .AsSingle();
-
-            Container
                 .Bind<ITransformInspectorContext>()
                 .To<TransformInspectorContext>()
                 .AsSingle();

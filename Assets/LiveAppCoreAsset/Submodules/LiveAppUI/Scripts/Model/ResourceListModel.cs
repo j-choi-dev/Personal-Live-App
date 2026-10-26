@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
+using UnityEngine;
 
 namespace LiveAppUI.Model
 {
@@ -17,8 +18,12 @@ namespace LiveAppUI.Model
         private IResourceServerConfigContext _resourceConfigContext;
         private IResourceTableContext _resourceTableContext;
         private IResourceLoadContext _resourceLoadContext;
+        private ISceneResourceListContext _sceneResourceListContext;
         private bool _configurationReady;
         private bool _isLoading;
+        private ResourceType _filter = ResourceType.None;
+        //여러 개 삭제 시 목록 갱신은 마지막에 한 번만 하기 위한 플래그
+        private bool _suppressRefresh = false;
 
         private CompositeDisposable _disposable = new CompositeDisposable();
 
@@ -34,6 +39,10 @@ namespace LiveAppUI.Model
         private Subject<IReadOnlyList<(string id, string displayName)>> _onPropListChanged = new Subject<IReadOnlyList<(string id, string displayName)>>();
         public IObservable<IReadOnlyList<(string id, string displayName)>> OnPropListChanged => _onPropListChanged;
 
+        private Subject<IReadOnlyList<(ResourceType type, string id, string displayName)>> _onSceneResourceListChanged
+            = new Subject<IReadOnlyList<(ResourceType type, string id, string displayName)>>();
+        public IObservable<IReadOnlyList<(ResourceType type, string id, string displayName)>> OnSceneResourceListChanged => _onSceneResourceListChanged;
+
         private readonly Subject<ResourceListFailureData> _onLoadFailed = new Subject<ResourceListFailureData>();
 
         public IObservable<ResourceListFailureData> OnLoadFailed => _onLoadFailed;
@@ -41,11 +50,13 @@ namespace LiveAppUI.Model
 
         public ResourceListModel( IResourceServerConfigContext resourceConfigContext,
             IResourceTableContext resourceTableContext,
-            IResourceLoadContext resourceLoadContext )
+            IResourceLoadContext resourceLoadContext,
+            ISceneResourceListContext sceneResourceListContext)
         {
             _resourceConfigContext = resourceConfigContext;
             _resourceTableContext = resourceTableContext;
             _resourceLoadContext = resourceLoadContext;
+            _sceneResourceListContext = sceneResourceListContext;
 
             _resourceTableContext.OnCharacterListChanged
                 .Subscribe( list =>
@@ -86,6 +97,15 @@ namespace LiveAppUI.Model
                 }
                 _serverTypeDic.Add( resourceTypeList[i], ServerType.None );
             }
+
+            //세 이벤트 스트림 값이 다르지만, 값을 사용하지 않고 변경 여부만 사용하니 merge를 통해 묶음
+            Observable.Merge(
+                _sceneResourceListContext.OnChangedCharacterList.AsUnitObservable(),
+                _sceneResourceListContext.OnChangedBackGroundList.AsUnitObservable(),
+                _sceneResourceListContext.OnChangedPropList.AsUnitObservable() )
+                .Where(_ => !_suppressRefresh)
+                .Subscribe(_ => RefreshSceneResourceList())
+                .AddTo(_disposable);
         }
 
         public async UniTask<bool> InitializeServerConfig()
@@ -263,6 +283,70 @@ namespace LiveAppUI.Model
                 resourceId );
         }
 
+        public void RemoveResourcesProcess(IReadOnlyList<(ResourceType type, string id)> targets)
+        {
+            _suppressRefresh = true;
+
+            try
+            {
+                for (var i = 0; i < targets.Count; i++)
+                {
+                    try
+                    {
+                        var removed = _resourceLoadContext.RemoveResource(
+                            ConvertResourceType(targets[i].type), targets[i].id);
+                        if (removed == false)
+                        {
+                            Debug.LogWarning($"[ResourceListModel] 삭제 대상을 찾지 못했습니다. Type={targets[i].type}, ID={targets[i].id}");
+                        }
+                    }//inner try
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }//inner catch
+                }
+            }//outer try
+            finally
+            {
+                _suppressRefresh = false;
+            }//outer final
+
+            RefreshSceneResourceList();
+        }
+        public void FilterRemoveResource(ResourceType resourceType)
+        {
+            _filter = resourceType;
+            RefreshSceneResourceList();
+        }
+
+        private bool IsVisible(ResourceType type)
+            => _filter == ResourceType.None || _filter == type;
+
+        private void RefreshSceneResourceList()
+        {
+            var list = new List<(ResourceType type, string id, string displayName)>();
+
+            if (IsVisible(ResourceType.Character))
+            {
+                list.AddRange(_sceneResourceListContext.CharacterList
+                    .Select(c => (ResourceType.Character, c.ID, c.ID)));
+            }
+
+            if (IsVisible(ResourceType.BackGround))
+            {
+                list.AddRange(_sceneResourceListContext.BackGroundList
+                    .Select(b => (ResourceType.BackGround, b.ID, b.ID)));
+            }
+
+            if (IsVisible(ResourceType.Prop))
+            {
+                list.AddRange(_sceneResourceListContext.PropList
+                    .Select(p => (ResourceType.Prop, p.ID, p.ID)));
+            }
+
+            _onSceneResourceListChanged.OnNext(list);
+        }
+
         private StudioResourceSDK.Domain.ResourceType ConvertResourceType( ResourceType type )
             => ( StudioResourceSDK.Domain.ResourceType )Enum.Parse( 
                 typeof( StudioResourceSDK.Domain.ResourceType ), 
@@ -279,6 +363,9 @@ namespace LiveAppUI.Model
             _disposable = null;
 
             _onCharacterListChanged.Dispose();
+            _onBackStageListChanged.Dispose();
+            _onPropListChanged.Dispose();
+            _onSceneResourceListChanged.Dispose();
             _onLoadFailed.Dispose();
         }
     }
