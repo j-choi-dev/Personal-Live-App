@@ -7,7 +7,7 @@ using UnityEngine.XR.ARSubsystems;
 
 namespace StudioTrackingSDK.Infrastructure
 {
-    public class ARKitBodyTraker : MonoBehaviour, IBodyTrackingDomain
+    public class ARKitBodyTracker : MonoBehaviour, IBodyTrackingDomain
     {
         [SerializeField] private ARFaceManager _faceManager;
 

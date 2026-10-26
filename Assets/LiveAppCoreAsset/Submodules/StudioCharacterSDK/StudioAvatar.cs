@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace StudioCharacterSDK.Infrastructure
 {
-    public class StudioAvatar : MonoBehaviour, ICharacter, IFacialData, ILipSyncData
+    public class StudioAvatar : MonoBehaviour, ICharacter, IFacialData, ILipSyncData, IBodyData
     {
         [SerializeField] private AvatarParameterPair _pair = null;
         [SerializeField] private CubismModel _avatar = null;
@@ -103,6 +103,21 @@ namespace StudioCharacterSDK.Infrastructure
         public IObservable<float> OnChangeMouthForm => _onChangeMouthForm;
         private Subject<float> _onChangeMouthOpen = new Subject<float>();
         public IObservable<float> OnChangeMouthOpen => _onChangeMouthOpen;
+
+        public float BodyAngleX => _updateBodyAngleX;
+
+        public float BodyAngleY => _updateBodyAngleY;
+
+        public float BodyAngleZ => _updateBodyAngleZ;
+
+        private Subject<float> _onChangeBodyAngleX = new Subject<float>();
+        public IObservable<float> OnChangeBodyAngleX => _onChangeBodyAngleX;
+
+        private Subject<float> _onChangeBodyAngleY = new Subject<float>();
+        public IObservable<float> OnChangeBodyAngleY => _onChangeBodyAngleY;
+
+        private Subject<float> _onChangeBodyAngleZ = new Subject<float>();
+        public IObservable<float> OnChangeBodyAngleZ => _onChangeBodyAngleZ;
 
         private void Awake()
         {

@@ -18,6 +18,11 @@ namespace StudioTrackingSDK.Application
 
         public string CurrentSelectedCharacter { get; private set; }
 
+        public BodyTrackingContext(IBodyTrackingDomain bodyTrackingDomain)
+        {
+            _bodyTrackingDomain = bodyTrackingDomain;
+        }
+
         public void SetCharacterID(string id)
         {
             CurrentSelectedCharacter = id;
