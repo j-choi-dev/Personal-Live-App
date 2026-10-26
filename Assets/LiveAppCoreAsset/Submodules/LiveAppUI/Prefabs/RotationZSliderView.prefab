@@ -65,7 +65,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Scale
+  m_text: 'Rotation
+
 
 '
   m_isRightToLeft: 0
