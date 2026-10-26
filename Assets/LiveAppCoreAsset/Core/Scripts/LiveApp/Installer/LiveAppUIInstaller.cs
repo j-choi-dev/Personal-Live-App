@@ -90,6 +90,12 @@ namespace LiveAppUI.Installer
                 .NonLazy();
 
             Container
+                .Bind<IARKitBodyTrackingModel>()
+                .To<ARKitBodyTrackingModel>()
+                .AsSingle()
+                .NonLazy();
+
+            Container
                 .Bind<ILipSyncModel>()
                 .To<LipSyncModel>()
                 .AsSingle()

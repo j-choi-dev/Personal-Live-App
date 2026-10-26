@@ -67,7 +67,6 @@ namespace LiveApp
 
         private void SubscribeTrackingData()
         {
-            UnityEngine.Debug.Log( "SubscribeTrackingData" );
             _faceTrackingContext.OnFaceAngleX
                 .Subscribe( val => _currentCharacter.SetFaceAngleX( val ) )
                 .AddTo( _disposables );
