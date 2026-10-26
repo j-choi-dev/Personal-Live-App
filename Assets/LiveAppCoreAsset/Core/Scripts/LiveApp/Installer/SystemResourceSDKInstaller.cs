@@ -50,11 +50,6 @@ namespace StudioResourceSDK.Installer
                 .AsSingle();
 
             Container
-                .Bind<IRemoveResourceContext>()
-                .To<RemoveResourceContext>()
-                .AsSingle();
-
-            Container
                 .Bind<IResourceTableLoadDomain>()
 #if !UNITY_EDITOR_WIN && (UNITY_IOS || UNITY_IPHONE) 
                 .To<iOSGoogleSheetLoader>()

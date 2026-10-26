@@ -17,7 +17,6 @@ namespace LiveAppUI.Installer
         [SerializeField] private ServerModalView _serverModalView;
         [SerializeField] private RoomModalView _roomModalView;
         [SerializeField] private ResourceListView _resourceListView;
-        [SerializeField] private ResourceInpectorView _resourceInspectorView;
         [SerializeField] private ConfigMenuView _configMenuView;
         [SerializeField] private ObsConfigView _obsConfigView;
         [SerializeField] private YoutubeConfigView _youtubeConfigView;
@@ -46,9 +45,6 @@ namespace LiveAppUI.Installer
             Container
                 .Bind<IResourceListView>()
                 .FromInstance( _resourceListView);
-            Container
-                .Bind<IResourceInspectorView>()
-                .FromInstance(_resourceInspectorView);
             Container
                 .Bind<IConfigMenuView>()
                 .FromInstance( _configMenuView );
@@ -105,10 +101,6 @@ namespace LiveAppUI.Installer
                 .To<ResourceGimmickModel>()
                 .AsSingle();
 
-            Container
-               .Bind<IResourceRemoveModel>().
-               To<ResourceRemoveModel>()
-               .AsSingle();
         }
     }
 }

@@ -19,8 +19,6 @@ namespace LiveAppUI.Presenter
         private INoticeModalView _noticeModalView;
         private IResourceRemoveView _resourceRemoveView;
         private IResourceListModel _resourceListModel;
-        private IResourceRemoveModel _resourceRemoveModel;
-
         private ResourceType _currentResourceType;
         private ResourceType _currentRemoveFilter = ResourceType.None;
         private ServerType _currentResourceServerType;
@@ -35,15 +33,13 @@ namespace LiveAppUI.Presenter
             IResourceListView resourceListView,
             IResourceRemoveView resourceRemoveView,
             INoticeModalView noticeModalView,
-            IResourceListModel resourceListModel,
-            IResourceRemoveModel resourceRemoveModel)
+            IResourceListModel resourceListModel)
         {
             _resourceMenuView = resourceMenuView;
             _resourceListView = resourceListView;
             _noticeModalView = noticeModalView;
             _resourceRemoveView = resourceRemoveView;
             _resourceListModel = resourceListModel;
-            _resourceRemoveModel = resourceRemoveModel;
         }
 
         private void Awake()
@@ -172,7 +168,7 @@ namespace LiveAppUI.Presenter
                 })
                 .AddTo(this);
 
-            _resourceRemoveModel.OnSceneResourceListChanged
+            _resourceListModel.OnSceneResourceListChanged
                 .Subscribe(list => RefreshRemoveList(list))
                 .AddTo(this);
         }
@@ -236,7 +232,7 @@ namespace LiveAppUI.Presenter
 
             _resourceRemoveView.SetActive(true);
             _resourceRemoveView.SetFilterItem(GetResourceIndex(resourceType));
-            _resourceRemoveModel.FilterRemoveResource(resourceType);
+            _resourceListModel.FilterRemoveResource(resourceType);
         }
 
         private void CloseResourceListView()
@@ -291,7 +287,7 @@ namespace LiveAppUI.Presenter
                 return;
             }
 
-            _resourceRemoveModel.RemoveResourcesFromScene(targets);
+            _resourceListModel.RemoveResourcesProcess(targets);
         }
 
         private int GetServerIndex( ServerType type ) 
