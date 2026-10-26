@@ -30,10 +30,5 @@ namespace StudioTrackingSDK.Application
         {
             _faceTrackingDomain.SetIsActive( isValue );
         }
-
-        public void SetFacial( IFacialData data )
-        {
-            throw new NotImplementedException();
-        }
     }
 }
