@@ -8,5 +8,6 @@ namespace LiveApp
         void SetAbleTracking( bool isOK );
 
         void SetIntensity( float intensity );
+        void ResetTracking();
     }
 }

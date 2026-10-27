@@ -29,5 +29,6 @@ namespace StudioTrackingSDK.Application
         void SetIsActive( bool isValue );
         void SetCharacterID( string id );
         void SetFacial( IFacialData data );
+        void ResetTracking();
     }
 }

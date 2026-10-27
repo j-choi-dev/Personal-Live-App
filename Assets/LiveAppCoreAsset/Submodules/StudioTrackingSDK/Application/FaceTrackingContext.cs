@@ -35,5 +35,8 @@ namespace StudioTrackingSDK.Application
         {
             throw new NotImplementedException();
         }
+
+        public void ResetTracking()
+            => _faceTrackingDomain.ResetTracking();
     }
 }
