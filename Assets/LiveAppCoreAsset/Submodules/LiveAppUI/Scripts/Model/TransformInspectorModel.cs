@@ -1,13 +1,9 @@
 ﻿using LiveAppUI.Domain;
 using StudioResourceSDK.Application;
 using System;
-using UnityEngine;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
 using UniRx;
 using DomainResourceType = StudioResourceSDK.Domain.ResourceType;
-using TMPro.EditorUtilities;
 
 namespace LiveAppUI.Model
 {
@@ -59,7 +55,7 @@ namespace LiveAppUI.Model
             bool result = _context.SetValue(_targetType, _targetId, prop.ToDomain(), axis.ToDomain(), value);
             if(result == false)
             {
-                Debug.LogWarning($"[TransformInspectorModel] SetValue 실패. {_targetType} {_targetId} {prop}.{axis}={value}");
+                UnityEngine.Debug.LogWarning($"[TransformInspectorModel] SetValue 실패. {_targetType} {_targetId} {prop}.{axis}={value}");
             }
         }
         //----------------------implement----------------------------

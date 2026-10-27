@@ -16,6 +16,9 @@ namespace LiveAppUI.Model
         /// Inspector 대상 리소스오브젝트 지정
         /// </summary>
         void SetTarget(ResourceType type, string id);
+        /// <summary>
+        /// 대상 해제(null)
+        /// </summary>
         void ClearTarget();
         /// <summary>
         /// Inspector 대상 리소스오브젝트 값 변경. 대상 없으면 무시
