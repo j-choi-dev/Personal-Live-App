@@ -30,7 +30,6 @@ namespace LiveApp
                     var target = arg as IBodyData;
                     if (target == null)
                     {
-                        UnityEngine.Debug.LogError($"Invalid Resource ; Not Exist Body Component({arg.ID})");
                         _trackingContext.SetCharacterID(string.Empty);
                         _trackingContext.SetIsActive(false);
                         _currentCharacter = null;
@@ -38,7 +37,6 @@ namespace LiveApp
                     }
                     _currentCharacter = target;
                     _trackingContext.SetCharacterID(arg.ID);
-                    //_trackingContext.SetIsActive(true);
 
                     ApplyTrackingState();
                 })

@@ -37,8 +37,6 @@ namespace LiveAppUI.Presenter
             _systemMenuView.OnClickCalibration
                 .Subscribe(_ =>
                 {
-                    Debug.Log($"[CHOI] [Calibration] Button clicked...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}");
-
                     _facialTrackingModel.ResetTracking();
                     _bodyTrackingModel.ResetTracking(); 
                     _bodyTrackingModel.SetAbleTracking(true);

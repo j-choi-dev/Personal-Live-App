@@ -33,7 +33,6 @@ namespace LiveApp
                     var target = arg as IFacialData;
                     if( target == null )
                     {
-                        UnityEngine.Debug.LogError( $"Invalid Resource ; Not Exist Ficial Component({arg.ID})" );
                         _faceTrackingContext.SetCharacterID( string.Empty );
                         _faceTrackingContext.SetIsActive( false );
                         _currentCharacter = null;
@@ -61,7 +60,6 @@ namespace LiveApp
 
         public void ResetTracking()
         {
-            UnityEngine.Debug.Log($"[CHOI] [Calibration] Called ARKitFacialTrackingModel.ResetTracking()...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}");
             _faceTrackingContext.ResetTracking();
             _eyeTrackingContext.ResetTracking();
         }

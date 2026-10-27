@@ -31,14 +31,8 @@ namespace StudioTrackingSDK.Application
             _faceTrackingDomain.SetIsActive( isValue );
         }
 
-        public void SetFacial( IFacialData data )
-        {
-            throw new NotImplementedException();
-        }
-
         public void ResetTracking()
         {
-            UnityEngine.Debug.Log($"[CHOI] [Calibration] Called FaceTrackingContext.ResetTracking()...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}"); 
             _faceTrackingDomain.ResetTracking();
         }
     }

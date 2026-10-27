@@ -44,15 +44,13 @@ namespace StudioTrackingSDK.Infrastructure
         /// <param name="eventArgs">발생한 이벤트 값</param>
         private void OnFaceChanged( ARTrackablesChangedEventArgs<ARFace> eventArgs )
         {
-            if( !IsActive )
+            if( IsActive == false )
             {
-                Debug.Log( "OnFaceChanged ignored: Tracker inactive." );
                 return;
             }
 
             if( ARSession.state != ARSessionState.SessionTracking )
             {
-                Debug.Log( $"OnFaceChanged ignored: ARSession={ARSession.state}" );
                 return;
             }
 
@@ -73,8 +71,6 @@ namespace StudioTrackingSDK.Infrastructure
                     return;
                 }
             }
-
-            Debug.Log( "OnFaceChanged ignored: No trackable ARFace found." );
         }
 
         private bool TryUpdateFace( ARFace face )
@@ -86,7 +82,6 @@ namespace StudioTrackingSDK.Infrastructure
 
             if( face.trackingState != TrackingState.Tracking )
             {
-                Debug.Log( $"Face tracking unavailable: {face.trackingState}" );
                 return false;
             }
 
@@ -102,11 +97,8 @@ namespace StudioTrackingSDK.Infrastructure
         {
             if( IsActive == false )
             {
-                Debug.Log( "UpdateFaceTransform Break" );
                 return;
             }
-
-            Debug.Log( "UpdateFaceTransform ...;" );
 
             var currentRotation = arFace.transform.rotation;
 
@@ -117,19 +109,12 @@ namespace StudioTrackingSDK.Infrastructure
                 _referenceTrackableId = arFace.trackableId;
 
                 _hasReferenceRotation = true;
-                _resetRequested = false; Debug.Log(
-                    $"[CHOI] [Calibration] Captured ...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}" +
-                    $"tracker={GetType().Name}, " +
-                    $"instance={GetInstanceID()}, " +
-                    $"trackable={arFace.trackableId}, " +
-                    $"reference={_referenceRotation.eulerAngles}",
-                    this);
+                _resetRequested = false;
             }
 
             var outputRotation = _hasReferenceRotation
                 ? Quaternion.Inverse(_referenceRotation) * currentRotation
                 : currentRotation;
-            Debug.Log($"[CHOI] [{GetType().Name}] Relative angle = {Quaternion.Angle(Quaternion.identity, outputRotation):F2}...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}", this);
 
             var euler = outputRotation.eulerAngles;
 
@@ -138,22 +123,11 @@ namespace StudioTrackingSDK.Infrastructure
             _onFaceAngleZ.OnNext(Mathf.DeltaAngle(0f, euler.z) * 2f);
         }
 
-        private float NormalizeAngle( float angle )
-        {
-            if ( angle > 180 )
-            {
-                return angle - 360;
-            }
-            return angle;
-        }
-
         public void SetIsActive( bool isValue )
             => IsActive = isValue;
 
         public void ResetTracking()
         {
-            Debug.Log($"[CHOI] [{GetType().Name}] Called ARKitFaceTraker.ResetTracking() tracker={GetType().Name}, instance={GetInstanceID()}, active={IsActive}...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}", this);
-            
             _resetRequested = true;
         }
     }

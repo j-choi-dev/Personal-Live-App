@@ -50,15 +50,13 @@ namespace StudioTrackingSDK.Infrastructure
         /// <param name="eventArgs">발생한 이벤트 값</param>
         private void OnBodyChanged(ARTrackablesChangedEventArgs<ARFace> eventArgs)
         {
-            if (!IsActive)
+            if ( IsActive == false )
             {
-                Debug.Log("OnFaceChanged ignored: Tracker inactive.");
                 return;
             }
 
             if (ARSession.state != ARSessionState.SessionTracking)
             {
-                Debug.Log($"OnFaceChanged ignored: ARSession={ARSession.state}");
                 return;
             }
 
@@ -108,11 +106,8 @@ namespace StudioTrackingSDK.Infrastructure
         {
             if (IsActive == false || arFace == null)
             {
-                Debug.Log("UpdateBodyTransform Break");
                 return;
             }
-
-            Debug.Log("UpdateBodyTransform ...;");
 
             var currentRotation = arFace.transform.rotation;
 
@@ -124,17 +119,11 @@ namespace StudioTrackingSDK.Infrastructure
 
                 _hasReferenceRotation = true;
                 _resetRequested = false;
-                Debug.Log( $"[CHOI] [BodyCalibration] Captured. Trackable={arFace.trackableId}, Reference={currentRotation.eulerAngles}", this);
             }
 
             var relativeRotation = Quaternion.Inverse(_referenceRotation) * currentRotation;
-
             var roll = ExtractZTwistDegrees(relativeRotation);
-
-            var amount = Mathf.Max(
-                0f,
-                Mathf.Abs(roll) - _rollDeadZone);
-
+            var amount = Mathf.Max( 0f, Mathf.Abs(roll) - _rollDeadZone );
             var outputZ = Mathf.Sign(roll) * amount * _bodyRollGain;
 
             if (_invertBodyRoll)
@@ -151,15 +140,11 @@ namespace StudioTrackingSDK.Infrastructure
 
         private static float ExtractZTwistDegrees(Quaternion rotation)
         {
-            // Quaternion의 벡터 성분을 Z축에 투영합니다.
             var length = Mathf.Sqrt( rotation.z * rotation.z + rotation.w * rotation.w);
-
-            // Z축 twist가 유일하게 정의되지 않는 특이 자세입니다.
             if (length < 0.00001f)
             {
                 return 0f;
             }
-
             var z = rotation.z / length;
             var w = rotation.w / length;
 
@@ -168,21 +153,11 @@ namespace StudioTrackingSDK.Infrastructure
             return Mathf.DeltaAngle(0f, angle);
         }
 
-        private float NormalizeAngle(float angle)
-        {
-            if (angle > 180)
-            {
-                return angle - 360;
-            }
-            return angle;
-        }
-
         public void SetIsActive(bool isValue)
             => IsActive = isValue;
 
         public void ResetTracking()
         {
-            Debug.Log($"[CHOI] [{GetType().Name}] Called ARKitBodyTracker.ResetTracking() tracker={GetType().Name}, instance={GetInstanceID()}, active={IsActive}...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}", this);
             _resetRequested = true;
         }
     }
