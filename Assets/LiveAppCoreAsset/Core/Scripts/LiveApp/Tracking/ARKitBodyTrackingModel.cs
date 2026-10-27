@@ -51,6 +51,11 @@ namespace LiveApp
             _disposables = null;
         }
 
+        public void ResetTracking()
+        {
+            _trackingContext.ResetTracking();
+        }
+
         public void SetAbleTracking(bool isOK)
             => _trackingContext.SetIsActive(isOK);
 

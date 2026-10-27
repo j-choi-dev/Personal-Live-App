@@ -29,5 +29,6 @@ namespace StudioTrackingSDK.Application
         /// Active ¿©ºÎ
         /// </summary>
         void SetIsActive( bool isValue );
+        void ResetTracking();
     }
 }
