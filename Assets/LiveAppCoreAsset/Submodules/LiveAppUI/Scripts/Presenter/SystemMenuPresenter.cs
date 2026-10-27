@@ -40,7 +40,8 @@ namespace LiveAppUI.Presenter
                     Debug.Log($"[CHOI] [Calibration] Button clicked...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}");
 
                     _facialTrackingModel.ResetTracking();
-                    _bodyTrackingModel.ResetTracking();
+                    _bodyTrackingModel.ResetTracking(); 
+                    _bodyTrackingModel.SetAbleTracking(true);
                 })
                 .AddTo(this);
         }

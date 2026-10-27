@@ -10,6 +10,12 @@ namespace StudioTrackingSDK.Infrastructure
     public class ARKitBodyTracker : MonoBehaviour, IBodyTrackingDomain
     {
         [SerializeField] private ARFaceManager _faceManager;
+        [SerializeField, Min(0f)] private float _bodyRollGain = 1f;
+        [SerializeField, Min(0f)] private float _maximumBodyRoll = 10f;
+        [SerializeField, Min(0f)] private float _rollDeadZone = 0.5f;
+
+        [SerializeField]
+        private bool _invertBodyRoll;
 
         private Subject<float> _onBodyAngleX = new Subject<float>();
         public IObservable<float> OnBodyAngleXChanged => _onBodyAngleX;
@@ -100,7 +106,7 @@ namespace StudioTrackingSDK.Infrastructure
         /// <param name="arFace">ARFace 정보</param>
         private void UpdateBodyTransform(ARFace arFace)
         {
-            if (IsActive == false)
+            if (IsActive == false || arFace == null)
             {
                 Debug.Log("UpdateBodyTransform Break");
                 return;
@@ -111,25 +117,55 @@ namespace StudioTrackingSDK.Infrastructure
             var currentRotation = arFace.transform.rotation;
 
             if (_resetRequested ||
-                (_hasReferenceRotation && _referenceTrackableId != arFace.trackableId))
+                (_hasReferenceRotation == false || _referenceTrackableId != arFace.trackableId))
             {
                 _referenceRotation = currentRotation;
                 _referenceTrackableId = arFace.trackableId;
 
                 _hasReferenceRotation = true;
                 _resetRequested = false;
-
+                Debug.Log( $"[CHOI] [BodyCalibration] Captured. Trackable={arFace.trackableId}, Reference={currentRotation.eulerAngles}", this);
             }
 
-            var outputRotation = _hasReferenceRotation
-                ? Quaternion.Inverse(_referenceRotation) * currentRotation
-                : currentRotation;
+            var relativeRotation = Quaternion.Inverse(_referenceRotation) * currentRotation;
 
-            var euler = outputRotation.eulerAngles;
+            var roll = ExtractZTwistDegrees(relativeRotation);
 
-            _onBodyAngleX.OnNext(Mathf.DeltaAngle(0f, euler.x) * 2f);
-            _onBodyAngleY.OnNext(Mathf.DeltaAngle(0f, euler.y));
-            _onBodyAngleZ.OnNext(Mathf.DeltaAngle(0f, euler.z) * 2f);
+            var amount = Mathf.Max(
+                0f,
+                Mathf.Abs(roll) - _rollDeadZone);
+
+            var outputZ = Mathf.Sign(roll) * amount * _bodyRollGain;
+
+            if (_invertBodyRoll)
+            {
+                outputZ = -outputZ;
+            }
+
+            outputZ = Mathf.Clamp( outputZ, -_maximumBodyRoll, _maximumBodyRoll);
+
+            _onBodyAngleX.OnNext(0f);
+            _onBodyAngleY.OnNext(0f);
+            _onBodyAngleZ.OnNext(outputZ);
+        }
+
+        private static float ExtractZTwistDegrees(Quaternion rotation)
+        {
+            // Quaternion의 벡터 성분을 Z축에 투영합니다.
+            var length = Mathf.Sqrt( rotation.z * rotation.z + rotation.w * rotation.w);
+
+            // Z축 twist가 유일하게 정의되지 않는 특이 자세입니다.
+            if (length < 0.00001f)
+            {
+                return 0f;
+            }
+
+            var z = rotation.z / length;
+            var w = rotation.w / length;
+
+            var angle = 2f * Mathf.Atan2(z, w) * Mathf.Rad2Deg;
+
+            return Mathf.DeltaAngle(0f, angle);
         }
 
         private float NormalizeAngle(float angle)

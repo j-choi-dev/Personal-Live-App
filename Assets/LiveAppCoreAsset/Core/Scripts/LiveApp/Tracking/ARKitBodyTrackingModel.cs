@@ -59,6 +59,7 @@ namespace LiveApp
         {
             _trackingContext.ResetTracking();
         }
+
         public void SetAbleTracking(bool isOK)
         {
             _bodyTrackingEnabled = isOK;
