@@ -124,5 +124,10 @@ namespace StudioTrackingSDK.Infrastructure
 
         public void SetIsActive(bool isValue)
             => IsActive = isValue;
+
+        public void ResetTracking()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
