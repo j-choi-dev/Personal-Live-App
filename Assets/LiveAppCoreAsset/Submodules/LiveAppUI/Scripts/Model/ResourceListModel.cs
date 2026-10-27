@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
-using UnityEngine;
+
 
 namespace LiveAppUI.Model
 {
@@ -297,12 +297,12 @@ namespace LiveAppUI.Model
                             ConvertResourceType(targets[i].type), targets[i].id);
                         if (removed == false)
                         {
-                            Debug.LogWarning($"[ResourceListModel] 삭제 대상을 찾지 못했습니다. Type={targets[i].type}, ID={targets[i].id}");
+                            UnityEngine.Debug.LogWarning($"[ResourceListModel] 삭제 대상을 찾지 못했습니다. Type={targets[i].type}, ID={targets[i].id}");
                         }
                     }//inner try
                     catch (Exception e)
                     {
-                        Debug.LogException(e);
+                        UnityEngine.Debug.LogException(e);
                     }//inner catch
                 }
             }//outer try

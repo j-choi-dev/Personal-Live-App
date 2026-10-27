@@ -5,7 +5,6 @@ using StudioCharacterSDK.Domain;
 using StudioCommonSDK.Domain;
 using StudioResourceSDK.Domain;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
@@ -133,7 +132,7 @@ namespace StudioResourceSDK.Application
         }
 
         private static bool TryFindInPivot<T>(ISpawnPivotTransform pivot, string id, Func<T, string> getId,
-          out T found) where T : class
+          out GameObject found) where T : class
         {
             found = null;
 
@@ -148,7 +147,7 @@ namespace StudioResourceSDK.Application
                 if (child.TryGetComponent(out T component)
                 && getId(component) == id)
                 {
-                    found = component;
+                    found = child.gameObject;
                     return true;
                 }
             }
