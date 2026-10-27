@@ -119,13 +119,11 @@ namespace StudioTrackingSDK.Infrastructure
                 _hasReferenceRotation = true;
                 _resetRequested = false;
 
-                Debug.Log( $"[CHOI] [{GetType().Name}] Calibration captured. Trackable={arFace.trackableId}, Reference={_referenceRotation.eulerAngles}", this);
             }
 
             var outputRotation = _hasReferenceRotation
                 ? Quaternion.Inverse(_referenceRotation) * currentRotation
                 : currentRotation;
-            Debug.Log($"[CHOI] [{GetType().Name}] Relative angle = {Quaternion.Angle(Quaternion.identity, outputRotation):F2}", this);
 
             var euler = outputRotation.eulerAngles;
 
@@ -148,11 +146,8 @@ namespace StudioTrackingSDK.Infrastructure
 
         public void ResetTracking()
         {
+            Debug.Log($"[CHOI] [{GetType().Name}] Called ARKitBodyTracker.ResetTracking() tracker={GetType().Name}, instance={GetInstanceID()}, active={IsActive}...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}", this);
             _resetRequested = true;
-
-            Debug.Log(
-                $"[{GetType().Name}] Calibration requested. Active={IsActive}",
-                this);
         }
     }
 }

@@ -37,6 +37,9 @@ namespace StudioTrackingSDK.Application
         }
 
         public void ResetTracking()
-            => _faceTrackingDomain.ResetTracking();
+        {
+            UnityEngine.Debug.Log($"[CHOI] [Calibration] Called FaceTrackingContext.ResetTracking()...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}"); 
+            _faceTrackingDomain.ResetTracking();
+        }
     }
 }

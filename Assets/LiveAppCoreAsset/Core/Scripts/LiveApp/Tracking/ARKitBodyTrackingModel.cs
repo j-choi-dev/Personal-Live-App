@@ -13,6 +13,8 @@ namespace LiveApp
         private IBodyData _currentCharacter = null;
         private CompositeDisposable _disposables = new CompositeDisposable();
 
+        private bool _bodyTrackingEnabled;
+
         public ARKitBodyTrackingModel(IBodyTrackingContext trackingContext,
             ISceneResourceListContext sceneResourceListContext)
         {
@@ -34,9 +36,11 @@ namespace LiveApp
                         _currentCharacter = null;
                         return;
                     }
-                    _trackingContext.SetCharacterID(arg.ID);
-                    _trackingContext.SetIsActive(true);
                     _currentCharacter = target;
+                    _trackingContext.SetCharacterID(arg.ID);
+                    //_trackingContext.SetIsActive(true);
+
+                    ApplyTrackingState();
                 })
                 .AddTo(_disposables);
         }
@@ -55,9 +59,25 @@ namespace LiveApp
         {
             _trackingContext.ResetTracking();
         }
-
         public void SetAbleTracking(bool isOK)
-            => _trackingContext.SetIsActive(isOK);
+        {
+            _bodyTrackingEnabled = isOK;
+            ApplyTrackingState();
+        }
+
+        private void ApplyTrackingState()
+        {
+            var active = _bodyTrackingEnabled && _currentCharacter != null;
+
+            _trackingContext.SetIsActive(active);
+
+            if (!active)
+            {
+                _currentCharacter?.SetBodyAngleX(0f);
+                _currentCharacter?.SetBodyAngleY(0f);
+                _currentCharacter?.SetBodyAngleZ(0f);
+            }
+        }
 
         public void SetIntensity(float intensity)
             => Intensity = intensity;

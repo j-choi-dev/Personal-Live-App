@@ -61,6 +61,7 @@ namespace LiveApp
 
         public void ResetTracking()
         {
+            UnityEngine.Debug.Log($"[CHOI] [Calibration] Called ARKitFacialTrackingModel.ResetTracking()...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}");
             _faceTrackingContext.ResetTracking();
             _eyeTrackingContext.ResetTracking();
         }

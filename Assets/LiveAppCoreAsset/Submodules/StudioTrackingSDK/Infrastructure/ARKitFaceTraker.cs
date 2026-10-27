@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using StudioTrackingSDK.Domain;
+using System;
+using UniRx;
+using UnityEditor.PackageManager.Requests;
+using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-using UniRx;
-using System;
-using StudioTrackingSDK.Domain;
 
 namespace StudioTrackingSDK.Infrastructure
 {
@@ -117,12 +118,19 @@ namespace StudioTrackingSDK.Infrastructure
                 _referenceTrackableId = arFace.trackableId;
 
                 _hasReferenceRotation = true;
-                _resetRequested = false;
+                _resetRequested = false; Debug.Log(
+                    $"[CHOI] [Calibration] Captured ...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}" +
+                    $"tracker={GetType().Name}, " +
+                    $"instance={GetInstanceID()}, " +
+                    $"trackable={arFace.trackableId}, " +
+                    $"reference={_referenceRotation.eulerAngles}",
+                    this);
             }
 
             var outputRotation = _hasReferenceRotation
                 ? Quaternion.Inverse(_referenceRotation) * currentRotation
                 : currentRotation;
+            Debug.Log($"[CHOI] [{GetType().Name}] Relative angle = {Quaternion.Angle(Quaternion.identity, outputRotation):F2}...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}", this);
 
             var euler = outputRotation.eulerAngles;
 
@@ -145,6 +153,8 @@ namespace StudioTrackingSDK.Infrastructure
 
         public void ResetTracking()
         {
+            Debug.Log($"[CHOI] [{GetType().Name}] Called ARKitFaceTraker.ResetTracking() tracker={GetType().Name}, instance={GetInstanceID()}, active={IsActive}...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}", this);
+            
             _resetRequested = true;
         }
     }

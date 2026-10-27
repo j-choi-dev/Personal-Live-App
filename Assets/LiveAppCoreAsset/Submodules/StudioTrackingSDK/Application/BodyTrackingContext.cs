@@ -1,4 +1,3 @@
-using StudioCharacterSDK.Domain;
 using StudioTrackingSDK.Domain;
 using System;
 
@@ -34,6 +33,9 @@ namespace StudioTrackingSDK.Application
         }
 
         public void ResetTracking()
-            => _bodyTrackingDomain.ResetTracking();
+        {
+            UnityEngine.Debug.Log($"[CHOI] [Calibration] Called BodyTrackingContext.ResetTracking()...{System.DateTime.Now.ToString("yyyy.MM.dd_HH.mm.ss.fff")}");
+            _bodyTrackingDomain.ResetTracking();
+        }
     }
 }
