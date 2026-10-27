@@ -350,6 +350,7 @@ GameObject:
   - component: {fileID: 44717209}
   - component: {fileID: 44717210}
   - component: {fileID: 44717211}
+  - component: {fileID: 44717212}
   m_Layer: 0
   m_Name: Presenter
   m_TagString: Untagged
@@ -456,6 +457,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c05d15c9bec8cb46b50ec8ae23391c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.Presenter.ResourceGimmickPresenter
+--- !u!114 &44717212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44717203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29d7dc6685ab77c4a973ed5fcf1dec9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.Presenter.SystemMenuPresenter
 --- !u!1 &89256925
 GameObject:
   m_ObjectHideFlags: 0
@@ -1156,6 +1169,7 @@ MonoBehaviour:
   _obsConfigView: {fileID: 6512752416724687229}
   _youtubeConfigView: {fileID: 6512752416724687226}
   _gimmickControlView: {fileID: 966602023}
+  _systemMenuView: {fileID: 6555371862902107371}
 --- !u!4 &601516613
 Transform:
   m_ObjectHideFlags: 0
@@ -2856,11 +2870,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 564772396074407428, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00005084499
+      value: 0.00034437474
       objectReference: {fileID: 0}
     - target: {fileID: 873010737266811815, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00003924029
+      value: 0.0003672036
       objectReference: {fileID: 0}
     - target: {fileID: 914902428677726665, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3297,6 +3311,17 @@ PrefabInstance:
       addedObject: {fileID: 1189707372}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 738045247e4937d4b97877ca5130eba8, type: 3}
+--- !u!114 &6555371862902107371 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8237502244640182123, guid: 738045247e4937d4b97877ca5130eba8, type: 3}
+  m_PrefabInstance: {fileID: 6555371862902107370}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 288764b4376e39349aaf6a5d8703ddcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.SystemMenuView
 --- !u!1001 &7529454243848309171
 PrefabInstance:
   m_ObjectHideFlags: 0
