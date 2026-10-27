@@ -21,6 +21,11 @@ namespace StudioTrackingSDK.Infrastructure
         public IObservable<float> OnFaceAngleZ => _onFaceAngleZ;
 
         public bool IsActive { get; private set; } = false;
+        private bool _resetRequested = false;
+        private bool _hasReferenceRotation = false;
+
+        private Quaternion _referenceRotation = Quaternion.identity;
+        private TrackableId _referenceTrackableId;
 
         private void OnEnable()
         {
@@ -103,14 +108,27 @@ namespace StudioTrackingSDK.Infrastructure
 
             Debug.Log( "UpdateFaceTransform ...;" );
 
-            var faceRotation = arFace.transform.rotation;
-            var x = NormalizeAngle(faceRotation.eulerAngles.x) * 2f;
-            var y = NormalizeAngle(faceRotation.eulerAngles.y);
-            var z = NormalizeAngle(faceRotation.eulerAngles.z) * 2f;
+            var currentRotation = arFace.transform.rotation;
 
-            _onFaceAngleX.OnNext( x );
-            _onFaceAngleY.OnNext( y );
-            _onFaceAngleZ.OnNext( z );
+            if (_resetRequested ||
+                (_hasReferenceRotation && _referenceTrackableId != arFace.trackableId))
+            {
+                _referenceRotation = currentRotation;
+                _referenceTrackableId = arFace.trackableId;
+
+                _hasReferenceRotation = true;
+                _resetRequested = false;
+            }
+
+            var outputRotation = _hasReferenceRotation
+                ? Quaternion.Inverse(_referenceRotation) * currentRotation
+                : currentRotation;
+
+            var euler = outputRotation.eulerAngles;
+
+            _onFaceAngleX.OnNext(Mathf.DeltaAngle(0f, euler.x) * 2f);
+            _onFaceAngleY.OnNext(Mathf.DeltaAngle(0f, euler.y));
+            _onFaceAngleZ.OnNext(Mathf.DeltaAngle(0f, euler.z) * 2f);
         }
 
         private float NormalizeAngle( float angle )
@@ -127,7 +145,7 @@ namespace StudioTrackingSDK.Infrastructure
 
         public void ResetTracking()
         {
-            throw new NotImplementedException();
+            _resetRequested = true;
         }
     }
 }
