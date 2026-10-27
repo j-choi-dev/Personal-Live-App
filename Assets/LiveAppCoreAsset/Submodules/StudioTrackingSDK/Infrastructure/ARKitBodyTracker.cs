@@ -21,6 +21,11 @@ namespace StudioTrackingSDK.Infrastructure
         public IObservable<float> OnBodyAngleZChanged => _onBodyAngleZ;
 
         public bool IsActive { get; private set; } = false;
+        private bool _resetRequested = false;
+        private bool _hasReferenceRotation = false;
+
+        private Quaternion _referenceRotation = Quaternion.identity;
+        private TrackableId _referenceTrackableId;
 
         private void OnEnable()
         {
@@ -103,14 +108,27 @@ namespace StudioTrackingSDK.Infrastructure
 
             Debug.Log("UpdateBodyTransform ...;");
 
-            var bodyRotation = arFace.transform.rotation;
-            var x = NormalizeAngle(bodyRotation.eulerAngles.x) * 2f;
-            var y = NormalizeAngle(bodyRotation.eulerAngles.y);
-            var z = NormalizeAngle(bodyRotation.eulerAngles.z) * 2f;
+            var currentRotation = arFace.transform.rotation;
 
-            _onBodyAngleX.OnNext(x);
-            _onBodyAngleY.OnNext(y);
-            _onBodyAngleZ.OnNext(z);
+            if (_resetRequested ||
+                (_hasReferenceRotation && _referenceTrackableId != arFace.trackableId))
+            {
+                _referenceRotation = currentRotation;
+                _referenceTrackableId = arFace.trackableId;
+
+                _hasReferenceRotation = true;
+                _resetRequested = false;
+            }
+
+            var outputRotation = _hasReferenceRotation
+                ? Quaternion.Inverse(_referenceRotation) * currentRotation
+                : currentRotation;
+
+            var euler = outputRotation.eulerAngles;
+
+            _onBodyAngleX.OnNext(Mathf.DeltaAngle(0f, euler.x) * 2f);
+            _onBodyAngleY.OnNext(Mathf.DeltaAngle(0f, euler.y));
+            _onBodyAngleZ.OnNext(Mathf.DeltaAngle(0f, euler.z) * 2f);
         }
 
         private float NormalizeAngle(float angle)
@@ -124,5 +142,10 @@ namespace StudioTrackingSDK.Infrastructure
 
         public void SetIsActive(bool isValue)
             => IsActive = isValue;
+
+        public void ResetTracking()
+        {
+            _resetRequested = true;
+        }
     }
 }

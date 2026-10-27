@@ -32,6 +32,11 @@ namespace StudioTrackingSDK.Infrastructure
         private int _trackingDebugLogInterval = 30;
 
         public bool IsActive { get; private set; }
+        private bool _resetRequested = false;
+        private bool _hasReferenceGaze = false;
+
+        private Vector2 _referenceGaze = Vector2.zero;
+        private TrackableId _referenceTrackableId;
 
 #if !LIVEAPP_ASSETBUNDLE_STANDALONE
         private ARKitFaceSubsystem _faceSubsystem;
@@ -170,18 +175,36 @@ namespace StudioTrackingSDK.Infrastructure
                         break;
                 }
             }
-            var eyeBallXValue = ( eyeLookOutLeft - eyeLookInLeft + eyeLookInRight - eyeLookOutRight ) / 2.0f;
-            var eyeBallYValue = ( eyeLookUpLeft - eyeLookDownLeft + eyeLookUpRight - eyeLookDownRight ) / 2.0f;
+            var eyeBallXValue = (eyeLookOutLeft - eyeLookInLeft + eyeLookInRight - eyeLookOutRight) / 2f;
+            var eyeBallYValue = (eyeLookUpLeft - eyeLookDownLeft + eyeLookUpRight - eyeLookDownRight) / 2f;
 
-            var resultX = Mathf.Clamp(eyeBallXValue, -1f, 1f);
-            var resultY = Mathf.Clamp(eyeBallXValue, -1f, 1f);
+            var currentGaze = new Vector2( eyeBallXValue, eyeBallYValue);
 
-            _onEyeBallAngleX.OnNext( resultX );
-            _onEyeBallAngleY.OnNext( resultY );
+            if (_resetRequested ||
+                (_hasReferenceGaze && _referenceTrackableId != arFace.trackableId))
+            {
+                _referenceGaze = currentGaze;
+                _referenceTrackableId = arFace.trackableId;
+
+                _hasReferenceGaze = true;
+                _resetRequested = false;
+            }
+
+            var outputGaze = _hasReferenceGaze
+                ? currentGaze - _referenceGaze
+                : currentGaze;
+
+            _onEyeBallAngleX.OnNext( Mathf.Clamp(outputGaze.x, -1f, 1f) );
+            _onEyeBallAngleY.OnNext( Mathf.Clamp(outputGaze.y, -1f, 1f) );
         }
 #endif
 
         public void SetIsActive( bool isValue )
             => IsActive = isValue;
+
+        public void ResetTracking()
+        {
+            _resetRequested = true;
+        }
     }
 }

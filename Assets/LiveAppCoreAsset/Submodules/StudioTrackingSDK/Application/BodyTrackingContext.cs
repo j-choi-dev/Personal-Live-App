@@ -32,5 +32,8 @@ namespace StudioTrackingSDK.Application
         {
             _bodyTrackingDomain.SetIsActive(isValue);
         }
+
+        public void ResetTracking()
+            => _bodyTrackingDomain.ResetTracking();
     }
 }

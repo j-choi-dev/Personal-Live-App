@@ -26,5 +26,6 @@ namespace StudioTrackingSDK.Domain
         /// Active 여부
         /// </summary>
         void SetIsActive( bool isValue );
+        void ResetTracking();
     }
 }
