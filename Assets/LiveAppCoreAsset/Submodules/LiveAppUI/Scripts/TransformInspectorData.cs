@@ -21,6 +21,7 @@ namespace LiveAppUI.Domain
         X,
         Y,
         Z,
+        Uniform, // 비율 고정
     }
 
     /// <summary>

@@ -78,6 +78,7 @@ namespace StudioResourceSDK.Application
                 Channel(TransformProperty.Position, TransformAxis.X, -50f,50f),
                 Channel(TransformProperty.Position, TransformAxis.Y, -100f,100f),
                 Channel(TransformProperty.Rotation, TransformAxis.Z, -180f,180f),
+                Channel(TransformProperty.Scale, TransformAxis.Uniform, -2f, 2f), //2^-2 ~ 2^2 = 0.25배 ~ 4배
             };
         }
 
@@ -88,6 +89,7 @@ namespace StudioResourceSDK.Application
                 Channel(TransformProperty.Position, TransformAxis.X, -50f,50f),
                 Channel(TransformProperty.Position, TransformAxis.Y, -100f,100f),
                 Channel(TransformProperty.Rotation, TransformAxis.Z, -180f,180f),
+                Channel(TransformProperty.Scale, TransformAxis.Uniform, -2f, 2f), //2^-2 ~ 2^2 = 0.25배 ~ 4배
             };
         }
         /// <summary>
