@@ -20,6 +20,7 @@ namespace StudioResourceSDK.Domain
         X,
         Y,
         Z,
+        Uniform, // 비율 고정
     }
 
 }
