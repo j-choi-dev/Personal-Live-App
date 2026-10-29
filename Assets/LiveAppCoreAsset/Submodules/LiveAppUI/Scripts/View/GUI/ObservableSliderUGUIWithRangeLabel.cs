@@ -1,7 +1,6 @@
-using UnityEngine;
 using TMPro;
 using UniRx;
-using UnityEditor.PackageManager.Requests;
+using UnityEngine;
 
 namespace LiveAppUI.View
 {
@@ -82,6 +81,17 @@ namespace LiveAppUI.View
             }
         }
 
+        /// <summary>
+        /// 값을 라벨에 표시할 문자열로 변경
+        /// virtual, proteced로 자식 슬라이더에서 표시 방식을 재정의할 수 있도록 함
+        /// 우선은 scale 배율쪽 표시만 달라서 이렇게 했지만 추후 더 많은 방식의 표시 방법이 생기면
+        /// Formatter를 분리해서 만든 후 slider에 comp를 붙이는 방식으로 전환 검토 @OH 26.10.29
+        /// </summary>
+        protected virtual string FormatValue(float value)
+        {
+            return value.ToString(_format);
+        }
+
         private void Awake()
         {
             OnValueChanged
@@ -103,7 +113,7 @@ namespace LiveAppUI.View
         {
             if(_valueText != null)
             {
-                _valueText.text = value.ToString(_format);
+                _valueText.text = FormatValue(value);
             }
         }
 
@@ -111,12 +121,12 @@ namespace LiveAppUI.View
         {
             if (_minText != null)
             {
-                _minText.text = MinValue.ToString(_format);
+                _minText.text = FormatValue(MinValue);
             }
 
             if (_maxText != null)
             {
-                _maxText.text = MaxValue.ToString(_format);
+                _maxText.text = FormatValue(MaxValue);
             }
         }
 

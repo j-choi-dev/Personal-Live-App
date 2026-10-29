@@ -12,15 +12,16 @@ namespace StudioResourceSDK.Infrastructure
         //------------------------------------inner class----------------------
         /// <summary>
         /// 조작 대상 하나에 대한 모든 정보
+        /// </summary>
         /// 이것도 ResourceTransformType.cs에 정의할까 고민하다가
         /// 해당 구현체에서만 사용할 생각이라서 inner class로 숨김
         /// 추후 다른 resource 영역에서 쓸 일이 생기면 그 때 이전할 예정 @OH 26.10.21
-        /// </summary>
         private class TransformState
         {
             public readonly Transform Target;
             public readonly float PositionScale;
             public readonly Vector3 BasePosition;
+            public readonly Vector3 BaseScale;
             public readonly Quaternion BaseRotation;
             /// <summary>
             /// (속성, 축) 튜플에 대한 값 저장 dict 
@@ -33,6 +34,7 @@ namespace StudioResourceSDK.Infrastructure
                 PositionScale = positionScale;
                 BasePosition = target.localPosition;
                 BaseRotation = target.localRotation;
+                BaseScale = target.localScale;
             }
 
             public float GetValue( TransformProperty prop, TransformAxis axis)
@@ -50,6 +52,11 @@ namespace StudioResourceSDK.Infrastructure
         /// </summary>
         private const float _characterPositionScale = 0.01f;
         private const float _propPositionScale = 0.01f;
+        /// <summary>
+        /// scale 슬라이더 값은 배율의 지수(2^값, 0 = 원래 크기)
+        /// view의 배율 라벨 표시도 같은 밑을 사용하므로 바꿀 때 함께 수정할 것
+        /// </summary>
+        private const float _scaleExponentBase = 2.0f;
         private readonly ISceneResourceListDomain _listDomain;
         /// <summary>
         /// transform 별 상태 저장 dict
@@ -66,6 +73,7 @@ namespace StudioResourceSDK.Infrastructure
         {
             bool isPosition;
             bool isRotation;
+            bool isScale;
             switch (type)
             {
                 ///<summary>
@@ -77,9 +85,13 @@ namespace StudioResourceSDK.Infrastructure
                      isPosition = prop == TransformProperty.Position
                         && (axis == TransformAxis.X || axis == TransformAxis.Y);
 
-                    isRotation = prop == TransformProperty.Rotation
+                     isRotation = prop == TransformProperty.Rotation
                         && axis == TransformAxis.Z;
-                    return isPosition || isRotation;
+
+                     isScale = prop == TransformProperty.Scale
+                        && axis == TransformAxis.Uniform;
+
+                    return isPosition || isRotation || isScale;
                 default:
                     return false;
             }
@@ -104,6 +116,16 @@ namespace StudioResourceSDK.Infrastructure
                 state.GetValue(TransformProperty.Rotation, TransformAxis.Z) );
 
             state.Target.localRotation = state.BaseRotation * offset;
+        }
+
+        private static void ApplyScale(TransformState state)
+        {
+            float exponent = state.GetValue(TransformProperty.Scale, TransformAxis.Uniform);
+            float muliplier = Mathf.Pow(_scaleExponentBase, exponent);
+
+            //불균일 스케일이 되어 찌그러짐등 렌더링 오류가 발생할 수 있기에 z값도 같이 스케일링을 적용했지만
+            //z축값 변경으로 인해 깊이순서에 문제가 생기면 해당 부분에서 z축값만 basescale.z만 사용할 것. @OH 26.10.29
+            state.Target.localScale = state.BaseScale * muliplier;
         }
 
         /// <summary>
@@ -269,6 +291,9 @@ namespace StudioResourceSDK.Infrastructure
                     return true;
 
                 case TransformProperty.Scale:
+                    state.SetValue(prop, axis, value);
+                    ApplyScale(state);
+                    return true;
                 default:
                     return false;
             
