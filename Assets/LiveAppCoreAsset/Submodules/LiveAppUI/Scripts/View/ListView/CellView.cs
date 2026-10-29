@@ -1,12 +1,8 @@
-using LiveApp.Util;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
-using static System.Net.Mime.MediaTypeNames;
+using UnityEngine.UI; 
 
 namespace LiveApp.UI
 {
@@ -14,6 +10,8 @@ namespace LiveApp.UI
     {
         [SerializeField] private Button _button;
         [SerializeField] private TMP_Text _text;
+        [SerializeField] private bool _toggleOnClick = true;
+        [SerializeField] private GameObject _selectedMark = null;
         private bool _isSelected = false;
 
         private Subject<Unit> _onSelected = new Subject<Unit>();
@@ -50,19 +48,43 @@ namespace LiveApp.UI
             _text.text = displayName;
         }
 
+        public void SetSelected(bool isSelected)
+        {
+            _isSelected = isSelected;
+            UpdateSelectedMark();
+        }
+
         private void Awake()
         {
             _button.onClick
                 .AsObservable()
-                .Subscribe(arg =>
-                {
-                    _isSelected = !_isSelected;
-                    if( _isSelected )
-                    {
-                        _onSelected.OnNext( Unit.Default );
-                    }
-                } )
+                .Subscribe( _ => OnClick() )
                 .AddTo( this );
+
+            UpdateSelectedMark();
+        }
+
+        private void OnClick()
+        {
+            if(_toggleOnClick == false && _isSelected)
+            {
+                return;
+            }
+
+            _isSelected = !_isSelected;
+            UpdateSelectedMark();
+            if(_isSelected)
+            {
+                _onSelected.OnNext(Unit.Default);
+            }
+        }
+
+        private void UpdateSelectedMark()
+        {
+            if(_selectedMark != null)
+            {
+                _selectedMark.SetActive(_isSelected);
+            }
         }
 
         private void OnDestroy()

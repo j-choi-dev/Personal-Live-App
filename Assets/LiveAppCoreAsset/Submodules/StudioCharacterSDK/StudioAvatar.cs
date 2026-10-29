@@ -97,6 +97,8 @@ namespace StudioCharacterSDK.Infrastructure
         public IObservable<LipSyncVowelData> OnChangeLipSync => _onChangeLipSync;
 
         public LipSyncVowelData LipSyncValue => _lipSyncValue;
+        //Inspector 등 외부에서 모델의 transform에 접근하기 위한 프로퍼티 추가 @OH 26.10.21
+        public CubismModel Avatar => _avatar;
 
 
         private Subject<float> _onChangeMouthForm = new Subject<float>();

@@ -1,4 +1,5 @@
-﻿using StudioResourceSDK.Application;
+﻿using LiveAppUI.Model;
+using StudioResourceSDK.Application;
 using StudioResourceSDK.Domain;
 using StudioResourceSDK.Infrastructure;
 using StudioSystemSDK.Domain;
@@ -49,6 +50,11 @@ namespace StudioResourceSDK.Installer
                 .AsSingle();
 
             Container
+                .Bind<ITransformInspectorContext>()
+                .To<TransformInspectorContext>()
+                .AsSingle();
+
+            Container
                 .Bind<IResourceTableLoadDomain>()
 #if !UNITY_EDITOR_WIN && (UNITY_IOS || UNITY_IPHONE) 
                 .To<iOSGoogleSheetLoader>()
@@ -75,6 +81,14 @@ namespace StudioResourceSDK.Installer
             Container
                 .Bind<ISceneGimmickListDomain>()
                 .To<SceneGimmickList>()
+                .AsSingle();
+            Container
+                .Bind<IResourceDestroyDomain>()
+                .To<SceneResourceDestroyer>()
+                .AsSingle();
+            Container
+                .Bind<IResourceTransformDomain>()
+                .To<SceneResourceTransformer>()
                 .AsSingle();
         }
     }
