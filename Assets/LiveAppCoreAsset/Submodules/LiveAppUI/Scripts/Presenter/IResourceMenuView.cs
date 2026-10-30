@@ -8,6 +8,7 @@ namespace LiveAppUI.Presenter
         IObservable<Unit> OnClickAvatar { get; }
         IObservable<Unit> OnClickStage { get; }
         IObservable<Unit> OnClickProp { get; }
+        IObservable<Unit> OnClickRemove { get; }
         IObservable<Unit> OnBackButtonClick { get; }
     }
 }

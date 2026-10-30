@@ -26,6 +26,11 @@ namespace LiveApp
             _sceneResourceListContext.OnCurrentCharacterChanged
                 .Subscribe( arg =>
                 {
+                    //TODO 일단 삭제 확인을 위해 null처리 했는데 혹여나 null처리 시 추가 해제가 필요하다면 여기서@OH 26.10.15
+                    if (arg == null)
+                    {
+                        return;
+                    }
                     var target = arg as ILipSyncData;
                     if( target == null )
                     {

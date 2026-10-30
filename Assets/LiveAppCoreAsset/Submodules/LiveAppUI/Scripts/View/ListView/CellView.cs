@@ -1,12 +1,8 @@
-using LiveApp.Util;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
-using static System.Net.Mime.MediaTypeNames;
+using UnityEngine.UI; 
 
 namespace LiveApp.UI
 {
@@ -48,6 +44,11 @@ namespace LiveApp.UI
         {
             ID = id;
             _text.text = displayName;
+        }
+
+        public void SetSelected(bool isSelected)
+        {
+            _isSelected = isSelected;
         }
 
         private void Awake()

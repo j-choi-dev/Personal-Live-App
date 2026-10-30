@@ -8,10 +8,10 @@ namespace StudioResourceSDK.Application
 {
     public interface IResourceLoadContext
     {
-        IObservable<IReadOnlyList<ICharacter>> OnCharacterListChanged { get; }
-        IObservable<ICharacter> OnLoadCharacter { get; }
         UniTask<bool> LoadResource( Domain.ResourceType resourceType,
             ServerType serverType,
             IReadOnlyList<string> resourceIds );
+
+        bool RemoveResource(Domain.ResourceType type, string id);
     }
 }

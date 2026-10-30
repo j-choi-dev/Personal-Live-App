@@ -1,8 +1,9 @@
 ﻿using LiveApp;
+using LiveApp.UI;
+using LiveApp.UI.Presenter;
 using LiveAppUI.Model;
 using LiveAppUI.Presenter;
 using LiveAppUI.View;
-using StudioResourceSDK.Application;
 using UnityEngine;
 using Zenject;
 
@@ -16,6 +17,7 @@ namespace LiveAppUI.Installer
         [SerializeField] private ServerModalView _serverModalView;
         [SerializeField] private RoomModalView _roomModalView;
         [SerializeField] private ResourceListView _resourceListView;
+        [SerializeField] private ResourceRemoveView _resourceRemoveView;
         [SerializeField] private ConfigMenuView _configMenuView;
         [SerializeField] private ObsConfigView _obsConfigView;
         [SerializeField] private YoutubeConfigView _youtubeConfigView;
@@ -43,7 +45,10 @@ namespace LiveAppUI.Installer
                 .FromInstance( _roomModalView );
             Container
                 .Bind<IResourceListView>()
-                .FromInstance( _resourceListView );
+                .FromInstance( _resourceListView);
+            Container
+                .Bind<IResourceRemoveView>()
+                .FromInstance(_resourceRemoveView);
             Container
                 .Bind<IConfigMenuView>()
                 .FromInstance( _configMenuView );
@@ -105,6 +110,7 @@ namespace LiveAppUI.Installer
                 .Bind<IResourceGimmickModel>()
                 .To<ResourceGimmickModel>()
                 .AsSingle();
+
         }
     }
 }
