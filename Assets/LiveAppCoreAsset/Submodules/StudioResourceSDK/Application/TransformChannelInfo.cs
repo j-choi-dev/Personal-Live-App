@@ -1,5 +1,8 @@
 ﻿using LiveAppCore;
 using StudioResourceSDK.Domain;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace StudioResourceSDK.Application
 {
