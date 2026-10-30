@@ -33,7 +33,6 @@ namespace LiveApp
                     var target = arg as IFacialData;
                     if( target == null )
                     {
-                        UnityEngine.Debug.LogError( $"Invalid Resource ; Not Exist Ficial Component({arg.ID})" );
                         _faceTrackingContext.SetCharacterID( string.Empty );
                         _faceTrackingContext.SetIsActive( false );
                         _currentCharacter = null;

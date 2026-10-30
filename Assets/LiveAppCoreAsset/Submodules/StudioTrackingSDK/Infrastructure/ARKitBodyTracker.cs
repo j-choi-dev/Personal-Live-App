@@ -10,6 +10,12 @@ namespace StudioTrackingSDK.Infrastructure
     public class ARKitBodyTracker : MonoBehaviour, IBodyTrackingDomain
     {
         [SerializeField] private ARFaceManager _faceManager;
+        [SerializeField, Min(0f)] private float _bodyRollGain = 1f;
+        [SerializeField, Min(0f)] private float _maximumBodyRoll = 10f;
+        [SerializeField, Min(0f)] private float _rollDeadZone = 0.5f;
+
+        [SerializeField]
+        private bool _invertBodyRoll;
 
         private Subject<float> _onBodyAngleX = new Subject<float>();
         public IObservable<float> OnBodyAngleXChanged => _onBodyAngleX;
@@ -44,15 +50,13 @@ namespace StudioTrackingSDK.Infrastructure
         /// <param name="eventArgs">발생한 이벤트 값</param>
         private void OnBodyChanged(ARTrackablesChangedEventArgs<ARFace> eventArgs)
         {
-            if (!IsActive)
+            if ( IsActive == false )
             {
-                Debug.Log("OnFaceChanged ignored: Tracker inactive.");
                 return;
             }
 
             if (ARSession.state != ARSessionState.SessionTracking)
             {
-                Debug.Log($"OnFaceChanged ignored: ARSession={ARSession.state}");
                 return;
             }
 
@@ -100,18 +104,15 @@ namespace StudioTrackingSDK.Infrastructure
         /// <param name="arFace">ARFace 정보</param>
         private void UpdateBodyTransform(ARFace arFace)
         {
-            if (IsActive == false)
+            if (IsActive == false || arFace == null)
             {
-                Debug.Log("UpdateBodyTransform Break");
                 return;
             }
-
-            Debug.Log("UpdateBodyTransform ...;");
 
             var currentRotation = arFace.transform.rotation;
 
             if (_resetRequested ||
-                (_hasReferenceRotation && _referenceTrackableId != arFace.trackableId))
+                (_hasReferenceRotation == false || _referenceTrackableId != arFace.trackableId))
             {
                 _referenceRotation = currentRotation;
                 _referenceTrackableId = arFace.trackableId;
@@ -120,24 +121,36 @@ namespace StudioTrackingSDK.Infrastructure
                 _resetRequested = false;
             }
 
-            var outputRotation = _hasReferenceRotation
-                ? Quaternion.Inverse(_referenceRotation) * currentRotation
-                : currentRotation;
+            var relativeRotation = Quaternion.Inverse(_referenceRotation) * currentRotation;
+            var roll = ExtractZTwistDegrees(relativeRotation);
+            var amount = Mathf.Max( 0f, Mathf.Abs(roll) - _rollDeadZone );
+            var outputZ = Mathf.Sign(roll) * amount * _bodyRollGain;
 
-            var euler = outputRotation.eulerAngles;
+            if (_invertBodyRoll)
+            {
+                outputZ = -outputZ;
+            }
 
-            _onBodyAngleX.OnNext(Mathf.DeltaAngle(0f, euler.x) * 2f);
-            _onBodyAngleY.OnNext(Mathf.DeltaAngle(0f, euler.y));
-            _onBodyAngleZ.OnNext(Mathf.DeltaAngle(0f, euler.z) * 2f);
+            outputZ = Mathf.Clamp( outputZ, -_maximumBodyRoll, _maximumBodyRoll);
+
+            _onBodyAngleX.OnNext(0f);
+            _onBodyAngleY.OnNext(0f);
+            _onBodyAngleZ.OnNext(outputZ);
         }
 
-        private float NormalizeAngle(float angle)
+        private static float ExtractZTwistDegrees(Quaternion rotation)
         {
-            if (angle > 180)
+            var length = Mathf.Sqrt( rotation.z * rotation.z + rotation.w * rotation.w);
+            if (length < 0.00001f)
             {
-                return angle - 360;
+                return 0f;
             }
-            return angle;
+            var z = rotation.z / length;
+            var w = rotation.w / length;
+
+            var angle = 2f * Mathf.Atan2(z, w) * Mathf.Rad2Deg;
+
+            return Mathf.DeltaAngle(0f, angle);
         }
 
         public void SetIsActive(bool isValue)

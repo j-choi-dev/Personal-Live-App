@@ -59,7 +59,7 @@ namespace StudioTrackingSDK.Infrastructure
         private void OnEyeChanged( ARTrackablesChangedEventArgs<ARFace> eventArgs )
         {
 #if !LIVEAPP_ASSETBUNDLE_STANDALONE
-            if( !IsActive )
+            if ( IsActive == false )
             {
                 return;
             }

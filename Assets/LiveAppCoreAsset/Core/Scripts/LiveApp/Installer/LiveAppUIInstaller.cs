@@ -20,6 +20,7 @@ namespace LiveAppUI.Installer
         [SerializeField] private ObsConfigView _obsConfigView;
         [SerializeField] private YoutubeConfigView _youtubeConfigView;
         [SerializeField] private ResourceGimmickView _gimmickControlView;
+        [SerializeField] private SystemMenuView _systemMenuView;
 
         public override void InstallBindings()
         {
@@ -59,6 +60,9 @@ namespace LiveAppUI.Installer
             Container
                 .Bind<INoticeModalView>()
                 .FromInstance(_noticeModalView);
+            Container
+                .Bind<ISystemMenuView>()
+                .FromInstance(_systemMenuView);
         }
 
         private void ModelBinding()
