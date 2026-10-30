@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using LiveAppUI.Domain;
+using System;
 ///ResourceSDK.Domain enum 가시성을 위해 rename
 using DomainResourceType = StudioResourceSDK.Domain.ResourceType;
-using DomainTransformProperty = StudioResourceSDK.Domain.TransformProperty;
 using DomainTransformAxis = StudioResourceSDK.Domain.TransformAxis;
-using UnityEditor;
+using DomainTransformProperty = StudioResourceSDK.Domain.TransformProperty;
 
 
 namespace LiveAppUI.Model

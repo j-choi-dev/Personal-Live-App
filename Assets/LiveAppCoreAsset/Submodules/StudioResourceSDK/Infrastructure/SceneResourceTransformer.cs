@@ -19,7 +19,7 @@ namespace StudioResourceSDK.Infrastructure
         private class TransformState
         {
             public readonly Transform Target;
-            public readonly float PositionScale;
+            public readonly ResourceType Type;
             public readonly Vector3 BasePosition;
             public readonly Vector3 BaseScale;
             public readonly Quaternion BaseRotation;
@@ -28,10 +28,10 @@ namespace StudioResourceSDK.Infrastructure
             /// </summary>
             private readonly Dictionary<(TransformProperty, TransformAxis), float> _value
                 = new Dictionary<(TransformProperty, TransformAxis), float>();
-            public TransformState( Transform target, float positionScale)
+            public TransformState( Transform target, ResourceType type )
             {
                 Target = target;
-                PositionScale = positionScale;
+                Type = type;
                 BasePosition = target.localPosition;
                 BaseRotation = target.localRotation;
                 BaseScale = target.localScale;
@@ -103,7 +103,7 @@ namespace StudioResourceSDK.Infrastructure
                 state.GetValue(TransformProperty.Position, TransformAxis.X),
                 state.GetValue(TransformProperty.Position, TransformAxis.Y),
                 state.GetValue(TransformProperty.Position, TransformAxis.Z)
-            ) * state.PositionScale;
+            ) * GetPositionScale( state.Type);
 
             state.Target.localPosition = state.BasePosition + offset;
         }
@@ -141,40 +141,38 @@ namespace StudioResourceSDK.Infrastructure
                 return false;
             }
 
-            if (TryResolveTarget(type, id, out Transform target, out float positionScale) == false)
+            if (TryResolveTarget(type, id, out Transform target) == false)
             {
                 return false;
             }
 
-            state = GetOrCreateState(target, positionScale);
+            state = GetOrCreateState(target, type);
             return true;
         }
 
         /// <summary>
-        /// id로 실제 조작할 transform과 scale계수를 찾음
+        /// id로 실제 조작할 transform을 찾음
         /// </summary>
-        private bool TryResolveTarget(ResourceType type, string id, out Transform target, out float positionScale)
+        private bool TryResolveTarget(ResourceType type, string id, out Transform target)
         {
             target = null;
-            positionScale = 1.0f;
 
             switch(type)
             {
                 case ResourceType.Character:
-                    return TryResolveCharacter(id, out target, out positionScale);
+                    return TryResolveCharacter(id, out target);
 
                 case ResourceType.Prop:
-                    return TryResolveProp(id, out target, out positionScale);
+                    return TryResolveProp(id, out target);
 
                 default:
                     return false;
             }
         }
         
-        private bool TryResolveCharacter(string id, out Transform target, out float positionScale)
+        private bool TryResolveCharacter(string id, out Transform target)
         {
             target = null;
-            positionScale = _characterPositionScale;
 
             ICharacter character = _listDomain.CharacterList.FirstOrDefault(arg => arg.ID == id);
             if(character == null)
@@ -201,10 +199,9 @@ namespace StudioResourceSDK.Infrastructure
 
         }
 
-        private bool TryResolveProp(string id, out Transform target, out float positionScale)
+        private bool TryResolveProp(string id, out Transform target)
         {
             target = null;
-            positionScale = _propPositionScale;
 
             IProp prop = _listDomain.PropList.FirstOrDefault(arg => arg.ID == id);
             if(prop == null)
@@ -224,7 +221,7 @@ namespace StudioResourceSDK.Infrastructure
             return true;
         }
 
-        private TransformState GetOrCreateState(Transform target, float positionScale)
+        private TransformState GetOrCreateState(Transform target, ResourceType type)
         {
             if(_states.TryGetValue(target, out TransformState state))
             {
@@ -233,7 +230,7 @@ namespace StudioResourceSDK.Infrastructure
 
             RemoveDestroyedStates();
 
-            state = new TransformState(target, positionScale);
+            state = new TransformState(target, type);
             _states.Add(target, state);
             return state;
         }
@@ -249,7 +246,21 @@ namespace StudioResourceSDK.Infrastructure
 
         }
 
-        
+        /// <summary>
+        /// 리소스 타입별 위치 계수 (라벨 표시 단위 -> 실제 로컬에 적용할 단위)
+        /// </summary>
+        private static float GetPositionScale(ResourceType type)
+        {
+            switch (type)
+            {
+                case ResourceType.Character:
+                    return _characterPositionScale;
+                case ResourceType.Prop:
+                    return _propPositionScale;
+                default:
+                    return 1.0f;
+            }
+        }
 
         //----------------------------------implements---------------------------------
         public bool TryGetValue(ResourceType type, string id, TransformProperty prop, TransformAxis axis, out float value)
