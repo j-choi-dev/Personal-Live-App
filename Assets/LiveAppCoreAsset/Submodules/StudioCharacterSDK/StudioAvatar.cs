@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace StudioCharacterSDK.Infrastructure
 {
-    public class StudioAvatar : MonoBehaviour, ICharacter, IFacialData, ILipSyncData
+    public class StudioAvatar : MonoBehaviour, ICharacter, IFacialData, ILipSyncData, IBodyData
     {
         [SerializeField] private AvatarParameterPair _pair = null;
         [SerializeField] private CubismModel _avatar = null;
@@ -104,6 +104,21 @@ namespace StudioCharacterSDK.Infrastructure
         private Subject<float> _onChangeMouthOpen = new Subject<float>();
         public IObservable<float> OnChangeMouthOpen => _onChangeMouthOpen;
 
+        public float BodyAngleX => _updateBodyAngleX;
+
+        public float BodyAngleY => _updateBodyAngleY;
+
+        public float BodyAngleZ => _updateBodyAngleZ;
+
+        private Subject<float> _onChangeBodyAngleX = new Subject<float>();
+        public IObservable<float> OnChangeBodyAngleX => _onChangeBodyAngleX;
+
+        private Subject<float> _onChangeBodyAngleY = new Subject<float>();
+        public IObservable<float> OnChangeBodyAngleY => _onChangeBodyAngleY;
+
+        private Subject<float> _onChangeBodyAngleZ = new Subject<float>();
+        public IObservable<float> OnChangeBodyAngleZ => _onChangeBodyAngleZ;
+
         private void Awake()
         {
             Init();
@@ -170,6 +185,10 @@ namespace StudioCharacterSDK.Infrastructure
 
             _mouthForm = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ ( int )AvatarPartsParameter.MouthForm ].parameter.Id );
             //_mouthOpenY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ ( int )AvatarPartsParameter.MouthOpen_Y ].parameter.Id );
+
+            _bodyAngleX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ (int)AvatarPartsParameter.BodyAngle_X].parameter.Id);
+            _bodyAngleY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ (int)AvatarPartsParameter.BodyAngle_Y].parameter.Id);
+            _bodyAngleZ = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[ (int)AvatarPartsParameter.BodyAngle_Z].parameter.Id);
         }
 
         public void SetFaceAngleX( float value )
@@ -271,6 +290,10 @@ namespace StudioCharacterSDK.Infrastructure
             _eyeBallY.Value = _updateEyeballY;
 
             _mouthForm.Value = _updateMouthForm;
+
+            _bodyAngleX.Value = Mathf.Clamp( _updateBodyAngleX, _bodyAngleX.MinimumValue, _bodyAngleX.MaximumValue);
+            _bodyAngleY.Value = Mathf.Clamp( _updateBodyAngleY, _bodyAngleY.MinimumValue, _bodyAngleY.MaximumValue);
+            _bodyAngleZ.Value = Mathf.Clamp( _updateBodyAngleZ, _bodyAngleZ.MinimumValue, _bodyAngleZ.MaximumValue);
         }
 
         public void SetID( string id )

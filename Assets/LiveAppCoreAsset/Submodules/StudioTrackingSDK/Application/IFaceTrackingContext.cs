@@ -17,6 +17,8 @@ namespace StudioTrackingSDK.Application
         /// Face Angle Z
         /// </summary>
         IObservable<float> OnFaceAngleZ { get; }
+        
+        string CurrentSelectedCharacter { get; }
 
         /// <summary>
         /// Active 상태
@@ -28,6 +30,5 @@ namespace StudioTrackingSDK.Application
         /// </summary>
         void SetIsActive( bool isValue );
         void SetCharacterID( string id );
-        void SetFacial( IFacialData data );
     }
 }

@@ -433,6 +433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StudioResourceSDK.Application.StudioTrackingSDKInstaller
   _faceTracker: {fileID: 6867358909134192767}
   _eyeTracker: {fileID: 6867358909134192768}
+  _bodyTracker: {fileID: 6867358909134192770}
   _ovrLipsync: {fileID: 946495281}
 --- !u!1 &946495280
 GameObject:
@@ -886,14 +887,22 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6634514250334912596, guid: 5df4cb996af9a449aa1605d85c7eb658, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6867358909134192770}
   m_SourcePrefab: {fileID: 100100000, guid: 5df4cb996af9a449aa1605d85c7eb658, type: 3}
+--- !u!1 &6867358909134192766 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6634514250334912596, guid: 5df4cb996af9a449aa1605d85c7eb658, type: 3}
+  m_PrefabInstance: {fileID: 6867358909134192765}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6867358909134192767 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6867358909134192767, guid: 5df4cb996af9a449aa1605d85c7eb658, type: 3}
   m_PrefabInstance: {fileID: 6867358909134192765}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 6867358909134192766}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 384f56a03755a41d2a2f36c330a6c200, type: 3}
@@ -904,12 +913,36 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3061732700728249284, guid: 5df4cb996af9a449aa1605d85c7eb658, type: 3}
   m_PrefabInstance: {fileID: 6867358909134192765}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 6867358909134192766}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d9f253c7d9614b1b8bebc418b9d353d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6867358909134192769 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6867358909900239886, guid: 5df4cb996af9a449aa1605d85c7eb658, type: 3}
+  m_PrefabInstance: {fileID: 6867358909134192765}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caeceacb624484daf8e379c2252fd246, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6867358909134192770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6867358909134192766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a877d6fe1b29b0c4fad83091b3e8a619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StudioTrackingSDK.Infrastructure.ARKitBodyTracker
+  _faceManager: {fileID: 6867358909134192769}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
