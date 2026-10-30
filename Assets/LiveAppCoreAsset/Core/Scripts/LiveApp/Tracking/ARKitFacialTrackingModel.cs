@@ -59,6 +59,12 @@ namespace LiveApp
             _disposables = null;
         }
 
+        public void ResetTracking()
+        {
+            _faceTrackingContext.ResetTracking();
+            _eyeTrackingContext.ResetTracking();
+        }
+
         public void SetAbleTracking( bool isOK )
             => _faceTrackingContext.SetIsActive(isOK);
 

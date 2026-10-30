@@ -31,5 +31,8 @@ namespace StudioTrackingSDK.Application
         {
             CurrentSelectedCharacter = id;
         }
+
+        public void ResetTracking()
+            => _eyeTrackingDomain.ResetTracking();
     }
 }

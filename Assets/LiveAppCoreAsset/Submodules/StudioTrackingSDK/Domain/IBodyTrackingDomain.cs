@@ -10,5 +10,6 @@ namespace StudioTrackingSDK.Domain
         IObservable<float> OnBodyAngleZChanged { get; }
         bool IsActive { get; }
         void SetIsActive(bool isValue);
+        void ResetTracking();
     }
 }
