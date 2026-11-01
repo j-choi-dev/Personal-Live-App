@@ -16,6 +16,10 @@ namespace LiveAppUI.Model
         IObservable<IReadOnlyList<(string id, string displayName)>> OnBackStageListChanged { get; }
         IObservable<IReadOnlyList<(string id, string displayName)>> OnPropListChanged { get; }
         /// <summary>
+        /// 씬에 '로드 된' 오브젝트 리스트 변경 이벤트
+        /// </summary>
+        public IObservable<IReadOnlyList<(ResourceType type, string id, string displayName)>> OnSceneResourceListChanged { get; }
+        /// <summary>
         /// 현재 선택한 리소스의 서버 타입
         /// </summary>
         /// <param name="resourceType">현재 선택한 리소스 타입</param>
@@ -56,6 +60,16 @@ namespace LiveAppUI.Model
         UniTask<bool> LoadResourceProcess( ResourceType resourceType, 
             ServerType serverType, 
             IReadOnlyList<string> list );
+        /// <summary>
+        /// 리소스 삭제 프로세스
+        /// </summary>
+        /// <param name="targets">삭제할 오브젝트 (type, id)튜플 리스트</param>
+        void RemoveResourcesProcess(IReadOnlyList<(ResourceType type, string id)> targets);
+        /// <summary>
+        /// 타입에 따른 필터링 후 리스트 초기화
+        /// </summary>
+        /// <param name="resourceType">필터링 할 타입</param>
+        void FilterRemoveResource(ResourceType resourceType);
 
         UniTask ReauthorizeAndGetResourceList( ResourceType resourceType, ServerType serverType);
     }

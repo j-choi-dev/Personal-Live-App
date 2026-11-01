@@ -67,7 +67,7 @@ namespace LiveApp.UI
 
             var tmpList = _cells.Select( arg => arg.ID ).ToList();
             var newID = IDUtil.GenerateNewId( ( _cells.Count + 1 ).ToString(), tmpList, data => obj.ID );
-            obj.SetItem( displayName, newID );
+            obj.SetItem(newID, displayName);
             obj.name = newID;
             _cells.Add( obj );
             _onCellChanged.Add( obj );

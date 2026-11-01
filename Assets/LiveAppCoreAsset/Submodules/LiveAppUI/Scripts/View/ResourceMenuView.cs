@@ -10,6 +10,7 @@ namespace LiveAppUI.View
         [SerializeField] private ObservableButton _avatarButton = null;
         [SerializeField] private ObservableButton _stageButton = null;
         [SerializeField] private ObservableButton _propButton = null;
+        [SerializeField] private ObservableButton _removeButton = null;
         [SerializeField] private ObservableButton _backButton = null;
         public IObservable<Unit> OnBackButtonClick => _backButton.OnClick;
 
@@ -20,7 +21,7 @@ namespace LiveAppUI.View
         public IObservable<Unit> OnClickStage => _stageButton.OnClick;
 
         public IObservable<Unit> OnClickProp => _propButton.OnClick;
-
+        public IObservable<Unit> OnClickRemove => _removeButton.OnClick;
         public IObservable<Unit> OnClickClose => throw new NotImplementedException();
 
         public IObservable<Unit> OnClickCancle => throw new NotImplementedException();

@@ -7,7 +7,6 @@ namespace StudioResourceSDK.Application
 {
     public class SceneResourceLifecycleContext : ISceneResourceLifecycleContext, IDisposable
     {
-        private ISceneResourceListDomain _sceneResourceList;
         private ISceneGimmickListDomain _sceneGimmickList;
 
         private readonly Subject<string> _onGimmickRegistered = new Subject<string>();
@@ -16,11 +15,11 @@ namespace StudioResourceSDK.Application
         private readonly Subject<string> _onGimmickRemoved = new Subject<string>();
         public IObservable<string> OnGimmickRemoved => _onGimmickRemoved;
 
+
         public SceneResourceLifecycleContext(
             ISceneResourceListDomain sceneResourceList,
             ISceneGimmickListDomain sceneGimmickList)
         {
-            _sceneResourceList = sceneResourceList;
             _sceneGimmickList = sceneGimmickList;
         }
 
