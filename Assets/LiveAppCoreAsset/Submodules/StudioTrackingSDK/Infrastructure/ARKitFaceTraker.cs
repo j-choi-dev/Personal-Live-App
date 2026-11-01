@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+﻿using StudioTrackingSDK.Domain;
+using System;
+using UniRx;
+using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-using UniRx;
-using System;
-using StudioTrackingSDK.Domain;
 
 namespace StudioTrackingSDK.Infrastructure
 {
@@ -44,15 +44,13 @@ namespace StudioTrackingSDK.Infrastructure
         /// <param name="eventArgs">발생한 이벤트 값</param>
         private void OnFaceChanged( ARTrackablesChangedEventArgs<ARFace> eventArgs )
         {
-            if( !IsActive )
+            if( IsActive == false )
             {
-                Debug.Log( "OnFaceChanged ignored: Tracker inactive." );
                 return;
             }
 
             if( ARSession.state != ARSessionState.SessionTracking )
             {
-                Debug.Log( $"OnFaceChanged ignored: ARSession={ARSession.state}" );
                 return;
             }
 
@@ -73,8 +71,6 @@ namespace StudioTrackingSDK.Infrastructure
                     return;
                 }
             }
-
-            Debug.Log( "OnFaceChanged ignored: No trackable ARFace found." );
         }
 
         private bool TryUpdateFace( ARFace face )
@@ -86,7 +82,6 @@ namespace StudioTrackingSDK.Infrastructure
 
             if( face.trackingState != TrackingState.Tracking )
             {
-                Debug.Log( $"Face tracking unavailable: {face.trackingState}" );
                 return false;
             }
 
@@ -102,11 +97,8 @@ namespace StudioTrackingSDK.Infrastructure
         {
             if( IsActive == false )
             {
-                Debug.Log( "UpdateFaceTransform Break" );
                 return;
             }
-
-            Debug.Log( "UpdateFaceTransform ...;" );
 
             var currentRotation = arFace.transform.rotation;
 
@@ -129,15 +121,6 @@ namespace StudioTrackingSDK.Infrastructure
             _onFaceAngleX.OnNext(Mathf.DeltaAngle(0f, euler.x) * 2f);
             _onFaceAngleY.OnNext(Mathf.DeltaAngle(0f, euler.y));
             _onFaceAngleZ.OnNext(Mathf.DeltaAngle(0f, euler.z) * 2f);
-        }
-
-        private float NormalizeAngle( float angle )
-        {
-            if ( angle > 180 )
-            {
-                return angle - 360;
-            }
-            return angle;
         }
 
         public void SetIsActive( bool isValue )

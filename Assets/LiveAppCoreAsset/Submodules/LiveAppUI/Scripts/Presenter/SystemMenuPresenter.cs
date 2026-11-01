@@ -38,7 +38,8 @@ namespace LiveAppUI.Presenter
                 .Subscribe(_ =>
                 {
                     _facialTrackingModel.ResetTracking();
-                    _bodyTrackingModel.ResetTracking();
+                    _bodyTrackingModel.ResetTracking(); 
+                    _bodyTrackingModel.SetAbleTracking(true);
                 })
                 .AddTo(this);
         }
