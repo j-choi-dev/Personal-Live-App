@@ -12,6 +12,7 @@ namespace LiveAppCore.Google.Domain
 
     public class OAuthConstValue
     {
+        public static readonly string ConfigPath = "Config/";
         public static readonly string BinFileName = "auth.bin";
         public static readonly string AuthEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
         public static readonly string TokenEndpoint = "https://oauth2.googleapis.com/token";

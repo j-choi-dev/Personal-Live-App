@@ -14,5 +14,6 @@ namespace LiveApp.UI
         void SetIsUsable( bool isVal );
         void SetItem( string text, string id );
         void SetIdIfNull( string id );
+        void SetSelected(bool isSelected);
     }
 }

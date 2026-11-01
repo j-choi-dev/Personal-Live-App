@@ -1,4 +1,4 @@
-using StudioNetworkSDK.Domain;
+ï»¿using StudioNetworkSDK.Domain;
 using System;
 using System.Text;
 using UniRx;
@@ -9,7 +9,7 @@ using uPLibrary.Networking.M2Mqtt.Messages;
 namespace StudioNetworkSDK.Infrastructure
 {
     /// <summary>
-    /// MqTT ¼­¹ö ¼ö½Å °ü·Ã Interface
+    /// MqTT ì„œë²„ ìˆ˜ì‹  ê´€ë ¨ Interface
     /// </summary>
     public class MqTTReceiver : IReceiverDomain, IDisposable
     {
@@ -24,18 +24,18 @@ namespace StudioNetworkSDK.Infrastructure
 
             if( _client != null && _client.IsConnected )
             {
-                // 1. ÀÌº¥Æ® ¹ÙÀÎµù
+                // 1. ì´ë²¤íŠ¸ ë°”ì¸ë”©
                 _client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
 
-                // 2. ÀÀ´ä¹ŞÀ» ÅäÇÈ ±¸µ¶
+                // 2. ì‘ë‹µë°›ì„ í† í”½ êµ¬ë…
                 string myResponseTopic = $"login/response/{config.guid}";
                 _client.Subscribe( new string[] { myResponseTopic }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE } );
 
-                Debug.Log( $"MqTTReceiver: ¼ö½Å ÀÌº¥Æ® ¹ÙÀÎµù ¹× ±¸µ¶ ¿Ï·á ({myResponseTopic})" );
+                Debug.Log( $"MqTTReceiver: ìˆ˜ì‹  ì´ë²¤íŠ¸ ë°”ì¸ë”© ë° êµ¬ë… ì™„ë£Œ ({myResponseTopic})" );
             }
             else
             {
-                Debug.LogError( "MqTTReceiver: MqttClient°¡ NullÀÌ°Å³ª ¿¬°áµÇÁö ¾Ê¾Ò¾î." );
+                Debug.LogError( "MqTTReceiver: MqttClientê°€ Nullì´ê±°ë‚˜ ì—°ê²°ë˜ì§€ ì•Šì•˜ì–´." );
             }
         }
 
@@ -57,7 +57,7 @@ namespace StudioNetworkSDK.Infrastructure
             }
             catch( Exception ex )
             {
-                Debug.LogError( $"MqTTReceiver ÆÄ½Ì ¿¡·¯: {ex.Message}" );
+                Debug.LogError( $"MqTTReceiver íŒŒì‹± ì—ëŸ¬: {ex.Message}" );
             }
         }
 

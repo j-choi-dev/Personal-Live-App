@@ -8,7 +8,7 @@ namespace StudioResourceSDK.Infrastructure
     /// <summary>
     /// 리소스 테이블을 읽어들이는 처리 관련 iOS 구현체 클래스
     /// </summary>
-    public class IOSGoogleSheetLoader : IResourceTableLoadDomain
+    public class iOSGoogleSheetLoader : IResourceTableLoadDomain
     {
         public UniTask<bool> ExistsSheetAndTabAsync(
             string spreadsheetUrlOrId,

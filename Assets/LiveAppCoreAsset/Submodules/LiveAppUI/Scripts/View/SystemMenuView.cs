@@ -10,10 +10,12 @@ namespace LiveAppUI.View
         [SerializeField] private ObservableButtonTMPro _buttonEmergency = null;
         [SerializeField] private ObservableToggleButton _buttonLock = null;
         [SerializeField] private ObservableToggleButton _buttonRec = null;
+        [SerializeField] private ObservableButtonTMPro _buttonCalibration = null;
 
         public IObservable<Unit> OnClickEmergency => _buttonEmergency.OnClick;
         public IObservable<bool> OnClickLock => _buttonLock.OnActiveChange;
         public IObservable<bool> OnClickRec => _buttonRec.OnActiveChange;
+        public IObservable<Unit> OnClickCalibration => _buttonCalibration.OnClick;
 
         private void Awake()
         {

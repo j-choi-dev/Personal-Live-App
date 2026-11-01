@@ -36,5 +36,7 @@ namespace StudioResourceSDK.Application
         /// <param name="tableUrl">테이블 URL(Config로부터 취득)</param>
         /// <returns>리소스 리스트 취득 결과</returns>
         UniTask<bool> LoadResourceTableProcess( ResourceType resourceType, string serverType, string tableUrl );
+
+        UniTask<bool> ReauthorizeAndLoadResourceTableProcess( ResourceType resourceType, string serverType, string tableUrl);
     }
 }

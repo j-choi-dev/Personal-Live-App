@@ -1,0 +1,27 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "AVIA.moc3",
+		"Textures": [
+			"AVIA.4096/texture_00.png",
+			"AVIA.4096/texture_01.png"
+		],
+		"Physics": "AVIA.physics3.json",
+		"DisplayInfo": "AVIA.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"ParamEyeLOpen",
+				"ParamEyeROpen"
+			]
+		}
+	]
+}

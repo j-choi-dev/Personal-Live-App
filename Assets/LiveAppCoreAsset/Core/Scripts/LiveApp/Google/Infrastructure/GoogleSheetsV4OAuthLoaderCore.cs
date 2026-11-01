@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using LiveAppCore.Google.Domain;
 using SimpleJSON;
+using StudioResourceSDK.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -43,7 +44,7 @@ namespace LiveAppCore.Google.Infrastructure
                 var url = $"{OAuthConstValue.SheetsApiBaseUrl}/{Uri.EscapeDataString(spreadsheetId)}?fields={fields}";
 
                 string json = await GetTextWithBearerAsync( url, token, cancellationToken );
-                Debug.Log( $"json = {json}" );
+                //Debug.Log( $"json = {json}" );// TODO 지울것 @Choi 26.07.28
 
                 var root = JSON.Parse(json);
                 var sheets = root["sheets"].AsArray;
@@ -69,10 +70,15 @@ namespace LiveAppCore.Google.Infrastructure
             {
                 throw;
             }
+            catch( UnauthorizedAccessException )
+            {
+                // TODO @Choi 26.07.22
+                throw;
+            }
             catch( Exception e )
             {
                 Debug.LogError( $"[GoogleSheetsV4OAuthLoader] Exists check failed. {e.Message}" );
-                return false;
+                throw;
             }
         }
 
@@ -152,17 +158,27 @@ namespace LiveAppCore.Google.Infrastructure
             request.timeout = 30;
             request.SetRequestHeader( "Authorization", $"Bearer {accessToken}" );
 
-            await request.SendWebRequest().ToUniTask( cancellationToken: cancellationToken );
+            try
+            {
+                await request.SendWebRequest().ToUniTask(cancellationToken: cancellationToken);
+            }
+            catch (UnityWebRequestException e)
+            {
+                if (request.result != UnityWebRequest.Result.ProtocolError)
+                {
+                    throw new GoogleNetworkException(e);
+                }
+            }
 
             var body = request.downloadHandler != null
                 ? request.downloadHandler.text
                 : string.Empty;
 
-            if( request.result != UnityWebRequest.Result.Success )
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (request.result != UnityWebRequest.Result.Success)
             {
-                throw new Exception(
-                    $"HTTP Error: {request.responseCode}, Result: {request.result}, Error: {request.error}, Body: {body}"
-                );
+                throw new GoogleSheetsRequestException( request.responseCode, body );
             }
 
             return body;
