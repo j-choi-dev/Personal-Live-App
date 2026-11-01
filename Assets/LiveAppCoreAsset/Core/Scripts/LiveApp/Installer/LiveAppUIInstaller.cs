@@ -1,7 +1,9 @@
+﻿using LiveApp;
+using LiveApp.UI;
+using LiveApp.UI.Presenter;
 using LiveAppUI.Model;
 using LiveAppUI.Presenter;
 using LiveAppUI.View;
-using StudioResourceSDK.Application;
 using UnityEngine;
 using Zenject;
 
@@ -9,11 +11,18 @@ namespace LiveAppUI.Installer
 {
     public class LiveAppUIInstaller : MonoInstaller
     {
+        [SerializeField] private NoticeModalView _noticeModalView;
         [SerializeField] private MainMenuView _mainMenuView;
         [SerializeField] private ResourceMenuView _resourceMenuView;
         [SerializeField] private ServerModalView _serverModalView;
         [SerializeField] private RoomModalView _roomModalView;
         [SerializeField] private ResourceListView _resourceListView;
+        [SerializeField] private ResourceRemoveView _resourceRemoveView;
+        [SerializeField] private ConfigMenuView _configMenuView;
+        [SerializeField] private ObsConfigView _obsConfigView;
+        [SerializeField] private YoutubeConfigView _youtubeConfigView;
+        [SerializeField] private ResourceGimmickView _gimmickControlView;
+        [SerializeField] private SystemMenuView _systemMenuView;
 
         public override void InstallBindings()
         {
@@ -37,7 +46,28 @@ namespace LiveAppUI.Installer
                 .FromInstance( _roomModalView );
             Container
                 .Bind<IResourceListView>()
-                .FromInstance( _resourceListView );
+                .FromInstance( _resourceListView);
+            Container
+                .Bind<IResourceRemoveView>()
+                .FromInstance(_resourceRemoveView);
+            Container
+                .Bind<IConfigMenuView>()
+                .FromInstance( _configMenuView );
+            Container
+                .Bind<IOBSConfigView>()
+                .FromInstance( _obsConfigView );
+            Container
+                .Bind<IYoutubeConfigView>()
+                .FromInstance( _youtubeConfigView );
+            Container
+                .Bind<IResourceGimmickView>()
+                .FromInstance(_gimmickControlView);
+            Container
+                .Bind<INoticeModalView>()
+                .FromInstance(_noticeModalView);
+            Container
+                .Bind<ISystemMenuView>()
+                .FromInstance(_systemMenuView);
         }
 
         private void ModelBinding()
@@ -56,6 +86,35 @@ namespace LiveAppUI.Installer
                 .Bind<IResourceListModel>()
                 .To<ResourceListModel>()
                 .AsSingle();
+
+            Container
+                .Bind<IObsAgentModel>()
+                .To<ObsAgentModel>()
+                .AsSingle();
+
+            Container
+                .Bind<IARKitFacialTrackingModel>()
+                .To<ARKitFacialTrackingModel>()
+                .AsSingle()
+                .NonLazy();
+
+            Container
+                .Bind<IARKitBodyTrackingModel>()
+                .To<ARKitBodyTrackingModel>()
+                .AsSingle()
+                .NonLazy();
+
+            Container
+                .Bind<ILipSyncModel>()
+                .To<LipSyncModel>()
+                .AsSingle()
+                .NonLazy();
+
+            Container
+                .Bind<IResourceGimmickModel>()
+                .To<ResourceGimmickModel>()
+                .AsSingle();
+
         }
     }
 }

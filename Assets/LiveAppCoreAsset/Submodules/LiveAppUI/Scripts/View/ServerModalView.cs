@@ -55,5 +55,15 @@ namespace LiveAppUI.View
         {
             gameObject.SetActive( isActive );
         }
+
+        public void SetServerIdWithoutNotify( string id )
+        {
+            _id.SetTextWithoutNotify( id );
+        }
+
+        public void SetServerPasswordWithoutNotify( string password )
+        {
+            _password.SetTextWithoutNotify( password );
+        }
     }
 }

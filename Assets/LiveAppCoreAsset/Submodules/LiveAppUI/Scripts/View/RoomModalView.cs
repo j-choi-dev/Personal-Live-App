@@ -36,6 +36,11 @@ namespace LiveAppUI.View
             gameObject.SetActive( isActive );
         }
 
+        public void SetNameWithoutNotify( string name )
+        {
+            _name.SetTextWithoutNotify( name );
+        }
+
         public void SetRoomList( IReadOnlyList<string> list )
         {
             _dropdown.SetOptions( list );

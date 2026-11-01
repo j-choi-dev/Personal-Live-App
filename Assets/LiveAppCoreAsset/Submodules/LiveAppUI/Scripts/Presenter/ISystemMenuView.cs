@@ -9,5 +9,6 @@ namespace LiveAppUI.Presenter
         IObservable<Unit> OnClickEmergency { get; }
         IObservable<bool> OnClickLock { get; }
         IObservable<bool> OnClickRec { get; }
+        IObservable<Unit> OnClickCalibration { get; }
     }
 }
