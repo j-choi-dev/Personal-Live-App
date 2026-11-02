@@ -1658,7 +1658,7 @@ GameObject:
   - component: {fileID: 5249504405440615854}
   - component: {fileID: 2933754315986123512}
   m_Layer: 5
-  m_Name: ResourceInspectorView
+  m_Name: ResourceRemoveInspectorView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
