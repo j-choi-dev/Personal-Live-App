@@ -217,8 +217,25 @@ namespace StudioResourceSDK.Infrastructure
                 return false;
             }
 
-            target = comp.transform;
+            target = ResolvePropPivot(comp);
             return true;
+        }
+
+        //TransformPivot 찾는 함수 추가해야할듯??
+        //아니면 TryResolveProp에서 TransformPivot을 찾는 방식? 나눠 말아
+        //EventCollcetion이 TransformPivot 참조 들고 있으니 EC써서 사용하면 되겠는데
+        //EC가 없는 경우는 기존대로 루트 transform 조절하도록 해서 안전 장치 추가
+        //그러면 별도의 함수 있는 게 나을듯??
+        private Transform ResolvePropPivot(Component root)
+        {
+            if(root.TryGetComponent(out EventCollection ec)
+              && ec.transform != null)
+            {
+                return ec.TransformPivot;
+            }
+
+            //EventCollection이 없는 Prop의 경우는 루트 오브젝트의 transform 반환
+            return root.transform;
         }
 
         private TransformState GetOrCreateState(Transform target, ResourceType type)
