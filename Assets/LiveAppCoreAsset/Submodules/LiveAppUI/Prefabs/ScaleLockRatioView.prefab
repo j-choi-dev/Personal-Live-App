@@ -487,17 +487,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
---- !u!114 &2576282346090652335 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3556851736727032758, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
-  m_PrefabInstance: {fileID: 1341143515220898073}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!224 &3635050689176415339 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2373108640818748786, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
@@ -536,6 +525,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &8115397961261096269 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7062521184460139604, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
+  m_PrefabInstance: {fileID: 1341143515220898073}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_InputField
 --- !u!1 &8679059269800263736 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7705241732003066145, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
@@ -555,7 +555,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ObservableExponentSliderUGUI
   m_Slider: {fileID: 8712315722439056061}
   m_HandleImage: {fileID: 4763902630048626597}
-  _valueText: {fileID: 2576282346090652335}
+  _input: {fileID: 8115397961261096269}
   _minText: {fileID: 7273036343367518945}
   _maxText: {fileID: 931074820042399652}
   _resetButton: {fileID: 6023797777574029620}

@@ -3472,6 +3472,7 @@ MonoBehaviour:
   _avatarButton: {fileID: 4849052356968379320}
   _stageButton: {fileID: 3458613830293389721}
   _propButton: {fileID: 1527648856018244824}
+  _removeButton: {fileID: 5349610381294157246}
   _backButton: {fileID: 4774476418316967753}
 --- !u!1 &1955589571986609334
 GameObject:
