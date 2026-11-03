@@ -278,8 +278,8 @@ namespace LiveAppUI.Model
             IReadOnlyList<string> resourceId )
         {
             return await _resourceLoadContext.LoadResource( 
-                ConvertResourceType( resourceType ), 
-                serverType, 
+                ConvertResourceType( resourceType ),
+                ConvertServerType( serverType ), 
                 resourceId );
         }
 

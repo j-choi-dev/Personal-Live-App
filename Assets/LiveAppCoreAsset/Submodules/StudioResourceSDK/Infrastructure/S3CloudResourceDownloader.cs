@@ -4,6 +4,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Cysharp.Threading.Tasks;
 using LiveAppCore.Google.Domain;
+using StudioNetworkSDK.Domain;
 using StudioSystemSDK.Domain;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,8 @@ namespace StudioResourceSDK.Domain
         private string _regionSystemName = "ap-northeast-2";
         private string _bucketName = "weavr-liveapp-assetbundle";
 
-        private string TargetPath => $"AssetBundles/{AssetBundleVersion}/{GetPlatformFolder()}/";
+        private string RootPath => "AssetBundles/";
+        private string TargetPath => $"{AssetBundleVersion}/{GetPlatformFolder()}/";
         private string _cloudFrontBaseUrl = "https://d2vg1d2gp7bnqk.cloudfront.net/";
 
         private CloudConfigData _configData = null;
@@ -65,7 +67,7 @@ namespace StudioResourceSDK.Domain
             return true;
         }
 
-        public async UniTask<UnityEngine.Object> DownloadProcess( string name )
+        public async UniTask<UnityEngine.Object> DownloadProcess( ServerType serverType, string name )
         {
             if( _s3Client == null )
             {
@@ -76,8 +78,8 @@ namespace StudioResourceSDK.Domain
                 throw new InvalidDataException( "Bucket Name is NULL" );
             }
 
-            var normalizedName = name.Replace('\\', '/').TrimStart('/'); 
-            var normalizedPrefix = TargetPath.Replace( '\\', '/' ).Trim( '/' );
+            var normalizedName = name.Replace('\\', '/').TrimStart('/');
+            var normalizedPrefix = $"{RootPath}/{serverType}/{TargetPath.Replace( '\\', '/' ).Trim( '/' )}";
             var objectKey = normalizedPrefix + "/" + normalizedName;
             Debug.Log( $"AssetBundle 다운로드 :: Platform={GetPlatformFolder()}, Key={objectKey}" );
 
