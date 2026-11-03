@@ -45,6 +45,11 @@ namespace StudioResourceSDK.Installer
                 .AsSingle();
 
             Container
+                .Bind<IResourcePickContext>()
+                .To<ResourcePickContext>()
+                .AsSingle();
+
+            Container
                 .Bind<IResourceConfigParseDomain>()
                 .To<ResourceConfigParser>()
                 .AsSingle();
@@ -80,6 +85,10 @@ namespace StudioResourceSDK.Installer
             Container
                 .Bind<IResourceDestroyDomain>()
                 .To<SceneResourceDestroyer>()
+                .AsSingle();
+            Container
+                .Bind<IResourcePickDomain>()
+                .To<SceneResourcePicker>()
                 .AsSingle();
 
         }

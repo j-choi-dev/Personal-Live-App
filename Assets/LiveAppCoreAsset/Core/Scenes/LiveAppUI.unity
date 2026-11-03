@@ -235,7 +235,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.PlayAreaView
   _rawImage: {fileID: 216601424}
-  _logClick: 1
 --- !u!1001 &26087645
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -498,9 +497,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 44717203}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06a4103eee03129429f6a87fb280de2d, type: 3}
+  m_Script: {fileID: 11500000, guid: c0f446df2ae621949b5de7cbe7cc3d4a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DebugUIRaycastChecker
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.Presenter.ResourcePickPresenter
 --- !u!1 &89256925
 GameObject:
   m_ObjectHideFlags: 0
@@ -1203,6 +1202,7 @@ MonoBehaviour:
   _youtubeConfigView: {fileID: 6512752416724687226}
   _gimmickControlView: {fileID: 966602023}
   _systemMenuView: {fileID: 6555371862902107371}
+  _playAreaView: {fileID: 24432462}
 --- !u!4 &601516613
 Transform:
   m_ObjectHideFlags: 0
@@ -2810,7 +2810,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 131522842848826247, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 88.39697
+      value: 88.39717
       objectReference: {fileID: 0}
     - target: {fileID: 199448906089766455, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_Pivot.x
@@ -3150,7 +3150,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7185339522828152280, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00073598325
+      value: 0.0009248453
       objectReference: {fileID: 0}
     - target: {fileID: 7351024989127909590, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_IsActive

@@ -15,20 +15,8 @@ namespace LiveAppUI.View
         /// RenderTexture(RT_OBS_Output)를 표시하는 RawImage
         /// </summary>
         [SerializeField] private RawImage _rawImage;
-        [SerializeField] private bool _logClick; //테스트용 클릭 로그 presenter 연결 후 제거 예정 @OH 26.11.03
         private IObservable<Vector2> _onViewportClicked;
         public IObservable<Vector2> OnViewportClicked => _onViewportClicked ??= CreateViewportClickStream();
-
-        private void Start()
-        {
-            Debug.Log($"[PlayAreaView] Start | logClick: {_logClick} | rawImage: {(_rawImage != null ? _rawImage.name : "null")}", this);
-            if (_logClick)
-            {
-                OnViewportClicked
-                    .Subscribe(uv => Debug.Log($"[PlayAreaView] Viewport 클릭 : {uv.x:F3}, {uv.y:F3}"))
-                    .AddTo(this);
-            }
-        }
   
         /// <summary>
         /// 클릭한 데이터의 스트림을 가공할 파이프라인 반환
