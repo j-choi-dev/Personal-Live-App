@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using StudioNetworkSDK.Domain;
 using System;
 using System.Collections.Generic;
 
@@ -16,6 +17,6 @@ namespace StudioResourceSDK.Domain
         UniTask<bool> UpdateObjectList();
 
         /// <remark>완료 시점에 OnLoadCharacter 이벤트로 통지</remark>
-        UniTask<UnityEngine.Object> DownloadProcess( string name );
+        UniTask<UnityEngine.Object> DownloadProcess( ServerType serverType, string name );
     }
 }

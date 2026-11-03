@@ -1,9 +1,9 @@
 ﻿using Cysharp.Threading.Tasks;
 using LiveAppCore;
-using LiveAppUI;
 using StudioCharacterSDK.Domain;
 using StudioCommonSDK.Domain;
 using StudioResourceSDK.Domain;
+using StudioNetworkSDK.Domain;
 using System;
 using System.Collections.Generic;
 using UniRx;
@@ -53,7 +53,7 @@ namespace StudioResourceSDK.Application
             {
                 var resourceId = resourceIds[i];
                 var targetId = $"{resourceType.ToString().ToLower()}/{resourceId.ToLower()}.ab";
-                var data = await _resourceLoadDomain.DownloadProcess(targetId);
+                var data = await _resourceLoadDomain.DownloadProcess(serverType, targetId);
                 if (data == null)
                 {
                     Debug.LogError($"AssetBundle Download Process Failed ... ResourceId={resourceId}");
