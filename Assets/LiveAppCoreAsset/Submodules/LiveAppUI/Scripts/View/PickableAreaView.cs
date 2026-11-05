@@ -9,12 +9,13 @@ using UnityEngine.UI;
 
 namespace LiveAppUI.View
 {
-    public class PlayAreaView : MonoBehaviour, IPlayAreaView
+    public class PickableAreaView : MonoBehaviour, IPickableAreaView
     {
         /// <summary>
         /// RenderTexture(RT_OBS_Output)를 표시하는 RawImage
         /// </summary>
         [SerializeField] private RawImage _rawImage;
+        [SerializeField] private RectTransform _highlight;
         private IObservable<Vector2> _onViewportClicked;
         public IObservable<Vector2> OnViewportClicked => _onViewportClicked ??= CreateViewportClickStream();
   
@@ -25,10 +26,8 @@ namespace LiveAppUI.View
         {
             //변환 파이프라인
             return _rawImage.OnPointerClickAsObservable()
-                .Do(e => Debug.Log($"[PlayAreaView] 클릭 수신: {e.button}, {e.position}"))
                 .Where(e => e.button == PointerEventData.InputButton.Left)
                 .Select(e => ToViewportPoint(e.position, e.pressEventCamera))
-                .Do(p => Debug.Log($"[PlayAreaView] 변환 결과: {p}"))
                 .Where(point => point.HasValue)
                 .Select(point => point.Value);
         }
@@ -72,6 +71,52 @@ namespace LiveAppUI.View
             return new Vector2(uvRect.x + normalized.x * uvRect.width,
                                uvRect.y + normalized.y * uvRect.height);
         }
+
+        //-------------------------------------------------------------------implement
+
+        public void ShowHighlight(float minX, float minY, float maxX, float maxY)
+        {
+            if(_highlight == null)
+            {
+                return;
+            }
+
+            Rect uvRect = _rawImage.uvRect;
+            if(uvRect.width <= 0.0f
+            || uvRect.height <= 0.0f)
+            {
+                return;
+            }
+
+            //Viewport 좌표 -> RawImage 안의 0~1 비율료 정규화
+            var normalizedMin = new Vector2((minX - uvRect.x) / uvRect.width, (minY - uvRect.y) / uvRect.height);
+            var normalizedMax = new Vector2((maxX - uvRect.x) / uvRect.width, (maxY - uvRect.y) / uvRect.height);
+
+            _highlight.anchorMin = normalizedMin;
+            _highlight.anchorMax = normalizedMax;
+            _highlight.offsetMin = Vector2.zero;
+            _highlight.offsetMax = Vector2.zero;
+
+            if(_highlight.gameObject.activeSelf == false)
+            {
+                _highlight.gameObject.SetActive(true);
+            }
+        }
+
+        public void HideHighlight()
+        {
+            if(_highlight == null)
+            {
+                return;
+            }
+
+            if(_highlight.gameObject.activeSelf)
+            {
+                _highlight.gameObject.SetActive(false);
+            }
+        }
+
+        //------------------------------------------------------------------/implement
 
     }
 }

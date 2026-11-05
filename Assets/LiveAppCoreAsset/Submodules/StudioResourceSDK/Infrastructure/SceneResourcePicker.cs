@@ -11,46 +11,27 @@ using Zenject;
 namespace StudioResourceSDK.Infrastructure
 {
     /// <summary>
-    /// 피킹 Sprite 프리팹 
-    /// 현재 ResourceInstaller에서 참조하는 중
-    /// ResourceInstaller 말고 별도의 installer로 빼고 거기서 필드로 prefab연결하는 방식으로 바꿀까 고민 중
-    /// 해당 아이디로 별도로 뺄지 이곳에 같이 둘 지도 고민 중 @OH 26.11.05
-    /// </summary>
-    public static class ResourcePickBindingId
-    {
-        public const string HighlightPrefab = "PickHighlightPrefab";
-    }
-
-
-    /// <summary>
-    /// 화면 좌표로 씬의 리소스를 찾는 infra
+    /// 화면 좌표로 씬의 리소스를 찾고 리소스의 화면 범위를 구할 infra
     /// 현재는 캐릭터만 지원 @OH 26.11.04
     /// </summary>
     public class SceneResourcePicker : IResourcePickDomain
     {
         private readonly ISpawnPivotTransform _objectPivot;
-        private readonly SpriteRenderer _highlightPrefab;
         /// <summary>
-        /// 선택 표시 오브젝트. 처음 표시할 때 생성하고 이후에 재사용
-        /// </summary>
-        private SpriteRenderer _highlightInstance;
         private const float _flatBoundsThickness = 0.001f;
         /// <summary>
-        /// 로컬 범위의 꼭짓점 8개를 담는 버퍼. 클릭마다 배열을 새로 만들지 않도록 재사용
+        /// 로컬 범위의 꼭짓점 4개를 담는 버퍼. 클릭마다 배열을 새로 만들지 않도록 재사용
+        /// 혹여나 3d로 바꿀 경우 8개로 변경.
         /// </summary>
-        private static readonly Vector3[] _corners = new Vector3[8];
+        private static readonly Vector3[] _corners = new Vector3[4];
         /// <summary>
         /// 대체 판정 경고를 이미 출력한 캐릭터 id. 클릭할 때마다 같은 경고가 쌓이지 않도록 하기 위함
         /// </summary>
         private readonly HashSet<string> _alreadyWarnedIds = new HashSet<string>();
 
-        public SceneResourcePicker(
-            [Inject( Id = SpawnPivotId.Object)] ISpawnPivotTransform objectPivot, 
-            [Inject( Id = ResourcePickBindingId.HighlightPrefab)] SpriteRenderer highlightPrefab
-            )
+        public SceneResourcePicker([Inject( Id = SpawnPivotId.Object)] ISpawnPivotTransform objectPivot)
         {
             _objectPivot = objectPivot;
-            _highlightPrefab = highlightPrefab;
         }
 
 
@@ -118,54 +99,53 @@ namespace StudioResourceSDK.Infrastructure
             return (ResourceType.Character, frontId);
         }
 
-        public void ShowHighlight(ResourceType type, string id)
+        public bool TryGetViewportRect(ResourceType type, string id, out ViewportRect rect)
         {
-            if(type != ResourceType.Character)
+            rect = default;
+
+            //현재는 캐릭터만 지원 @OH 26.11.05
+            if( type != ResourceType.Character)
             {
-                HideHighlight();
-                return;
+                return false;
+            }
+
+            Camera renderCamera = Camera.main;
+            if(renderCamera == null)
+            {
+                return false;
             }
 
             if(TryFindCharacterModel(id, out CubismModel model) == false)
             {
-                HideHighlight();
-                return;
+                return false;
             }
 
-            if(TryGetModelBounds(model, model.transform, out Bounds localBounds) == false)
+            //피킹과 같은 월드 기준 범위라 누르면 선택되는 영역과 테두리가 일치함
+            if(TryGetModelBounds(model, null, out Bounds worldBounds) == false)
             {
-                HideHighlight();
-                return;
+                return false;
             }
 
-            if(TryEnsureHighlightInstance() == false)
+            FillCorners(worldBounds);
+
+            float minX = float.MaxValue;
+            float minY = float.MaxValue;
+            float maxX = float.MinValue;
+            float maxY = float.MinValue;
+
+            for(int c = 0; c < _corners.Length; c++)
             {
-                Debug.LogWarning($"[SceneResourcePicker] _highlightInstance가 할당되지 않았습니다.");
-                return;
+                Vector3 viewport = renderCamera.WorldToViewportPoint(_corners[c]);
+
+                if (viewport.x < minX) minX = viewport.x;
+                if (viewport.y < minY) minY = viewport.y;
+                if (viewport.x > maxX) maxX = viewport.x;
+                if (viewport.y > maxY) maxY = viewport.y;
             }
 
-            Transform highlight = _highlightInstance.transform;
-            highlight.SetParent(model.transform, false);
-            highlight.localPosition = localBounds.center;
-            highlight.localRotation = Quaternion.identity;
-            highlight.localScale = Vector3.one;
-
-            _highlightInstance.size = new Vector2(localBounds.size.x, localBounds.size.y);
-            _highlightInstance.gameObject.SetActive(true);
-
-
+            rect = new ViewportRect(minX, minY, maxX, maxY);
+            return true;
         }
-
-        public void HideHighlight()
-        {
-            if(_highlightInstance == null)
-            {
-                return;
-            }
-
-            _highlightInstance.gameObject.SetActive(false);
-        }
-
         // -------------------------------------------------------------------------/implement
 
         /// <summary>
@@ -254,23 +234,12 @@ namespace StudioResourceSDK.Infrastructure
 
         /// <summary>
         /// 로컬 범위를 월드 좌표로 바꾼 후 범위를 누적산
-        /// 꼭짓점 8개를 모두 변환해서 Drawable이 회전해 있어도 월드 범위가 정확하게 감싸지게 하였음
         /// </summary>
         /// <param name="from">범위가 속한 공간(drawable의 tranform)</param>
         /// <param name="space">결과 기준 공간. null -> 월드 기준</param>
         private void EncapsulateLocalBounds(Transform from, Transform space, Bounds local, ref Bounds world, ref bool hasBounds)
         {
-            Vector3 min = local.min;
-            Vector3 max = local.max;
-
-            _corners[0] = new Vector3(min.x, min.y, min.z);
-            _corners[1] = new Vector3(max.x, min.y, min.z);
-            _corners[2] = new Vector3(min.x, max.y, min.z);
-            _corners[3] = new Vector3(max.x, max.y, min.z);
-            _corners[4] = new Vector3(min.x, min.y, max.z);
-            _corners[5] = new Vector3(max.x, min.y, max.z);
-            _corners[6] = new Vector3(min.x, max.y, max.z);
-            _corners[7] = new Vector3(max.x, max.y, max.z);
+            FillCorners(local);
 
             for (int c = 0; c < _corners.Length; c++)
             {
@@ -344,29 +313,6 @@ namespace StudioResourceSDK.Infrastructure
             return maxOrder;
         }
 
-        private bool TryEnsureHighlightInstance()
-        {
-            if(_highlightInstance != null)
-            {
-                return true;
-            }
-
-            if (_highlightPrefab == null)
-            {
-                Debug.LogWarning($"[SceneResourcePicker] HighlightPrefab이 연결되지 않았습니다.");
-                return false;
-            }
-
-            _highlightInstance = Object.Instantiate(_highlightPrefab);
-
-            if(_highlightInstance.drawMode != SpriteDrawMode.Sliced)
-            {
-                Debug.LogWarning($"[SceneResourcePicker]_highlightInstance의 drawMode가 Slied가 아닙니다.)");
-            }
-
-            return true;
-        }
-
         /// <summary>
         /// SpawnPivot의 직속 자식 중 id가 같은 캐릭터의 모델을 찾음
         /// </summary>
@@ -394,6 +340,20 @@ namespace StudioResourceSDK.Infrastructure
             }
 
             return false;
+        }
+        
+        /// <summary>
+        /// _corner를 bounds의 꼭짓점으로 채움
+        /// </summary>
+        private void FillCorners(Bounds bounds)
+        {
+            Vector3 min = bounds.min;
+            Vector3 max = bounds.max;
+
+            _corners[0] = new Vector3(min.x, min.y, min.z);
+            _corners[1] = new Vector3(max.x, min.y, min.z);
+            _corners[2] = new Vector3(min.x, max.y, min.z);
+            _corners[3] = new Vector3(max.x, max.y, min.z);
         }
 
         private void WarnIdOnce(string id)

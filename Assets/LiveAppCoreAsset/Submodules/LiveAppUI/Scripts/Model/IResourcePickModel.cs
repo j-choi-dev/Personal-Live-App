@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UniRx;
+﻿using UniRx;
 
 namespace LiveAppUI.Model
 {
@@ -25,6 +22,13 @@ namespace LiveAppUI.Model
         /// <param name="viewportX">렌더 카메라 기준 viewport X(0~1)</param>
         /// <param name="viewportY">렌더 카메라 기준 viewport Y(0~1)</param>
         void PickAt(float viewportX, float viewportY);
+
+        /// <summary>
+        /// 현재 선택된 리소스가 화면에서 차지하는 범위를 구함
+        /// 좌표는 렌더 카메라 기준 viewport(0~1, 좌하단 0)
+        /// </summary>
+        /// <returns>선택이 있고 범위를 구했으면 true, 선택이 없거나 대상 못 찾으면 false</returns>
+        bool TryGetSelectedViewportRect(out float minX, out float minY, out float maxX, out float maxY);
 
         /// <summary>
         /// 선택 해제

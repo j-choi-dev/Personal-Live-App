@@ -21,14 +21,9 @@ namespace StudioResourceSDK.Application
             return _pickDomain.Pick(point);
         }
 
-        public void ShowHighlight(ResourceType type, string id)
+        public bool TryGetViewportRect(ResourceType type, string id, out ViewportRect rect)
         {
-            _pickDomain.ShowHighlight(type, id);
-        }
-
-        public void HideHighlight()
-        {
-            _pickDomain.HideHighlight();
+            return _pickDomain.TryGetViewportRect(type, id, out rect);
         }
         //-------------------------------------------------------------------------/implement
     }

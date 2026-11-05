@@ -4,7 +4,6 @@ using StudioResourceSDK.Domain;
 using StudioResourceSDK.Infrastructure;
 using StudioSystemSDK.Domain;
 using StudioSystemSDK.Infrastructure;
-using UnityEngine;
 using Zenject;
 
 
@@ -12,7 +11,6 @@ namespace StudioResourceSDK.Installer
 {
     public class SystemResourceSDKInstaller : MonoInstaller
     {
-        [SerializeField] private SpriteRenderer _pickHighlightPrefab;
 
         public override void InstallBindings()
         {
@@ -93,9 +91,6 @@ namespace StudioResourceSDK.Installer
                 .Bind<IResourcePickDomain>()
                 .To<SceneResourcePicker>()
                 .AsSingle();
-            Container
-                .BindInstance(_pickHighlightPrefab)
-                .WithId(ResourcePickBindingId.HighlightPrefab);
 
         }
     }
