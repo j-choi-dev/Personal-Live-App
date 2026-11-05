@@ -6,11 +6,22 @@ using StudioCommonSDK.Domain;
 using StudioResourceSDK.Domain;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Zenject;
 
 namespace StudioResourceSDK.Infrastructure
 {
+    /// <summary>
+    /// 피킹 Sprite 프리팹 
+    /// 현재 ResourceInstaller에서 참조하는 중
+    /// ResourceInstaller 말고 별도의 installer로 빼고 거기서 필드로 prefab연결하는 방식으로 바꿀까 고민 중
+    /// 해당 아이디로 별도로 뺄지 이곳에 같이 둘 지도 고민 중 @OH 26.11.05
+    /// </summary>
+    public static class ResourcePickBindingId
+    {
+        public const string HighlightPrefab = "PickHighlightPrefab";
+    }
+
+
     /// <summary>
     /// 화면 좌표로 씬의 리소스를 찾는 infra
     /// 현재는 캐릭터만 지원 @OH 26.11.04
@@ -18,6 +29,11 @@ namespace StudioResourceSDK.Infrastructure
     public class SceneResourcePicker : IResourcePickDomain
     {
         private readonly ISpawnPivotTransform _objectPivot;
+        private readonly SpriteRenderer _highlightPrefab;
+        /// <summary>
+        /// 선택 표시 오브젝트. 처음 표시할 때 생성하고 이후에 재사용
+        /// </summary>
+        private SpriteRenderer _highlightInstance;
         private const float _flatBoundsThickness = 0.001f;
         /// <summary>
         /// 로컬 범위의 꼭짓점 8개를 담는 버퍼. 클릭마다 배열을 새로 만들지 않도록 재사용
@@ -29,12 +45,16 @@ namespace StudioResourceSDK.Infrastructure
         private readonly HashSet<string> _alreadyWarnedIds = new HashSet<string>();
 
         public SceneResourcePicker(
-            [Inject( Id = SpawnPivotId.Object)]
-            ISpawnPivotTransform objectPivot )
+            [Inject( Id = SpawnPivotId.Object)] ISpawnPivotTransform objectPivot, 
+            [Inject( Id = ResourcePickBindingId.HighlightPrefab)] SpriteRenderer highlightPrefab
+            )
         {
             _objectPivot = objectPivot;
+            _highlightPrefab = highlightPrefab;
         }
 
+
+        // ----------------------------------------------------------------------------implement
         public (ResourceType type, string id)? Pick(ViewportPoint point)
         {
             // 생성자로 카메라 할당 시 생성 시점에는 카메라가 없을 수 있어서 피킹할 때 가져옮
@@ -90,10 +110,63 @@ namespace StudioResourceSDK.Infrastructure
 
             //임시 로그 @OH 26.11.04 삭제 예정
             Debug.Log($"[SceneResourePicker] {point} -> 결과 : {frontId ?? "없음"}");
-
+            if(frontId == null)
+            {   
+                return null;
+            }
 
             return (ResourceType.Character, frontId);
         }
+
+        public void ShowHighlight(ResourceType type, string id)
+        {
+            if(type != ResourceType.Character)
+            {
+                HideHighlight();
+                return;
+            }
+
+            if(TryFindCharacterModel(id, out CubismModel model) == false)
+            {
+                HideHighlight();
+                return;
+            }
+
+            if(TryGetModelBounds(model, model.transform, out Bounds localBounds) == false)
+            {
+                HideHighlight();
+                return;
+            }
+
+            if(TryEnsureHighlightInstance() == false)
+            {
+                Debug.LogWarning($"[SceneResourcePicker] _highlightInstance가 할당되지 않았습니다.");
+                return;
+            }
+
+            Transform highlight = _highlightInstance.transform;
+            highlight.SetParent(model.transform, false);
+            highlight.localPosition = localBounds.center;
+            highlight.localRotation = Quaternion.identity;
+            highlight.localScale = Vector3.one;
+
+            _highlightInstance.size = new Vector2(localBounds.size.x, localBounds.size.y);
+            _highlightInstance.gameObject.SetActive(true);
+
+
+        }
+
+        public void HideHighlight()
+        {
+            if(_highlightInstance == null)
+            {
+                return;
+            }
+
+            _highlightInstance.gameObject.SetActive(false);
+        }
+
+        // -------------------------------------------------------------------------/implement
 
         /// <summary>
         /// 캐릭터 하나를 Ray로 판정.
@@ -110,6 +183,9 @@ namespace StudioResourceSDK.Infrastructure
             distance = 0.0f;
             sortingOrder = 0;
 
+            //레이 시각화
+            Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red, 3f);
+
             //판정과 앞뒤 비교에 같은 모델을 쓰므로 한 번만 찾음
             CubismModel model = root.GetComponentInChildren<CubismModel>();
             if(model == null)
@@ -117,11 +193,14 @@ namespace StudioResourceSDK.Infrastructure
                 return false;
             }
 
-            //CubismRaycaster가 없을 경우 대체 판정
-            if(TryGetModelBounds(model, out Bounds bounds) == false)
+            //CubismRaycaster가 없을 경우 대체 판정 -> 모델의 전체 범위(월드 기준)와 ray 교차
+            if(TryGetModelBounds(model, null, out Bounds bounds) == false)
             {
                 return false;
             }
+
+            //평면 모델은 z값이 0 이니 ray 교차 판정이 실패하지 않도록 최소 두께를 설정
+            bounds.Expand(new Vector3(0.0f, 0.0f, _flatBoundsThickness));
 
             WarnIdOnce(id);
             
@@ -132,8 +211,6 @@ namespace StudioResourceSDK.Infrastructure
 
             sortingOrder = GetFrontSortingOrder(model);
 
-            //레이 시각화
-            Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red, 3f);
             return true;
 
         }
@@ -143,7 +220,10 @@ namespace StudioResourceSDK.Infrastructure
         /// Cubism이 직접 관리하는 CubismRenderer.Mesh의 로컬 범위를 사용
         /// CubismSDK의 raycast 소스 방식을 참고하여 작성하였음
         /// </summary>
-        private bool TryGetModelBounds(CubismModel model, out Bounds bounds)
+        /// <param name="model">대상 모델</param>
+        /// <param name="space">결과 bound범위의 기준 공간. null ->월드 좌표 (피킹용), 모델 Transform -> 모델 로컬 좌표 (선택 UI표시용)</param>
+        /// <param name="bounds">기준 공간에서의 bound범위</param> 
+        private bool TryGetModelBounds(CubismModel model,Transform space ,out Bounds bounds)
         {
             bounds = default;
 
@@ -165,12 +245,7 @@ namespace StudioResourceSDK.Infrastructure
                     continue;
                 }
 
-                EncapsulateLocalBounds(renderer.transform, renderer.Mesh.bounds, ref bounds, ref hasBounds);
-            }
-
-            if(hasBounds)
-            {
-                bounds.Expand(new Vector3(0.0f, 0.0f, _flatBoundsThickness));
+                EncapsulateLocalBounds(renderer.transform, space,renderer.Mesh.bounds, ref bounds, ref hasBounds);
             }
 
             return hasBounds;
@@ -181,11 +256,9 @@ namespace StudioResourceSDK.Infrastructure
         /// 로컬 범위를 월드 좌표로 바꾼 후 범위를 누적산
         /// 꼭짓점 8개를 모두 변환해서 Drawable이 회전해 있어도 월드 범위가 정확하게 감싸지게 하였음
         /// </summary>
-        /// <param name="space"></param>
-        /// <param name="local"></param>
-        /// <param name="world"></param>
-        /// <param name="hasBounds"></param>
-        private void EncapsulateLocalBounds(Transform space, Bounds local, ref Bounds world, ref bool hasBounds)
+        /// <param name="from">범위가 속한 공간(drawable의 tranform)</param>
+        /// <param name="space">결과 기준 공간. null -> 월드 기준</param>
+        private void EncapsulateLocalBounds(Transform from, Transform space, Bounds local, ref Bounds world, ref bool hasBounds)
         {
             Vector3 min = local.min;
             Vector3 max = local.max;
@@ -201,7 +274,14 @@ namespace StudioResourceSDK.Infrastructure
 
             for (int c = 0; c < _corners.Length; c++)
             {
-                Vector3 corner = space.TransformPoint(_corners[c]);
+                //drawable 로컬 -> 월드
+                Vector3 corner = from.TransformPoint(_corners[c]);
+
+                //기준 공간이 있으면 월드 -> 기준 공간 로컬
+                if(space != null)
+                {
+                    corner = space.InverseTransformPoint(corner);
+                }
 
                 if(hasBounds == false)
                 {
@@ -263,6 +343,59 @@ namespace StudioResourceSDK.Infrastructure
             //보이는 렌더러가 없으면 가장 뒤로 설정
             return maxOrder;
         }
+
+        private bool TryEnsureHighlightInstance()
+        {
+            if(_highlightInstance != null)
+            {
+                return true;
+            }
+
+            if (_highlightPrefab == null)
+            {
+                Debug.LogWarning($"[SceneResourcePicker] HighlightPrefab이 연결되지 않았습니다.");
+                return false;
+            }
+
+            _highlightInstance = Object.Instantiate(_highlightPrefab);
+
+            if(_highlightInstance.drawMode != SpriteDrawMode.Sliced)
+            {
+                Debug.LogWarning($"[SceneResourcePicker]_highlightInstance의 drawMode가 Slied가 아닙니다.)");
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// SpawnPivot의 직속 자식 중 id가 같은 캐릭터의 모델을 찾음
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private bool TryFindCharacterModel(string id, out CubismModel model)
+        {
+            model = null;
+
+            if(_objectPivot == null 
+             ||_objectPivot.Transform == null)
+            {
+                return false;
+            }
+
+            foreach(Transform child in _objectPivot.Transform)
+            {
+                if(child.TryGetComponent(out ICharacter character)
+                    && character.ID == id)
+                {
+                    model = child.GetComponentInChildren<CubismModel>();
+                    return model != null;
+                }
+            }
+
+            return false;
+        }
+
         private void WarnIdOnce(string id)
         {
             if(_alreadyWarnedIds.Add(id))
