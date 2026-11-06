@@ -23,6 +23,7 @@ namespace LiveAppUI.Installer
         [SerializeField] private YoutubeConfigView _youtubeConfigView;
         [SerializeField] private ResourceGimmickView _gimmickControlView;
         [SerializeField] private SystemMenuView _systemMenuView;
+        [SerializeField] private PickableAreaView _playAreaView;
 
         public override void InstallBindings()
         {
@@ -68,6 +69,9 @@ namespace LiveAppUI.Installer
             Container
                 .Bind<ISystemMenuView>()
                 .FromInstance(_systemMenuView);
+            Container
+                .Bind<IPickableAreaView>()
+                .FromInstance(_playAreaView);
         }
 
         private void ModelBinding()
@@ -113,6 +117,11 @@ namespace LiveAppUI.Installer
             Container
                 .Bind<IResourceGimmickModel>()
                 .To<ResourceGimmickModel>()
+                .AsSingle();
+
+            Container
+                .Bind<IResourcePickModel>()
+                .To<ResourcePickModel>()
                 .AsSingle();
 
         }
