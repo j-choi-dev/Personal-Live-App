@@ -12,9 +12,12 @@ namespace LiveAppUI.View
     public class PickableAreaView : MonoBehaviour, IPickableAreaView
     {
         /// <summary>
-        /// RenderTexture(RT_OBS_Output)를 표시하는 RawImage
+        /// 플레이 화면 내에 클릭 감지해서 피킹 가능한 영역
         /// </summary>
-        [SerializeField] private RawImage _rawImage;
+        [SerializeField] private  Image _pickableArea;
+        /// <summary>
+        /// 선택 표시 UI
+        /// </summary>
         [SerializeField] private RectTransform _highlight;
         private IObservable<Vector2> _onViewportClicked;
         public IObservable<Vector2> OnViewportClicked => _onViewportClicked ??= CreateViewportClickStream();
@@ -25,7 +28,7 @@ namespace LiveAppUI.View
         private IObservable<Vector2> CreateViewportClickStream()
         {
             //변환 파이프라인
-            return _rawImage.OnPointerClickAsObservable()
+            return _pickableArea.OnPointerClickAsObservable()
                 .Where(e => e.button == PointerEventData.InputButton.Left)
                 .Select(e => ToViewportPoint(e.position, e.pressEventCamera))
                 .Where(point => point.HasValue)
@@ -33,16 +36,17 @@ namespace LiveAppUI.View
         }
 
         /// <summary>
-        /// 스크린 좌표 -> RawImage 로컬 -> 0~1(uv좌표계)정규화 -> uvRect 보정 순서로 viewport 좌표를 구함
+        /// 스크린 좌표 -> pickableArea 로컬 좌표 -> (0~1)정규화 순서로 viewport 좌표를 구함
         /// </summary>
         /// <param name="screenPos">클릭한 스크린 좌표</param>
         /// <param name="evnetCamera">Canvas가 Overlay면 null</param>
         /// <returns>렌더 카메라 기준 viewport 좌표(0~1). 이미지 바깥이면 null</returns>
+        /// 현재 RT_OBS_Output을 표시하는 rawImage의 display 영역과 같다는 전제하임 @OH 26.11.06
         private Vector2? ToViewportPoint(Vector2 screenPos, Camera eventCamera)
         {
-            RectTransform rectTransform = _rawImage.rectTransform;
+            RectTransform rectTransform = _pickableArea.rectTransform;
 
-            //RawImage가 이동, 확대, 회전되어 있어도 로컬 좌표로 정확히 변환됨
+            //_pickableArea이 이동, 확대, 회전되어 있어도 로컬 좌표로 정확히 변환됨
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle
               (rectTransform, screenPos, eventCamera, out Vector2 local) == false)
             {
@@ -55,21 +59,17 @@ namespace LiveAppUI.View
                 return null;
             }
 
-            //pivot과 무관하게 rect기준으로 0~1 정규화
-            var normalized = new Vector2((local.x - rect.xMin) / rect.width,
-                                         (local.y - rect.yMin) / rect.height);
+            //pivot과 무관하게 rect기준으로 0~1 정규화 -> 이 값이 곧 viewport 좌표
+            var viewport = new Vector2((local.x - rect.xMin) / rect.width,
+                                       (local.y - rect.yMin) / rect.height);
 
-            // uvRect로 보정 전에 범위 검증을 해야 텍스쳐 일부만 표시할 때도 정확함
-            if(normalized.x < 0.0f || normalized.x > 1.0f
-            || normalized.y < 0.0f || normalized.y > 1.0f)
+            if(viewport.x < 0.0f || viewport.x > 1.0f
+            || viewport.y < 0.0f || viewport.y > 1.0f)
             {
                 return null;
             }
 
-            // RawImage가 텍스쳐의 어느 부분을 보여주는지(uvRect)반영. 기본값(0,0,1,1)이면 그대로
-            Rect uvRect = _rawImage.uvRect;
-            return new Vector2(uvRect.x + normalized.x * uvRect.width,
-                               uvRect.y + normalized.y * uvRect.height);
+            return viewport;
         }
 
         //-------------------------------------------------------------------implement
@@ -81,19 +81,8 @@ namespace LiveAppUI.View
                 return;
             }
 
-            Rect uvRect = _rawImage.uvRect;
-            if(uvRect.width <= 0.0f
-            || uvRect.height <= 0.0f)
-            {
-                return;
-            }
-
-            //Viewport 좌표 -> RawImage 안의 0~1 비율료 정규화
-            var normalizedMin = new Vector2((minX - uvRect.x) / uvRect.width, (minY - uvRect.y) / uvRect.height);
-            var normalizedMax = new Vector2((maxX - uvRect.x) / uvRect.width, (maxY - uvRect.y) / uvRect.height);
-
-            _highlight.anchorMin = normalizedMin;
-            _highlight.anchorMax = normalizedMax;
+            _highlight.anchorMin = new Vector2(minX, minY);
+            _highlight.anchorMax = new Vector2(maxX, maxY);
             _highlight.offsetMin = Vector2.zero;
             _highlight.offsetMax = Vector2.zero;
 
