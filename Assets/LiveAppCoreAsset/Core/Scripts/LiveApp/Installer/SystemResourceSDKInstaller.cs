@@ -11,6 +11,7 @@ namespace StudioResourceSDK.Installer
 {
     public class SystemResourceSDKInstaller : MonoInstaller
     {
+
         public override void InstallBindings()
         {
             Container
@@ -42,6 +43,11 @@ namespace StudioResourceSDK.Installer
             Container
                 .Bind<ISceneResourceLifecycleContext>()
                 .To<SceneResourceLifecycleContext>()
+                .AsSingle();
+
+            Container
+                .Bind<IResourcePickContext>()
+                .To<ResourcePickContext>()
                 .AsSingle();
 
             Container
@@ -80,6 +86,10 @@ namespace StudioResourceSDK.Installer
             Container
                 .Bind<IResourceDestroyDomain>()
                 .To<SceneResourceDestroyer>()
+                .AsSingle();
+            Container
+                .Bind<IResourcePickDomain>()
+                .To<SceneResourcePicker>()
                 .AsSingle();
 
         }
