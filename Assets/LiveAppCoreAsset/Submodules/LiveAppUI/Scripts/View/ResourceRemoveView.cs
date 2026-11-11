@@ -16,6 +16,7 @@ namespace LiveApp.UI
         [SerializeField] private ObservableButton _removeButton = null;
         [SerializeField] private ObservableDropdown _filters = null;
         [SerializeField] private ListViewWithOneList _listView = null;
+        [SerializeField] private TransformInspectorView _transformView = null;
 
         //---------------implements-----------------------------
         public IObservable<int> OnFilterChanged => _filters.OnValueChanged;

@@ -1,17 +1,27 @@
-﻿using Live2D.Cubism.Core;
+﻿using Amazon.Runtime.Internal.Util;
+using Live2D.Cubism.Core;
 using StudioCharacterSDK.Domain;
+using StudioResourceSDK.Domain;
+using StudioResourceSDK.Infrastructure;
 using System;
 using System.Linq;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace StudioCharacterSDK.Infrastructure
 {
-    public class StudioAvatar : MonoBehaviour, ICharacter, IFacialData, ILipSyncData, IBodyData
+    public class StudioAvatar : MonoBehaviour, ICharacter, IFacialData, ILipSyncData, IBodyData, ITransformData
     {
         [SerializeField] private AvatarParameterPair _pair = null;
         [SerializeField] private CubismModel _avatar = null;
         [SerializeField] private CubismMoc _moc;
+        [SerializeField] private Transform _transformPivot = null; //프리팹에서 AvatarPivot 연결
+        /// <summary>
+        /// Transform 조작 처리 핸들러. Awake에서 한 번만 생성
+        /// </summary>
+        private TransformDataHandler _transformDataHandler;
+
         private bool _isInitialized = false;
         private LipSyncVowelData _lipSyncValue;
 
@@ -97,7 +107,8 @@ namespace StudioCharacterSDK.Infrastructure
         public IObservable<LipSyncVowelData> OnChangeLipSync => _onChangeLipSync;
 
         public LipSyncVowelData LipSyncValue => _lipSyncValue;
-        //Inspector 등 외부에서 모델의 transform에 접근하기 위한 프로퍼티 추가 @OH 26.10.21
+
+        //Inspector 등 외부에서 모델의 transform에 접근하기 위한 프로퍼티 추가 @OH 26.10.21 리팩 후 삭제 26.11.11
         public CubismModel Avatar => _avatar;
 
 
@@ -121,8 +132,42 @@ namespace StudioCharacterSDK.Infrastructure
         private Subject<float> _onChangeBodyAngleZ = new Subject<float>();
         public IObservable<float> OnChangeBodyAngleZ => _onChangeBodyAngleZ;
 
+        //---------------------------------------------------------------------------------------ITransformData
+        public Transform TransformPivot => _transformPivot;
+        private readonly Subject<float> _onPositionXChanged = new Subject<float>();
+        private readonly Subject<float> _onPositionYChanged = new Subject<float>();
+        private readonly Subject<float> _onPositionZChanged = new Subject<float>();
+        private readonly Subject<float> _onRotationXChanged = new Subject<float>();
+        private readonly Subject<float> _onRotationYChanged = new Subject<float>();
+        private readonly Subject<float> _onRotationZChanged = new Subject<float>();
+        private readonly Subject<float> _onScaleXChanged = new Subject<float>();
+        private readonly Subject<float> _onScaleYChanged = new Subject<float>();
+        private readonly Subject<float> _onScaleZChanged = new Subject<float>();
+
+        public IObservable<float> OnPositionXChanged => _onPositionXChanged;
+        public IObservable<float> OnPositionYChanged => _onPositionYChanged;
+        public IObservable<float> OnPositionZChanged => _onPositionZChanged;
+        public IObservable<float> OnRotationXChanged => _onRotationXChanged;
+        public IObservable<float> OnRotationYChanged => _onRotationYChanged;
+        public IObservable<float> OnRotationZChanged => _onRotationZChanged;
+        public IObservable<float> OnScaleXChanged => _onScaleXChanged;
+        public IObservable<float> OnScaleYChanged => _onScaleYChanged;
+        public IObservable<float> OnScaleZChanged => _onScaleZChanged;
+        public float PositionX => _transformDataHandler.GetPosition(TransformAxis.X);
+        public float PositionY => _transformDataHandler.GetPosition(TransformAxis.Y);
+        public float PositionZ => _transformDataHandler.GetPosition(TransformAxis.Z);
+        public float RotationX => _transformDataHandler.GetRotation(TransformAxis.X);
+        public float RotationY => _transformDataHandler.GetRotation(TransformAxis.Y);
+        public float RotationZ => _transformDataHandler.GetRotation(TransformAxis.Z);
+        public float ScaleX => _transformDataHandler.GetScale(TransformAxis.X);
+        public float ScaleY => _transformDataHandler.GetScale(TransformAxis.Y);
+        public float ScaleZ => _transformDataHandler.GetScale(TransformAxis.Z);
+
+        //---------------------------------------------------------------------------------------/ITransformData
+
         private void Awake()
         {
+            InitTransform();
             Init();
         }
 
@@ -170,11 +215,26 @@ namespace StudioCharacterSDK.Infrastructure
         }
 
         /// <summary>
+        /// Transform 관련 Init
+        /// </summary>
+        /// <remarks>Init 실패 시 Transform만 작동 안 하고 다른 곳엔 실패 위험이 퍼지지 않도록 분리</remarks>
+        private void InitTransform()
+        {
+            _transformDataHandler = new TransformDataHandler(_transformPivot);
+
+            if(_transformPivot == null)
+            {
+                Debug.LogWarning($"[StudioAvatar]_transformPivot이 연결되지 않아서 Transform조작 불가 Name={name}", this);
+            }
+        }
+
+        /// <summary>
         /// 아바타의 모션 정보를 멤버 변수에 대입
         /// </summary>
         /// <param name="model"></param>
         public void InitCubismParameter()
-        {
+        {    
+
             _faceAngleX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.FaceAngle_X].parameter.Id );
             _faceAngleY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.FaceAngle_Y].parameter.Id );
             _faceAngleZ = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.FaceAngle_Z].parameter.Id );
@@ -308,5 +368,74 @@ namespace StudioCharacterSDK.Infrastructure
             ApplyLipSyncValue( value );
             _onChangeLipSync.OnNext( value );
         }
+
+        //-----------------------------------------------------------------Transform methods
+        //setter들은 실제로 값이 바뀌었을 때만 이벤트 발행하도록 했음
+
+        public void SetPositionX(float positionX)
+        {
+            if(_transformDataHandler.TrySetPosition(TransformAxis.X, positionX) )
+            {
+                _onPositionXChanged.OnNext(positionX);
+            }
+        }
+        public void SetPositionY(float positionY)
+        {
+            if (_transformDataHandler.TrySetPosition(TransformAxis.Y, positionY) )
+            {
+                _onPositionYChanged.OnNext(positionY);
+            }
+        }
+        public void SetPositionZ(float positionZ)
+        {
+            if (_transformDataHandler.TrySetPosition(TransformAxis.Z, positionZ) )
+            {
+                _onPositionZChanged.OnNext(positionZ);
+            }
+        }
+        public void SetRotationX(float rotationX)
+        {
+            if(_transformDataHandler.TrySetRotation(TransformAxis.X, rotationX) )
+            {
+                _onRotationXChanged.OnNext(rotationX);
+            }
+        }
+        public void SetRotationY(float rotationY)
+        {
+            if (_transformDataHandler.TrySetRotation(TransformAxis.Y, rotationY))
+            {
+                _onRotationYChanged.OnNext(rotationY);
+            }
+        }
+        public void SetRotationZ(float rotationZ)
+        {
+            if (_transformDataHandler.TrySetRotation(TransformAxis.Z, rotationZ) )
+            {
+                _onRotationZChanged.OnNext(rotationZ);
+            }
+        }
+        public void SetScaleX(float scaleX)
+        {
+            if(_transformDataHandler.TrySetScale(TransformAxis.X, scaleX) )
+            {
+                _onScaleXChanged.OnNext(scaleX);
+            }
+        }
+        public void SetScaleY(float scaleY)
+        {
+            if (_transformDataHandler.TrySetScale(TransformAxis.Y, scaleY) )
+            {
+                _onScaleYChanged.OnNext(scaleY);
+            }
+        }
+        public void SetScaleZ(float scaleZ)
+        {
+            if (_transformDataHandler.TrySetScale(TransformAxis.Z, scaleZ) )
+            {
+                _onScaleZChanged.OnNext(scaleZ);
+            }
+        } 
+        //-----------------------------------------------------------------/Transform methods
+
     }
 }
