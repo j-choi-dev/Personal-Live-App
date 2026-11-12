@@ -26,6 +26,11 @@ namespace LiveAppUI.View
             new Subject<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)>();
         public IObservable<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)> OnValueChanged => _onValueChanged;
 
+        /// <summary>
+        /// 이 차이 미만이면 같은 값으로 판단하여 갱신하지 않음
+        /// </summary>
+        private const float _valueSyncTolerance = 0.001f;
+
         private void Awake()
         {
             foreach(SliderEntry entry in _entries)
@@ -58,6 +63,29 @@ namespace LiveAppUI.View
         }
 
         //------------------------------------implement---------------------------------
+
+        public void UpdateValue(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)
+        {
+            if(_table.TryGetValue((prop, axis), out SliderEntry entry) == false)
+            {
+                return;
+            }
+
+            //비활성화 슬라이더는 갱신하지 않음
+            if(entry.Slider.Interactable == false)
+            {
+                return;
+            }
+
+            //허용 오차 미만이면 무시
+            if(Mathf.Abs(entry.Slider.Value - value) < _valueSyncTolerance )
+            {
+                return;
+            }
+
+            entry.Slider.SetValueWithoutNotify(value);
+        }
+
         public void ShowChannel(InspectorTransformProperty prop, InspectorTransformAxis axis, ValueRange range, float value)
         {
             if(_table.TryGetValue( ( prop, axis ), out SliderEntry entry ) == false )

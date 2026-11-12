@@ -50,15 +50,15 @@ namespace LiveAppUI.Domain
     /// <summary>
     /// Inspector View에 표시 될 전체 데이터
     /// </summary>
-    public class TransformInspectorData
+    public class TransformInspectorUIData
     {
-        public static readonly TransformInspectorData Empty =
-            new TransformInspectorData(false, Array.Empty<TransformInspectorChannelData>());
+        public static readonly TransformInspectorUIData Empty =
+            new TransformInspectorUIData(false, Array.Empty<TransformInspectorChannelData>());
     
         public bool HasTarget { get; }
         public IReadOnlyList<TransformInspectorChannelData> _channels { get; }
 
-        public TransformInspectorData(bool hasTarget, IReadOnlyList<TransformInspectorChannelData> channels)
+        public TransformInspectorUIData(bool hasTarget, IReadOnlyList<TransformInspectorChannelData> channels)
         {
             HasTarget = hasTarget;
             _channels = channels;

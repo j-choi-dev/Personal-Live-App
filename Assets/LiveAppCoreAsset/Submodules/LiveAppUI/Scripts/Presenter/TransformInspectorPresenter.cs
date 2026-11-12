@@ -43,9 +43,13 @@ namespace LiveAppUI.Presenter
             _model.OnTargetChanged
                 .Subscribe(Render)
                 .AddTo(this);
+
+            _model.OnValueChanged
+                .Subscribe(data => _view.UpdateValue(data.prop, data.axis, data.value))
+                .AddTo (this);
         }
 
-        private void Render(TransformInspectorData data)
+        private void Render(TransformInspectorUIData data)
         {
             _view.ShowEmpty();
 

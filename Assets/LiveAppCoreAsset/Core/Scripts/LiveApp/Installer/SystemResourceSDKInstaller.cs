@@ -4,6 +4,7 @@ using StudioResourceSDK.Domain;
 using StudioResourceSDK.Infrastructure;
 using StudioSystemSDK.Domain;
 using StudioSystemSDK.Infrastructure;
+using System;
 using Zenject;
 
 
@@ -95,11 +96,6 @@ namespace StudioResourceSDK.Installer
             Container
                 .Bind<IResourcePickDomain>()
                 .To<SceneResourcePicker>()
-                .AsSingle();
-
-            Container
-                .Bind<IResourceTransformDomain>()
-                .To<SceneResourceTransformer>()
                 .AsSingle();
         }
     }

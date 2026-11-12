@@ -11,7 +11,14 @@ namespace LiveAppUI.Model
         /// <summary>
         /// 대상이 없는 상태로 바뀔 땐 Empty반환
         /// </summary>
-        IObservable<TransformInspectorData> OnTargetChanged { get; }
+        IObservable<TransformInspectorUIData> OnTargetChanged { get; }
+
+        /// <summary>
+        /// 현재 대상의 값이 바뀌면 발행(slider 조작 등 조작 경로 상관없이)
+        /// 대상이 없거나 다른 대상의 변경은 발행하지 않음
+        /// </summary>
+        IObservable<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)> OnValueChanged { get; }
+
         /// <summary>
         /// Inspector 대상 리소스오브젝트 지정
         /// </summary>

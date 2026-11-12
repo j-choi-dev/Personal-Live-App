@@ -5,7 +5,7 @@ namespace LiveAppUI.View
     public class ObservableExponentSliderUGUI : ObservableSliderUGUIWithRangeLabel
     {
         /// <summary>
-        /// Infra(SceneResourceTransfomer)의 _scaleExponentBase와 같은 값이어야 함
+        /// <see cref="StudioResourceSDK.Application.TransformInspectorContext"/>의 _scaleExponentBase와 같은 값이어야 함
         /// </summary>
         [SerializeField] private float _exponentBase = 2.0f;
         [SerializeField] private string _multiplierFormat = "0.00";

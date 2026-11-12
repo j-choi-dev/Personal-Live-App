@@ -16,6 +16,11 @@ namespace LiveAppUI.Presenter
         IObservable<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)> OnValueChanged { get; }
 
         /// <summary>
+        /// 이미 표시 중인 슬라이더의 값만 갱신. 이벤트 발생 안 함
+        /// </summary>
+        void UpdateValue(InspectorTransformProperty prop, InspectorTransformAxis axis, float value);
+
+        /// <summary>
         /// 생성 및 초기값 할당 시에는 이벤트 발생 안 함
         /// </summary>
         void ShowChannel(InspectorTransformProperty prop, InspectorTransformAxis axis, ValueRange range, float value);
