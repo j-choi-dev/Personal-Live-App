@@ -1741,6 +1741,7 @@ MonoBehaviour:
   _removeButton: {fileID: 2908921888957851193}
   _filters: {fileID: 2670990565532147961}
   _listView: {fileID: 6938884575651108133}
+  _transformView: {fileID: 4224281167916728008}
 --- !u!1 &5126945708823293940
 GameObject:
   m_ObjectHideFlags: 0
@@ -2874,23 +2875,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a1e4eaad4585b241b74952ea525b3a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.TransformInspectorView
-  _entries:
-  - Property: 0
-    Axis: 0
-    Slider: {fileID: 5622523598762062570}
-    Group: {fileID: 9116009155550361843}
-  - Property: 0
-    Axis: 1
-    Slider: {fileID: 411188733837786370}
-    Group: {fileID: 9116009155550361843}
-  - Property: 1
-    Axis: 2
-    Slider: {fileID: 5776367797611636843}
-    Group: {fileID: 7350680457213306368}
-  - Property: 2
-    Axis: 3
-    Slider: {fileID: 5969967730965873689}
-    Group: {fileID: 3175321440488471935}
+  _groups:
+  - {fileID: 7374399384620322397}
+  - {fileID: 2731104595419679447}
+  - {fileID: 2837507081895421918}
 --- !u!1 &8707690190486634614
 GameObject:
   m_ObjectHideFlags: 0
@@ -3223,22 +3211,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 24bfb0d12b2615e4b9c7a099c3ea16fc, type: 3}
---- !u!114 &5776367797611636843 stripped
+--- !u!114 &2731104595419679447 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5920003815237964979, guid: 24bfb0d12b2615e4b9c7a099c3ea16fc, type: 3}
+  m_CorrespondingSourceObject: {fileID: 2875274421126280719, guid: 24bfb0d12b2615e4b9c7a099c3ea16fc, type: 3}
   m_PrefabInstance: {fileID: 144629703424277720}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc008d2b3f0884f43b158063cb3ad5a6, type: 3}
+  m_Script: {fileID: 11500000, guid: e64b63688d50d9c4fabc0a058633def8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ObservableSliderUGUIWithRangeLabel
---- !u!1 &7350680457213306368 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7206620445230504664, guid: 24bfb0d12b2615e4b9c7a099c3ea16fc, type: 3}
-  m_PrefabInstance: {fileID: 144629703424277720}
-  m_PrefabAsset: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.TransformInspectorGroupView
 --- !u!224 &7381010856377614203 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7237088572185150371, guid: 24bfb0d12b2615e4b9c7a099c3ea16fc, type: 3}
@@ -3357,22 +3340,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1265085832226145052, guid: 6fb1cc08706971749b55a0afe0955894, type: 3}
   m_PrefabInstance: {fileID: 2079349569344842818}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &3175321440488471935 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3515718581949436221, guid: 6fb1cc08706971749b55a0afe0955894, type: 3}
-  m_PrefabInstance: {fileID: 2079349569344842818}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &5969967730965873689 stripped
+--- !u!114 &2837507081895421918 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5621270170588489819, guid: 6fb1cc08706971749b55a0afe0955894, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4304188637435726748, guid: 6fb1cc08706971749b55a0afe0955894, type: 3}
   m_PrefabInstance: {fileID: 2079349569344842818}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc7711a5f37a5814398c96c9b2ada967, type: 3}
+  m_Script: {fileID: 11500000, guid: e64b63688d50d9c4fabc0a058633def8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ObservableExponentSliderUGUI
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.TransformInspectorGroupView
 --- !u!1001 &4798982259303124151
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3657,35 +3635,19 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5111c4fe25f7fe542b8faba45e9749aa, type: 3}
---- !u!114 &411188733837786370 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8896951360193683702, guid: 5111c4fe25f7fe542b8faba45e9749aa, type: 3}
-  m_PrefabInstance: {fileID: 9136827167287467508}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc008d2b3f0884f43b158063cb3ad5a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ObservableSliderUGUIWithRangeLabel
 --- !u!224 &2572148589383875696 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6736994054291169668, guid: 5111c4fe25f7fe542b8faba45e9749aa, type: 3}
   m_PrefabInstance: {fileID: 9136827167287467508}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5622523598762062570 stripped
+--- !u!114 &7374399384620322397 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3516098041469234974, guid: 5111c4fe25f7fe542b8faba45e9749aa, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1773194278108500905, guid: 5111c4fe25f7fe542b8faba45e9749aa, type: 3}
   m_PrefabInstance: {fileID: 9136827167287467508}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc008d2b3f0884f43b158063cb3ad5a6, type: 3}
+  m_Script: {fileID: 11500000, guid: e64b63688d50d9c4fabc0a058633def8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ObservableSliderUGUIWithRangeLabel
---- !u!1 &9116009155550361843 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 21979106132845831, guid: 5111c4fe25f7fe542b8faba45e9749aa, type: 3}
-  m_PrefabInstance: {fileID: 9136827167287467508}
-  m_PrefabAsset: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.TransformInspectorGroupView

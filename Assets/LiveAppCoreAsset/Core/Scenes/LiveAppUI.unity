@@ -3137,6 +3137,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 529549607117591691, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
+      propertyPath: _transformView
+      value: 
+      objectReference: {fileID: 193787334}
     - target: {fileID: 564772396074407428, guid: e02394aa5a55ca445a362746b27896a2, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0.00034437474

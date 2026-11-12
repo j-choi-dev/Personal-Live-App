@@ -227,6 +227,7 @@ GameObject:
   - component: {fileID: 7237088572185150371}
   - component: {fileID: 983220080075476162}
   - component: {fileID: 464698233829475426}
+  - component: {fileID: 2875274421126280719}
   m_Layer: 5
   m_Name: RotationZSliderView
   m_TagString: Untagged
@@ -293,6 +294,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2875274421126280719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7206620445230504664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e64b63688d50d9c4fabc0a058633def8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.TransformInspectorGroupView
+  _entries:
+  - Property: 1
+    Axis: 2
+    Slider: {fileID: 5920003815237964979}
 --- !u!1001 &5428295892121640313
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -472,6 +489,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
+--- !u!114 &5920003815237964979 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1836688270623771082, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
+  m_PrefabInstance: {fileID: 5428295892121640313}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc008d2b3f0884f43b158063cb3ad5a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ObservableSliderUGUIWithRangeLabel
 --- !u!224 &7763035768984305675 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2373108640818748786, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}

@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 8751380799761331615}
   - component: {fileID: 1022474773351668511}
   - component: {fileID: 8740412293557264983}
+  - component: {fileID: 3970506805069204770}
   m_Layer: 5
   m_Name: RotationVector3View
   m_TagString: Untagged
@@ -155,6 +156,28 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3970506805069204770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5082285298633211492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e64b63688d50d9c4fabc0a058633def8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.TransformInspectorGroupView
+  _entries:
+  - Property: 1
+    Axis: 0
+    Slider: {fileID: 5940615558456457584}
+  - Property: 1
+    Axis: 1
+    Slider: {fileID: 7150314512958238508}
+  - Property: 1
+    Axis: 2
+    Slider: {fileID: 7882089217039944370}
 --- !u!1 &8315972280358775797
 GameObject:
   m_ObjectHideFlags: 0
@@ -474,6 +497,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
+--- !u!114 &5940615558456457584 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1836688270623771082, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
+  m_PrefabInstance: {fileID: 5407824933644185786}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc008d2b3f0884f43b158063cb3ad5a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ObservableSliderUGUIWithRangeLabel
 --- !u!224 &7773931609496350152 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2373108640818748786, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
@@ -661,6 +695,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2373108640818748786, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
   m_PrefabInstance: {fileID: 8367675057399546744}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7882089217039944370 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1836688270623771082, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
+  m_PrefabInstance: {fileID: 8367675057399546744}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc008d2b3f0884f43b158063cb3ad5a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ObservableSliderUGUIWithRangeLabel
 --- !u!1001 &8810799447049643750
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -843,3 +888,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2373108640818748786, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
   m_PrefabInstance: {fileID: 8810799447049643750}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7150314512958238508 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1836688270623771082, guid: 9d99aedac30bfa24f9047d34ce93177f, type: 3}
+  m_PrefabInstance: {fileID: 8810799447049643750}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc008d2b3f0884f43b158063cb3ad5a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LiveAppUI.View.ObservableSliderUGUIWithRangeLabel
