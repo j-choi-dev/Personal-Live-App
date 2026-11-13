@@ -14,6 +14,11 @@ namespace StudioResourceSDK.Domain
         /// </summary>
         Transform TransformPivot { get; }
 
+        /// <summary>
+        /// Transform 조작 가능 여부 상태 반환
+        /// </summary>
+        bool CanTransform { get; }
+
         //Properties
         float PositionX { get; }
         float PositionY { get; }

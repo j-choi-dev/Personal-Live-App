@@ -1,13 +1,10 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Live2D.Cubism.Core;
+﻿using Live2D.Cubism.Core;
 using StudioCharacterSDK.Domain;
 using StudioResourceSDK.Domain;
-using StudioResourceSDK.Infrastructure;
 using System;
 using System.Linq;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace StudioCharacterSDK.Infrastructure
 {
@@ -17,10 +14,6 @@ namespace StudioCharacterSDK.Infrastructure
         [SerializeField] private CubismModel _avatar = null;
         [SerializeField] private CubismMoc _moc;
         [SerializeField] private Transform _transformPivot = null; //프리팹에서 AvatarPivot 연결
-        /// <summary>
-        /// Transform 조작 처리 핸들러. Awake에서 한 번만 생성
-        /// </summary>
-        private TransformDataHandler _transformDataHandler;
 
         private bool _isInitialized = false;
         private LipSyncVowelData _lipSyncValue;
@@ -108,9 +101,6 @@ namespace StudioCharacterSDK.Infrastructure
 
         public LipSyncVowelData LipSyncValue => _lipSyncValue;
 
-        //Inspector 등 외부에서 모델의 transform에 접근하기 위한 프로퍼티 추가 @OH 26.10.21 리팩 후 삭제 26.11.11
-        public CubismModel Avatar => _avatar;
-
 
         private Subject<float> _onChangeMouthForm = new Subject<float>();
         public IObservable<float> OnChangeMouthForm => _onChangeMouthForm;
@@ -134,6 +124,7 @@ namespace StudioCharacterSDK.Infrastructure
 
         //---------------------------------------------------------------------------------------ITransformData
         public Transform TransformPivot => _transformPivot;
+        public bool CanTransform => _transformPivot != null;
         private readonly Subject<float> _onPositionXChanged = new Subject<float>();
         private readonly Subject<float> _onPositionYChanged = new Subject<float>();
         private readonly Subject<float> _onPositionZChanged = new Subject<float>();
@@ -153,15 +144,15 @@ namespace StudioCharacterSDK.Infrastructure
         public IObservable<float> OnScaleXChanged => _onScaleXChanged;
         public IObservable<float> OnScaleYChanged => _onScaleYChanged;
         public IObservable<float> OnScaleZChanged => _onScaleZChanged;
-        public float PositionX => _transformDataHandler.GetPosition(TransformAxis.X);
-        public float PositionY => _transformDataHandler.GetPosition(TransformAxis.Y);
-        public float PositionZ => _transformDataHandler.GetPosition(TransformAxis.Z);
-        public float RotationX => _transformDataHandler.GetRotation(TransformAxis.X);
-        public float RotationY => _transformDataHandler.GetRotation(TransformAxis.Y);
-        public float RotationZ => _transformDataHandler.GetRotation(TransformAxis.Z);
-        public float ScaleX => _transformDataHandler.GetScale(TransformAxis.X);
-        public float ScaleY => _transformDataHandler.GetScale(TransformAxis.Y);
-        public float ScaleZ => _transformDataHandler.GetScale(TransformAxis.Z);
+        public float PositionX => _transformPivot.localPosition.x;
+        public float PositionY => _transformPivot.localPosition.y;
+        public float PositionZ => _transformPivot.localPosition.z;
+        public float RotationX => _transformPivot.localEulerAngles.x;
+        public float RotationY => _transformPivot.localEulerAngles.y;
+        public float RotationZ => _transformPivot.localEulerAngles.z;
+        public float ScaleX => _transformPivot.localScale.x;
+        public float ScaleY => _transformPivot.localScale.y;
+        public float ScaleZ => _transformPivot.localScale.z;
 
         //---------------------------------------------------------------------------------------/ITransformData
 
@@ -220,9 +211,7 @@ namespace StudioCharacterSDK.Infrastructure
         /// <remarks>Init 실패 시 Transform만 작동 안 하고 다른 곳엔 실패 위험이 퍼지지 않도록 분리</remarks>
         private void InitTransform()
         {
-            _transformDataHandler = new TransformDataHandler(_transformPivot);
-
-            if(_transformPivot == null)
+            if(CanTransform)
             {
                 Debug.LogWarning($"[StudioAvatar]_transformPivot이 연결되지 않아서 Transform조작 불가 Name={name}", this);
             }
@@ -374,66 +363,111 @@ namespace StudioCharacterSDK.Infrastructure
 
         public void SetPositionX(float positionX)
         {
-            if(_transformDataHandler.TrySetPosition(TransformAxis.X, positionX) )
+            Vector3 position = _transformPivot.localPosition;
+            if(Mathf.Approximately(position.x, positionX) )
             {
-                _onPositionXChanged.OnNext(positionX);
+                return;
             }
+
+            position.x = positionX;
+            _transformPivot.localPosition = position;
+            _onPositionXChanged.OnNext(positionX);
         }
         public void SetPositionY(float positionY)
         {
-            if (_transformDataHandler.TrySetPosition(TransformAxis.Y, positionY) )
+            Vector3 position = _transformPivot.localPosition;
+            if (Mathf.Approximately(position.y, positionY))
             {
-                _onPositionYChanged.OnNext(positionY);
+                return;
             }
+
+            position.y = positionY;
+            _transformPivot.localPosition = position;
+            _onPositionYChanged.OnNext(positionY);
         }
         public void SetPositionZ(float positionZ)
         {
-            if (_transformDataHandler.TrySetPosition(TransformAxis.Z, positionZ) )
+            Vector3 position = _transformPivot.localPosition;
+            if (Mathf.Approximately(position.z, positionZ))
             {
-                _onPositionZChanged.OnNext(positionZ);
+                return;
             }
+
+            position.z = positionZ;
+            _transformPivot.localPosition = position;
+            _onPositionZChanged.OnNext(positionZ);
         }
         public void SetRotationX(float rotationX)
         {
-            if(_transformDataHandler.TrySetRotation(TransformAxis.X, rotationX) )
+            Vector3 rotation = _transformPivot.localEulerAngles;
+            if(Mathf.Approximately(Mathf.DeltaAngle(rotation.x, rotationX), 0.0f) )
             {
-                _onRotationXChanged.OnNext(rotationX);
+                return;
             }
+
+            rotation.x = rotationX;
+            _transformPivot.localRotation = Quaternion.Euler(rotation);
+            _onRotationXChanged.OnNext(rotationX);
         }
         public void SetRotationY(float rotationY)
         {
-            if (_transformDataHandler.TrySetRotation(TransformAxis.Y, rotationY))
+            Vector3 rotation = _transformPivot.localEulerAngles;
+            if (Mathf.Approximately(Mathf.DeltaAngle(rotation.y, rotationY), 0.0f))
             {
-                _onRotationYChanged.OnNext(rotationY);
+                return;
             }
+
+            rotation.y = rotationY;
+            _transformPivot.localRotation = Quaternion.Euler(rotation);
+            _onRotationYChanged.OnNext(rotationY);
         }
         public void SetRotationZ(float rotationZ)
         {
-            if (_transformDataHandler.TrySetRotation(TransformAxis.Z, rotationZ) )
+            Vector3 rotation = _transformPivot.localEulerAngles;
+            if (Mathf.Approximately(Mathf.DeltaAngle(rotation.z, rotationZ), 0.0f))
             {
-                _onRotationZChanged.OnNext(rotationZ);
+                return;
             }
+
+            rotation.z = rotationZ;
+            _transformPivot.localRotation = Quaternion.Euler(rotation);
+            _onRotationZChanged.OnNext(rotationZ);
         }
         public void SetScaleX(float scaleX)
         {
-            if(_transformDataHandler.TrySetScale(TransformAxis.X, scaleX) )
+            Vector3 scale = _transformPivot.localScale;
+            if(Mathf.Approximately(scale.x, scaleX))
             {
-                _onScaleXChanged.OnNext(scaleX);
+                return;
             }
+
+            scale.x = scaleX;
+            _transformPivot.localScale = scale;
+            _onScaleXChanged.OnNext(scaleX);
         }
         public void SetScaleY(float scaleY)
         {
-            if (_transformDataHandler.TrySetScale(TransformAxis.Y, scaleY) )
+            Vector3 scale = _transformPivot.localScale;
+            if (Mathf.Approximately(scale.y, scaleY))
             {
-                _onScaleYChanged.OnNext(scaleY);
+                return;
             }
+
+            scale.y = scaleY;
+            _transformPivot.localScale = scale;
+            _onScaleYChanged.OnNext(scaleY);
         }
         public void SetScaleZ(float scaleZ)
         {
-            if (_transformDataHandler.TrySetScale(TransformAxis.Z, scaleZ) )
+            Vector3 scale = _transformPivot.localScale;
+            if (Mathf.Approximately(scale.z, scaleZ))
             {
-                _onScaleZChanged.OnNext(scaleZ);
+                return;
             }
+
+            scale.z = scaleZ;
+            _transformPivot.localScale = scale;
+            _onScaleZChanged.OnNext(scaleZ);
         } 
         //-----------------------------------------------------------------/Transform methods
 

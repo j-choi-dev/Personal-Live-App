@@ -55,7 +55,6 @@ namespace LiveAppUI.Presenter
 
             foreach(TransformInspectorChannelData channel in data._channels)
             {
-                Debug.Log($"[InspectorPresenter] Render {channel.Property}.{channel.Axis} 범위={channel.Range.min}~{channel.Range.max}, 값={channel.Value}");
                 _view.ShowChannel(channel.Property, channel.Axis, channel.Range, channel.Value);
             }
         }

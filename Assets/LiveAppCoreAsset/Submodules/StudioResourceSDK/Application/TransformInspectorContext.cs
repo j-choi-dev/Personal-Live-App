@@ -3,9 +3,9 @@ using LiveAppUI.View;
 using StudioResourceSDK.Domain;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using UniRx;
+using UnityEngine;
 
 namespace StudioResourceSDK.Application
 {
@@ -101,7 +101,7 @@ namespace StudioResourceSDK.Application
             ApplyOffset(type, data, GetOrCaptureBase(data), prop, axis, clamped);
             return true;
         }
-        //--------------implements-------------------------------
+        //---------------------------------------------/implements
 
         /// <summary>
         /// 현재 리소스 목록과 구독 목록의 싱크 맞춤
@@ -112,7 +112,7 @@ namespace StudioResourceSDK.Application
 
             foreach(var character in _listDomain.CharacterList)
             {
-                if(character is ITransformData data)
+                if(character is ITransformData data && data.CanTransform)
                 {
                     alive[data] = (ResourceType.Character, character.ID);
                 }
@@ -120,7 +120,7 @@ namespace StudioResourceSDK.Application
 
             foreach(var prop in _listDomain.PropList)
             {
-                if(prop is ITransformData data)
+                if(prop is ITransformData data && data.CanTransform)
                 {
                     alive[data] = (ResourceType.Prop, prop.ID);
                 }
@@ -185,8 +185,10 @@ namespace StudioResourceSDK.Application
                     break;
             }
 
-            if(data == null)
+            if(data.CanTransform == false)
             {
+                UnityEngine.Debug.LogWarning($"[TransformInspectorContext] 조작 가능한 상태가 아닙니다. Type={type}, ID={id}");
+                data = null;
                 return false;
             }
 
@@ -211,7 +213,7 @@ namespace StudioResourceSDK.Application
         /// <summary>
         /// 실제 값 -> offset으로 변경 
         /// </summary>
-        private static float ToOffset (ResourceType type, ITransformData data, TransformBase tBase, TransformProperty prop, TransformAxis axis)
+        private float ToOffset (ResourceType type, ITransformData data, TransformBase tBase, TransformProperty prop, TransformAxis axis)
         {
             switch(prop)
             {
@@ -219,7 +221,14 @@ namespace StudioResourceSDK.Application
                     return (GetRaw(data, prop, axis) - tBase.Get(prop, axis)) / GetPositionScale(type);
 
                 case TransformProperty.Rotation:
-                    return GetRaw(data, prop, axis) - tBase.Get(prop, axis);
+                    {
+                        float baseValue = tBase.Get(prop, axis);
+                        float raw = GetRaw(data, prop, axis);
+                        float offset = Mathf.DeltaAngle(baseValue, raw);
+                        UnityEngine.Debug.Log($"[RotDebug] base={baseValue}, raw={raw}, offset={offset}");
+                        return offset;
+                    }
+                    //return Mathf.DeltaAngle(tBase.Get(prop, axis), GetRaw(data, prop, axis)); // localEulerAngles는 0~360으로 돌아오므로 각도 -180, 180으로 계산
 
                 case TransformProperty.Scale:
                     {
