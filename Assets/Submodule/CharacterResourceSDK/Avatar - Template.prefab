@@ -116,6 +116,7 @@ MonoBehaviour:
   _pair: {fileID: 2013080194380071952}
   _avatar: {fileID: 0}
   _moc: {fileID: 0}
+  _transformPivot: {fileID: 961643767583781590}
 --- !u!1 &8982061693404016862
 GameObject:
   m_ObjectHideFlags: 0

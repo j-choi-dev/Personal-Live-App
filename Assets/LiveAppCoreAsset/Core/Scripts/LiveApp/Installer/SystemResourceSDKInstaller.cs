@@ -4,6 +4,7 @@ using StudioResourceSDK.Domain;
 using StudioResourceSDK.Infrastructure;
 using StudioSystemSDK.Domain;
 using StudioSystemSDK.Infrastructure;
+using System;
 using Zenject;
 
 
@@ -56,6 +57,11 @@ namespace StudioResourceSDK.Installer
                 .AsSingle();
 
             Container
+                .Bind<ITransformInspectorContext>()
+                .To<TransformInspectorContext>()
+                .AsSingle();
+
+            Container
                 .Bind<IResourceTableLoadDomain>()
 #if !UNITY_EDITOR_WIN && (UNITY_IOS || UNITY_IPHONE) 
                 .To<iOSGoogleSheetLoader>()
@@ -91,7 +97,6 @@ namespace StudioResourceSDK.Installer
                 .Bind<IResourcePickDomain>()
                 .To<SceneResourcePicker>()
                 .AsSingle();
-
         }
     }
 }

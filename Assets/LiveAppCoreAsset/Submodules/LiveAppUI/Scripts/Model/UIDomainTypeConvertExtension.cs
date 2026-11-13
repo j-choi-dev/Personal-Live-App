@@ -1,7 +1,10 @@
-﻿using LiveAppUI.Domain;
+using LiveAppUI.Domain;
 using System;
 ///ResourceSDK.Domain enum 가시성을 위해 rename
 using DomainResourceType = StudioResourceSDK.Domain.ResourceType;
+using DomainTransformAxis = StudioResourceSDK.Domain.TransformAxis;
+using DomainTransformProperty = StudioResourceSDK.Domain.TransformProperty;
+
 
 namespace LiveAppUI.Model
 {
@@ -51,4 +54,85 @@ namespace LiveAppUI.Model
         }
     }
 
+    /// <summary>
+    /// InspectorUI용  Tranform enum <-> StudioResourceSDK.Domain의 Transform enum 컨버터 유틸 클래스
+    /// </summary>
+    public static class InspectorTransformConvertExtensions
+    {
+        /// <summary>
+        /// UI TransformProperty => ResourceSDK.Domain.TramsformProperty
+        /// </summary>
+        public static DomainTransformProperty ToDomain(this InspectorTransformProperty prop)
+        {
+            switch (prop)
+            {
+                case InspectorTransformProperty.Position:
+                    return DomainTransformProperty.Position;
+                case InspectorTransformProperty.Rotation:
+                    return DomainTransformProperty.Rotation;
+                case InspectorTransformProperty.Scale:
+                    return DomainTransformProperty.Scale;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(prop), prop, null);
+            }
+        }
+
+        /// <summary>
+        /// ResourceSDK.Domain.TramsformPropertyUI TransformProperty => UI TransformProperty
+        /// </summary>
+        public static InspectorTransformProperty ToInspector( this DomainTransformProperty prop)
+        {
+            switch(prop)
+            {
+                case DomainTransformProperty.Position:
+                    return InspectorTransformProperty.Position;
+                case DomainTransformProperty.Rotation:
+                    return InspectorTransformProperty.Rotation;
+                case DomainTransformProperty.Scale:
+                    return InspectorTransformProperty.Scale;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(prop), prop, null);
+            }
+        }
+
+        /// <summary>
+        /// UI TransformAxis => ResourceSDK.Domain.TramsformAxis
+        /// </summary>
+        public static DomainTransformAxis ToDomain( this InspectorTransformAxis axis)
+        {
+            switch (axis)
+            {
+                case InspectorTransformAxis.X:
+                    return DomainTransformAxis.X;
+                case InspectorTransformAxis.Y:
+                    return DomainTransformAxis.Y;
+                case InspectorTransformAxis.Z:
+                    return DomainTransformAxis.Z;
+                case InspectorTransformAxis.Uniform:
+                    return DomainTransformAxis.Uniform;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(axis), axis, null);
+            }
+        }
+
+        /// <summary>
+        /// ResourceSDK.Domain.TramsformAxisUI TransformAxis => UI TransformAxis
+        /// </summary>
+        public static InspectorTransformAxis ToInspector(this DomainTransformAxis axis)
+        {
+            switch (axis)
+            {
+                case DomainTransformAxis.X:
+                    return InspectorTransformAxis.X;
+                case DomainTransformAxis.Y:
+                    return InspectorTransformAxis.Y;
+                case DomainTransformAxis.Z:
+                    return InspectorTransformAxis.Z;
+                case DomainTransformAxis.Uniform:
+                    return InspectorTransformAxis.Uniform;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(axis), axis, null);
+            }
+        }
+    }
 }
