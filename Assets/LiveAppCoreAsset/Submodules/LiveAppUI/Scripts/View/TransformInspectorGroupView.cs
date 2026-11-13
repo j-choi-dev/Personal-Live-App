@@ -28,14 +28,14 @@ namespace LiveAppUI.View
         }
 
         /// <summary>이 차이 미만이면 같은 값으로 판단하여 갱신하지 않음</summary>
-        private const float _valueSyncTolerance = 0.001f;
+        private const float ValueSyncTolerance = 0.001f;
         private bool _isInitialized = false;
         [SerializeField] private List<SliderEntry> _entries = new List<SliderEntry>();
 
-        private readonly Dictionary<(InspectorTransformProperty, InspectorTransformAxis), ObservableSlider> _table
+        private Dictionary<(InspectorTransformProperty, InspectorTransformAxis), ObservableSlider> _table
             = new Dictionary<(InspectorTransformProperty, InspectorTransformAxis), ObservableSlider>();
 
-        private readonly Subject<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)> _onValueChanged 
+        private Subject<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)> _onValueChanged 
             = new Subject<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)>();
 
         /// <summary>슬라이더 조작으로 값 변경 시 발행</summary>
@@ -127,7 +127,7 @@ namespace LiveAppUI.View
                 return;
             }
 
-            if(Mathf.Abs(slider.Value - value) < _valueSyncTolerance)
+            if(Mathf.Abs(slider.Value - value) < ValueSyncTolerance)
             {
                 return;
             }

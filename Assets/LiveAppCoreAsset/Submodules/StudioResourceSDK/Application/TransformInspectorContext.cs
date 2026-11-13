@@ -16,35 +16,35 @@ namespace StudioResourceSDK.Application
     public class TransformInspectorContext : ITransformInspectorContext
     {
         // 표시 단위 -> 로컬 단위 변환 계수 (slider value 50 -> 로컬 0.5)
-        private const float _characterPositionScale = 0.01f;
-        private const float _propPositionScale = 0.01f;
+        private const float CharacterPositionScale = 0.01f;
+        private const float PropPositionScale = 0.01f;
         
         /// <summary>
         /// Scale 오프셋은 배율의 지수 (배율 = 2^값, 0 = 원래 크기)
         /// View의 배율 라벨 표시도 같은 밑을 사용하므로 수정 시 함께 수정할 것 <see cref="ObservableExponentSliderUGUI"/>
         /// </summary>
-        private const float _scaleExponentBase = 2.0f;
+        private const float ScaleExponentBase = 2.0f;
 
         /// <summary>지원하지 않는 항목은 미리 만들어 놓은 해당 빈채널로 처리</summary>
-        private static readonly IReadOnlyList<TransformChannelInfo> EmptyChannels = Array.Empty<TransformChannelInfo>();
+        private IReadOnlyList<TransformChannelInfo> EmptyChannels = Array.Empty<TransformChannelInfo>();
 
         /// <summary>목록 조회 및 로드,삭제 알림용. </summary>
         /// <remarks> 현재는 읽기만 하며 Add,Remove등 함수는 사용하지 않음</remarks>
-        private readonly ISceneResourceListDomain _listDomain;
+        private ISceneResourceListDomain _listDomain;
 
         /// <summary>리소스 타입에 따른 슬라이더 정보dict</summary>
-        private readonly Dictionary<ResourceType, IReadOnlyList<TransformChannelInfo>> _channels;
+        private Dictionary<ResourceType, IReadOnlyList<TransformChannelInfo>> _channels;
 
         /// <summary>대상 별 속성들 기준 상태</summary>
-        private readonly Dictionary<ITransformData, TransformBase> _bases = new Dictionary<ITransformData, TransformBase>();
+        private Dictionary<ITransformData, TransformBase> _bases = new Dictionary<ITransformData, TransformBase>();
 
         /// <summary>대상 별 리소스 이벤트 구독, 리소스가 목록에서 빠지면 해제</summary>
-        private readonly Dictionary<ITransformData, IDisposable> _subscriptions = new Dictionary<ITransformData, IDisposable>();
+        private Dictionary<ITransformData, IDisposable> _subscriptions = new Dictionary<ITransformData, IDisposable>();
 
         /// <summary>리소스 목록 변경 구독 정리용</summary>
-        private readonly CompositeDisposable _disposable = new CompositeDisposable();
+        private CompositeDisposable _disposable = new CompositeDisposable();
 
-        private readonly Subject<TransformOffsetChangedData> _onOffsetChanged = new Subject<TransformOffsetChangedData>();
+        private Subject<TransformOffsetChangedData> _onOffsetChanged = new Subject<TransformOffsetChangedData>();
         public IObservable<TransformOffsetChangedData> OnOffsetChanged => _onOffsetChanged;
 
         public TransformInspectorContext(ISceneResourceListDomain listDomain)
@@ -238,7 +238,7 @@ namespace StudioResourceSDK.Application
                         {
                             return 0.0f; // 0 이하는 로그 계산 불가
                         }
-                        return UnityEngine.Mathf.Log(currentScale / baseScale, _scaleExponentBase);
+                        return UnityEngine.Mathf.Log(currentScale / baseScale, ScaleExponentBase);
                     }
                 default:
                     return 0.0f;
@@ -264,7 +264,7 @@ namespace StudioResourceSDK.Application
                         // 세 축에 같은 배율을 곱해 원래 비율 유지
                         // Z까지 스케일링하는 이유: 불균일 스케일로 인한 렌더링 왜곡 방지
                         // Z 변경으로 깊이 순서 문제가 생기면 Z만 기준값(transformBase.ScaleZ)을 유지할 것
-                        float multiplier = UnityEngine.Mathf.Pow(_scaleExponentBase, offset);
+                        float multiplier = UnityEngine.Mathf.Pow(ScaleExponentBase, offset);
                         data.SetScaleX(tBase.ScaleX * multiplier);
                         data.SetScaleY(tBase.ScaleY * multiplier);
                         data.SetScaleZ(tBase.ScaleZ * multiplier);
@@ -279,9 +279,9 @@ namespace StudioResourceSDK.Application
             switch (type)
             {
                 case ResourceType.Character:
-                    return _characterPositionScale;
+                    return CharacterPositionScale;
                 case ResourceType.Prop:
-                    return _propPositionScale;
+                    return PropPositionScale;
                 default:
                     return 1.0f;
             }

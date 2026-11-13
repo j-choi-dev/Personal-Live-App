@@ -125,15 +125,15 @@ namespace StudioCharacterSDK.Infrastructure
         //---------------------------------------------------------------------------------------ITransformData
         public Transform TransformPivot => _transformPivot;
         public bool CanTransform => _transformPivot != null;
-        private readonly Subject<float> _onPositionXChanged = new Subject<float>();
-        private readonly Subject<float> _onPositionYChanged = new Subject<float>();
-        private readonly Subject<float> _onPositionZChanged = new Subject<float>();
-        private readonly Subject<float> _onRotationXChanged = new Subject<float>();
-        private readonly Subject<float> _onRotationYChanged = new Subject<float>();
-        private readonly Subject<float> _onRotationZChanged = new Subject<float>();
-        private readonly Subject<float> _onScaleXChanged = new Subject<float>();
-        private readonly Subject<float> _onScaleYChanged = new Subject<float>();
-        private readonly Subject<float> _onScaleZChanged = new Subject<float>();
+        private Subject<float> _onPositionXChanged = new Subject<float>();
+        private Subject<float> _onPositionYChanged = new Subject<float>();
+        private Subject<float> _onPositionZChanged = new Subject<float>();
+        private Subject<float> _onRotationXChanged = new Subject<float>();
+        private Subject<float> _onRotationYChanged = new Subject<float>();
+        private Subject<float> _onRotationZChanged = new Subject<float>();
+        private Subject<float> _onScaleXChanged = new Subject<float>();
+        private Subject<float> _onScaleYChanged = new Subject<float>();
+        private Subject<float> _onScaleZChanged = new Subject<float>();
 
         public IObservable<float> OnPositionXChanged => _onPositionXChanged;
         public IObservable<float> OnPositionYChanged => _onPositionYChanged;

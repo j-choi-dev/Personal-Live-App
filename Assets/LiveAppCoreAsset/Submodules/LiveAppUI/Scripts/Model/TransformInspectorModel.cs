@@ -1,5 +1,6 @@
 ﻿using LiveAppUI.Domain;
 using StudioResourceSDK.Application;
+using StudioResourceSDK.Domain;
 using System;
 using System.Collections.Generic;
 using UniRx;
@@ -9,19 +10,19 @@ namespace LiveAppUI.Model
 {
     public class TransformInspectorModel : ITransformInspectorModel, IDisposable
     {
-        private readonly ITransformInspectorContext _context;
-        private readonly Subject<TransformInspectorUIData> _onTargetChanged =
+        private ITransformInspectorContext _context;
+        private Subject<TransformInspectorUIData> _onTargetChanged =
             new Subject<TransformInspectorUIData>();
         public IObservable<TransformInspectorUIData> OnTargetChanged => _onTargetChanged;
 
-        private readonly Subject<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)> _onValueChanged
+        private Subject<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)> _onValueChanged
             = new Subject<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)>();
 
         public IObservable<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)> OnValueChanged => _onValueChanged;
 
         /// <summary> Context 오프셋 변경 구독 </summary>
         /// <remarks> 대상이 바뀌어도 필터 기준(_targetType, _targetId)만 바뀌므로 한 번만 구독</remarks>
-        private readonly IDisposable _offsetSubscription;
+        private IDisposable _offsetSubscription;
 
         private bool _hasTarget = false;
         private DomainResourceType _targetType;

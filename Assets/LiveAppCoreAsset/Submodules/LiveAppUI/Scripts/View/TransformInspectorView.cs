@@ -12,7 +12,7 @@ namespace LiveAppUI.View
     {
 
         [SerializeField] private List<TransformInspectorGroupView> _groups = new List<TransformInspectorGroupView>();
-        private readonly Dictionary<(InspectorTransformProperty, InspectorTransformAxis), TransformInspectorGroupView> _table =
+        private Dictionary<(InspectorTransformProperty, InspectorTransformAxis), TransformInspectorGroupView> _table =
             new Dictionary<(InspectorTransformProperty, InspectorTransformAxis), TransformInspectorGroupView>();
         private Subject<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)>   _onValueChanged =
             new Subject<(InspectorTransformProperty prop, InspectorTransformAxis axis, float value)>();
