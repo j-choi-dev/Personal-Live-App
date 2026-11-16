@@ -1,7 +1,5 @@
 using Cysharp.Threading.Tasks;
-using LiveAppUI;
-using StudioCharacterSDK.Domain;
-using System;
+using StudioNetworkSDK.Domain;
 using System.Collections.Generic;
 
 namespace StudioResourceSDK.Application
