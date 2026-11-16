@@ -20,7 +20,8 @@ namespace LiveApp.UI
         public IReadOnlyReactiveCollection<ICellView> OnCellChanged => _cells;
 
         public IObservable<int> OnSelectedIndex => throw new NotImplementedException();
-        public IObservable<string> OnSelectedId => throw new NotImplementedException();
+        private readonly Subject<string> _onSelectedId = new Subject<string>();
+        public IObservable<string> OnSelectedId => _onSelectedId;
         public IObservable<string> OnSelectedDiplayName => throw new NotImplementedException();
         public IReadOnlyList<string> CurrentSelectedItemList => _cells.Where(arg => arg.IsSelected).Select(arg => arg.ID).ToList();
 
@@ -75,8 +76,16 @@ namespace LiveApp.UI
                 return;
             }
 
+            bool wasSelected = item.IsSelected;
+
             Destroy(item.Object); 
             _cells.Remove(item);
+
+            if(wasSelected)
+            {
+                _onSelectedId.OnNext(null);
+            }
+
         }
         
         private void BindCell(ICellView cell)
@@ -87,22 +96,27 @@ namespace LiveApp.UI
 
         private void OnCellSelected(ICellView selected)
         {
-            if(_singleSelect == false)
+            if(_singleSelect)
             {
-                return;
-            }
-
-            for(var i = 0; i < _cells.Count; i++)
-            {
-                if (_cells[i] != selected && _cells[i].IsSelected)
+                for( var i = 0; i < _cells.Count; i++)
                 {
-                    _cells[i].SetSelected(false);
+                    if (_cells[i] != selected && _cells[i].IsSelected)
+                    {
+                        _cells[i].SetSelected(false);
+                    }
                 }
             }
+
+            //단일 선택 시 -> 선택한 셀id
+            //다중 선택 시 -> 마지막에 선택한 셀 id
+            //단일이던 다중이던 셀 선택에 대한 이벤트는 항상 발행하도록 함
+            _onSelectedId.OnNext(selected.ID);
         }
 
         public void Clear()
         {
+            bool removedSelected = false;
+
             for (var i = _cells.Count - 1; i >= 0; i--)
             {
                 var cell = _cells[i];
@@ -111,13 +125,26 @@ namespace LiveApp.UI
                     continue;
                 }
 
+                if (cell.IsSelected)
+                {
+                    removedSelected = true;
+                }
+
                 Destroy(cell.Object);
                 _cells.RemoveAt(i);
+
+            }
+
+            if (removedSelected)
+            {
+                _onSelectedId.OnNext(null);
             }
         }
 
         private void OnDestroy()
         {
+            _onSelectedId.OnCompleted();
+            _onSelectedId.Dispose();
             _cells.Dispose();
         }
 

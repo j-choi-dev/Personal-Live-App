@@ -327,21 +327,34 @@ namespace Live2D.Cubism.Rendering
             // Set offset and scale from transform.
             var offsetScale = _offsetScale;
 
-            offsetScale.Set(RenderController.transform.localPosition.x + transform.localPosition.x, RenderController.transform.localPosition.y + transform.localPosition.y,
-                RenderController.transform.localScale.x * transform.localScale.x, RenderController.transform.localScale.y * transform.localScale.y);
+            // [LiveApp 수정] 부모(AvatarPivot 등)의 Transform도 그리기에 반영되도록 월드 값 사용
+            // 원본은 CubismModel(RenderController)과 ArtMesh의 로컬 값만 합쳐서, 그 위의 부모 이동이 무시됨
+            // 그래서 캐릭터 루트 오브젝트나 AvatartPivot의 Transform의 값이 반영이 안 됐음
+            // ArtMesh의 월드 값에는 CubismModel과 그 위 모든 부모가 이미 반영되어 있음
+            // @OH 26.11.12
+            
+            //[원본]
+            //offsetScale.Set(RenderController.transform.localPosition.x + transform.localPosition.x, RenderController.transform.localPosition.y + transform.localPosition.y,
+            //    RenderController.transform.localScale.x * transform.localScale.x, RenderController.transform.localScale.y * transform.localScale.y);
+            offsetScale.Set(transform.position.x, transform.position.y,
+                     transform.lossyScale.x, transform.lossyScale.y);
             _offsetScale = offsetScale;
             // Write property.
             property.SetVector(CubismShaderVariables.OffsetScale, _offsetScale);
 
+            //[원본]
             // Set rotation from transform.
-            var combinedRotation = RenderController.transform.localRotation * transform.localRotation;
+            //var combinedRotation = RenderController.transform.localRotation * transform.localRotation;
+            var combinedRotation = transform.rotation;
             _quaternion.Set(combinedRotation.x, combinedRotation.y, combinedRotation.z, combinedRotation.w);
 
             // Write property.
             property.SetVector(CubismShaderVariables.RotationQuaternion, _quaternion);
 
+            //[원본]
             // Set z offset from transform.
-            _zOffset = RenderController.transform.localPosition.z + transform.localPosition.z;
+            //_zOffset = RenderController.transform.localPosition.z + transform.localPosition.z;
+            _zOffset = transform.position.z;
             // Write property.
             property.SetFloat(CubismShaderVariables.ZOffset, _zOffset);
 

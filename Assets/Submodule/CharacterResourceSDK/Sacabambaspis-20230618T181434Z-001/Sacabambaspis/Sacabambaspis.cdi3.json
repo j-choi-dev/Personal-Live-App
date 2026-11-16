@@ -1,0 +1,122 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "ParamAngleX",
+			"GroupId": "",
+			"Name": "角度 X"
+		},
+		{
+			"Id": "ParamAngleX2",
+			"GroupId": "",
+			"Name": "角度 X2"
+		},
+		{
+			"Id": "ParamAngleZ2",
+			"GroupId": "",
+			"Name": "角度 Z2"
+		},
+		{
+			"Id": "ParamAngleY2",
+			"GroupId": "",
+			"Name": "角度 Y2"
+		},
+		{
+			"Id": "ParamAngleY",
+			"GroupId": "",
+			"Name": "角度 Y"
+		},
+		{
+			"Id": "ParamAngleZ",
+			"GroupId": "",
+			"Name": "角度 Z"
+		},
+		{
+			"Id": "ParamEyeLOpen",
+			"GroupId": "",
+			"Name": "左眼　开闭"
+		},
+		{
+			"Id": "ParamEyeROpen",
+			"GroupId": "",
+			"Name": "右眼"
+		},
+		{
+			"Id": "ParamEyeBallX",
+			"GroupId": "",
+			"Name": "眼珠 X"
+		},
+		{
+			"Id": "ParamEyeBallY",
+			"GroupId": "",
+			"Name": "眼珠 Y"
+		},
+		{
+			"Id": "ParamMouthOpenY",
+			"GroupId": "",
+			"Name": "嘴　张开和闭合"
+		},
+		{
+			"Id": "ParamBreath",
+			"GroupId": "",
+			"Name": "呼吸"
+		},
+		{
+			"Id": "ParamG",
+			"GroupId": "",
+			"Name": "G"
+		},
+		{
+			"Id": "ParamFishBody",
+			"GroupId": "",
+			"Name": "FishBody"
+		},
+		{
+			"Id": "ParamFishBody2",
+			"GroupId": "",
+			"Name": "FishBody2"
+		},
+		{
+			"Id": "ParamFishBody3",
+			"GroupId": "",
+			"Name": "FishBody3"
+		}
+	],
+	"ParameterGroups": [],
+	"Parts": [
+		{
+			"Id": "Part",
+			"Name": "魚"
+		},
+		{
+			"Id": "Part4",
+			"Name": "正面魚"
+		},
+		{
+			"Id": "Part2",
+			"Name": "眼R"
+		},
+		{
+			"Id": "Part3",
+			"Name": "眼L"
+		},
+		{
+			"Id": "Part5",
+			"Name": "眼R"
+		},
+		{
+			"Id": "Part6",
+			"Name": "眼L"
+		}
+	],
+	"CombinedParameters": [
+		[
+			"ParamAngleZ2",
+			"ParamAngleY2"
+		],
+		[
+			"ParamEyeBallX",
+			"ParamEyeBallY"
+		]
+	]
+}

@@ -1,0 +1,23 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "Sacabambaspis.moc3",
+		"Textures": [
+			"Sacabambaspis.2048/texture_00.png"
+		],
+		"Physics": "Sacabambaspis.physics3.json",
+		"DisplayInfo": "Sacabambaspis.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	]
+}

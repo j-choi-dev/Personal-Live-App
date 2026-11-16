@@ -20,6 +20,7 @@ namespace LiveApp.UI.Presenter
         /// 현재 선택한 리소스 ID값
         /// </summary>
         IReadOnlyList<string> CurrSelectedItemList { get; }
+        IObservable<string> OnSelectedItemChanged { get; }
         /// <summary>
         /// 현재 선택한 필터의 dropdown index
         /// </summary>

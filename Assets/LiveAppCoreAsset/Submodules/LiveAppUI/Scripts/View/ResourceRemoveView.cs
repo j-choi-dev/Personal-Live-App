@@ -16,9 +16,11 @@ namespace LiveApp.UI
         [SerializeField] private ObservableButton _removeButton = null;
         [SerializeField] private ObservableDropdown _filters = null;
         [SerializeField] private ListViewWithOneList _listView = null;
+        [SerializeField] private TransformInspectorView _transformView = null;
 
         //---------------implements-----------------------------
         public IObservable<int> OnFilterChanged => _filters.OnValueChanged;
+        public IObservable<string> OnSelectedItemChanged => _listView.OnSelectedId;
         public IObservable<Unit> OnClickRemove => _removeButton.OnClick;
         public IReadOnlyList<string> CurrSelectedItemList => _listView.CurrentSelectedItemList;
         public int CurrentFilterIndex => _filters.Value;
@@ -26,12 +28,6 @@ namespace LiveApp.UI
         public IObservable<Unit> OnClickCancle => throw new NotImplementedException();
         public bool IsActive => gameObject.activeSelf;
 
-
-
-        private void Awake()
-        {
-
-        }
 
         //-----------implements---------
         public void SetActive(bool IsActive)

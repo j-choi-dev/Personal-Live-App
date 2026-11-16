@@ -19,6 +19,7 @@ namespace LiveAppUI.Presenter
         private INoticeModalView _noticeModalView;
         private IResourceRemoveView _resourceRemoveView;
         private IResourceListModel _resourceListModel;
+        private ITransformInspectorModel _transformInspectorModel;
         private ResourceType _currentResourceType;
         private ResourceType _currentRemoveFilter = ResourceType.None;
         private ServerType _currentResourceServerType;
@@ -33,13 +34,15 @@ namespace LiveAppUI.Presenter
             IResourceListView resourceListView,
             IResourceRemoveView resourceRemoveView,
             INoticeModalView noticeModalView,
-            IResourceListModel resourceListModel)
+            IResourceListModel resourceListModel,
+            ITransformInspectorModel transformInspectorModel)
         {
             _resourceMenuView = resourceMenuView;
             _resourceListView = resourceListView;
             _noticeModalView = noticeModalView;
             _resourceRemoveView = resourceRemoveView;
             _resourceListModel = resourceListModel;
+            _transformInspectorModel = transformInspectorModel;
         }
 
         private void Awake()
@@ -132,7 +135,9 @@ namespace LiveAppUI.Presenter
                 .Subscribe(_ => CloseResourceRemoveView())
                 .AddTo(this);
 
-
+            _resourceRemoveView.OnSelectedItemChanged
+                .Subscribe(UpdateInspectorTarget)
+                .AddTo(this);
         }
 
         private void SubscribeModel()
@@ -233,6 +238,27 @@ namespace LiveAppUI.Presenter
             _resourceRemoveView.SetActive(true);
             _resourceRemoveView.SetFilterItem(GetResourceIndex(resourceType));
             _resourceListModel.FilterRemoveResource(resourceType);
+        }
+
+        /// <summary>
+        /// 선택한 cell을 inspector 대상으로 지정하고 선택이 없으면 empty처리
+        /// </summary>
+        private void UpdateInspectorTarget(string cellId)
+        {
+            if (cellId == null)
+            {
+                _transformInspectorModel.ClearTarget();
+                return;
+            }
+
+            if(_removeCellMap.TryGetValue(cellId, out var target) == false)
+            {
+                Debug.LogWarning($"[ResourceMenuPresenter]dict에 없는 cellId = {cellId}");
+                _transformInspectorModel.ClearTarget();
+                return;
+            }
+
+            _transformInspectorModel.SetTarget(target.type, target.id);
         }
 
         private void CloseResourceListView()
