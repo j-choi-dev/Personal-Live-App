@@ -9,6 +9,7 @@ namespace LiveAppCore
     public class SceneLoadController : MonoBehaviour
     {
         private const string SCENE_UI = "LiveAppUI";
+        private const string SCENE_UI_PC = "LiveAppUI_PC";
 
         private void Awake()
         {
@@ -17,11 +18,10 @@ namespace LiveAppCore
 
         private void LoadSceneProcess()
         {
-#if UNITY_EDITOR || UNITY_IPHONE
+#if UNITY_EDITOR && UNITY_IPHONE
             SceneManager.LoadScene( SCENE_UI, LoadSceneMode.Additive );
 #else
-            
-            Debug.Log("// TODO PC ¹öÀü Scene Load @Choi 26.04.22");
+            SceneManager.LoadScene( SCENE_UI_PC, LoadSceneMode.Additive );
 #endif
         }
     }
