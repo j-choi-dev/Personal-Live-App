@@ -15,16 +15,18 @@ namespace MqttEcho.UseCase
     {
         readonly IResourceSyncGateway _gateway;
         readonly Dictionary<string, ResourcePose> _lastSent = new Dictionary<string, ResourcePose>();
+        readonly Dictionary<string, string> _assetKeys = new Dictionary<string, string>();
         int _seq;
 
         public ResourceSyncService(IResourceSyncGateway gateway) => _gateway = gateway;
 
         public IObservable<ResourceEcho> OnEcho => _gateway.OnEcho;
 
-        public UniTask NotifyCreatedAsync(string id, ResourcePose pose, CancellationToken ct)
+        public UniTask NotifyCreatedAsync(string id, string assetKey, ResourcePose pose, CancellationToken ct)
         {
             _lastSent[id] = pose;
-            return SendAsync(id, ResourceOp.Create, pose, ct);
+            _assetKeys[id] = assetKey;
+            return SendAsync(id, ResourceOp.Create, pose, assetKey, ct);
         }
 
         public UniTask NotifyMovedAsync(string id, ResourcePose pose, CancellationToken ct)
@@ -32,13 +34,15 @@ namespace MqttEcho.UseCase
             if (!_lastSent.TryGetValue(id, out var last)) return UniTask.CompletedTask; // 생성 전이면 무시
             if (last.ApproximatelyEquals(pose)) return UniTask.CompletedTask;        // 변화 없음
             _lastSent[id] = pose;
-            return SendAsync(id, ResourceOp.Update, pose, ct);
+            return SendAsync(id, ResourceOp.Update, pose, KeyOf(id), ct);
         }
 
         public UniTask NotifyDeletedAsync(string id, CancellationToken ct)
         {
             if (!_lastSent.Remove(id)) return UniTask.CompletedTask;
-            return SendAsync(id, ResourceOp.Delete, default, ct);
+            var key = KeyOf(id);
+            _assetKeys.Remove(id);
+            return SendAsync(id, ResourceOp.Delete, default, key, ct);
         }
 
         /// <summary>
@@ -50,12 +54,16 @@ namespace MqttEcho.UseCase
             // 보내는 도중 목록이 바뀌어도 안전하도록 복사본으로 돈다
             var mine = new List<KeyValuePair<string, ResourcePose>>(_lastSent);
             foreach (var kv in mine)
-                await SendAsync(kv.Key, ResourceOp.Create, kv.Value, ct);
+                await SendAsync(kv.Key, ResourceOp.Create, kv.Value, KeyOf(kv.Key), ct);
         }
 
-        UniTask SendAsync(string id, ResourceOp op, ResourcePose pose, CancellationToken ct)
+        string KeyOf(string id) => _assetKeys.TryGetValue(id, out var key) ? key : null;
+
+        // update·delete에도 키를 함께 보낸다.
+        // (JsonUtility는 null 문자열을 ""로 보내기 때문에, 빼면 서버가 저장해 둔 키를 빈 값으로 덮어쓴다)
+        UniTask SendAsync(string id, ResourceOp op, ResourcePose pose, string assetKey, CancellationToken ct)
         {
-            var change = new ResourceChange(id, op, pose, ++_seq, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+            var change = new ResourceChange(id, op, pose, ++_seq, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), assetKey);
             return _gateway.SendAsync(change, ct);
         }
     }

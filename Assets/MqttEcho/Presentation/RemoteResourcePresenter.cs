@@ -7,14 +7,15 @@ namespace MqttEcho.Presentation
 {
     /// <summary>
     /// 다른 사람의 리소스를 씬에 표시한다.
-    /// 받은 위치로 순간이동하지 않고 매 프레임 부드럽게 따라가게 한다 (간단한 보간).
-    /// 이 오브젝트들에는 NetworkedResource를 붙이지 않는다 (붙이면 내 것처럼 다시 보내게 됨).
+    /// - 받은 키(assetKey)로 카탈로그에서 프리팹을 찾아 생성, 없으면 주황 큐브
+    /// - 받은 위치로 순간이동하지 않고 매 프레임 부드럽게 따라가게 한다 (간단한 보간)
     /// </summary>
     public sealed class RemoteResourcePresenter : MonoBehaviour, IRemoteResourcePresenter
     {
-        [Tooltip("비워 두면 색이 다른 큐브")]
-        [SerializeField] GameObject remotePrefab;
-        [SerializeField] Color remoteColor = new Color(1f, 0.55f, 0.2f);
+        [Tooltip("비워 두면 Bootstrap이 자기 카탈로그를 넘겨줌")]
+        [SerializeField] ResourceCatalog catalog;
+        [Tooltip("카탈로그에 없는 키일 때 쓰는 큐브 색")]
+        [SerializeField] Color fallbackColor = new Color(1f, 0.55f, 0.2f);
         [Tooltip("클수록 목표 위치를 빨리 따라감")]
         [SerializeField] float followSharpness = 15f;
 
@@ -28,7 +29,13 @@ namespace MqttEcho.Presentation
             public ResourcePose Target;
         }
 
-        public void Spawn(string id, ResourcePose pose)
+        /// <summary>조립 시점에 카탈로그를 넘겨받는다 (Inspector에 따로 넣지 않아도 되게)</summary>
+        public void Initialize(ResourceCatalog sharedCatalog)
+        {
+            if (catalog == null) catalog = sharedCatalog;
+        }
+
+        public void Spawn(string id, string assetKey, ResourcePose pose)
         {
             if (_entries.TryGetValue(id, out var existing))
             {
@@ -36,8 +43,14 @@ namespace MqttEcho.Presentation
                 return;
             }
 
-            var go = remotePrefab != null ? Instantiate(remotePrefab) : CreateDefault();
-            go.name = $"Remote_{id.Substring(0, Mathf.Min(6, id.Length))}";
+            var go = catalog != null && catalog.TryGet(assetKey, out var prefab)
+                ? Instantiate(prefab)
+                : CreateFallback();
+
+            // 상대 리소스가 내 것처럼 다시 전송되지 않도록, 프리팹에 동기화 컴포넌트가 있으면 제거
+            if (go.TryGetComponent(out NetworkedResource networked)) Destroy(networked);
+
+            go.name = $"Remote_{assetKey}_{id.Substring(0, Mathf.Min(6, id.Length))}";
             go.transform.SetPositionAndRotation(pose.Position, pose.Rotation);
             go.transform.localScale = pose.Scale;
             _entries[id] = new Entry { Transform = go.transform, Target = pose };
@@ -77,10 +90,10 @@ namespace MqttEcho.Presentation
 
         void OnDestroy() => Clear();
 
-        GameObject CreateDefault()
+        GameObject CreateFallback()
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            if (go.TryGetComponent(out Renderer r)) r.material.color = remoteColor;
+            if (go.TryGetComponent(out Renderer r)) r.material.color = fallbackColor;
             return go;
         }
     }

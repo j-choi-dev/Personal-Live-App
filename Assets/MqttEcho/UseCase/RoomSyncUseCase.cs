@@ -13,7 +13,7 @@ namespace MqttEcho.UseCase
     /// </summary>
     public interface IRemoteResourcePresenter
     {
-        void Spawn(string id, ResourcePose pose);
+        void Spawn(string id, string assetKey, ResourcePose pose);
         void Move(string id, ResourcePose pose);
         void Despawn(string id);
         void Clear();
@@ -66,7 +66,7 @@ namespace MqttEcho.UseCase
 
                 // 끊겨 있던 동안의 변화는 알 수 없으므로 화면을 스냅샷 기준으로 다시 만든다
                 _presenter.Clear();
-                foreach (var c in others) _presenter.Spawn(c.ResourceId, c.Pose);
+                foreach (var c in others) _presenter.Spawn(c.ResourceId, c.AssetKey, c.Pose);
 
                 // 서버는 끊긴 사람의 리소스를 지웠으므로 내 리소스를 다시 알린다
                 await _resources.ResendAllAsync(ct);
@@ -84,7 +84,7 @@ namespace MqttEcho.UseCase
         {
             switch (change.Op)
             {
-                case ResourceOp.Create: _presenter.Spawn(change.ResourceId, change.Pose); break;
+                case ResourceOp.Create: _presenter.Spawn(change.ResourceId, change.AssetKey, change.Pose); break;
                 case ResourceOp.Update: _presenter.Move(change.ResourceId, change.Pose); break;
                 case ResourceOp.Delete: _presenter.Despawn(change.ResourceId); break;
             }

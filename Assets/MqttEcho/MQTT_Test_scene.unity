@@ -374,10 +374,10 @@ MonoBehaviour:
   roomId: room-1
   remotePresenter: {fileID: 0}
   autoStartInEditor: 1
-  editorTestUserId: editor-user
+  editorTestUserId: editor-Win
   autoStartOnDevice: 1
   deviceTestUserId: iphone-user
-  resourcePrefab: {fileID: 1529859801056418, guid: 86f883933a872f542994368197c83b5b, type: 3}
+  catalog: {fileID: 11400000, guid: 2fe5e939859f63b43a96e5582beb1ff1, type: 2}
 --- !u!4 &1610609050
 Transform:
   m_ObjectHideFlags: 0

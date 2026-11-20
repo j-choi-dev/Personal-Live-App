@@ -173,6 +173,7 @@ namespace MqttEcho.Infrastructure
         public long sentAt;     // 클라이언트 전송 시각 (ms)
         public long serverAt;   // 서버가 방에 전달한 시각 (ms)
         public string owner;    // 서버가 붙여 주는 보낸 사람 clientId
+        public string asset;    // 리소스 종류 키 (예: "candles")
 
         public static ResourceMessageDto From(ResourceChange c) => new ResourceMessageDto
         {
@@ -183,6 +184,7 @@ namespace MqttEcho.Infrastructure
             scl = c.Pose.Scale,
             seq = c.Seq,
             sentAt = c.SentAtMs,
+            asset = c.AssetKey,
         };
 
         public bool TryToChange(out ResourceChange change)
@@ -193,7 +195,7 @@ namespace MqttEcho.Infrastructure
             // 값이 빠진 메시지(테스트 앱에서 직접 보낸 JSON 등)도 안전하게 처리
             var r = rot.x == 0f && rot.y == 0f && rot.z == 0f && rot.w == 0f ? Quaternion.identity : rot;
             var s = scl == Vector3.zero ? Vector3.one : scl;
-            change = new ResourceChange(id, parsed, new ResourcePose(pos, r, s), seq, sentAt);
+            change = new ResourceChange(id, parsed, new ResourcePose(pos, r, s), seq, sentAt, asset);
             return true;
         }
     }

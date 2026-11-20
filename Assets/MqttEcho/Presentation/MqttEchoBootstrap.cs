@@ -36,8 +36,9 @@ namespace MqttEcho.Presentation
         [Tooltip("실기기 빌드에서도 로그인 없이 바로 시작 (테스트 빌드용, 실제 앱에서는 끄고 로그인 후 StartSession 호출)")]
         [SerializeField] bool autoStartOnDevice = true;
         [SerializeField] string deviceTestUserId = "iphone-user";
-        [Tooltip("비워 두면 기본 큐브 생성")]
-        [SerializeField] GameObject resourcePrefab;
+        [Header("Resources")]
+        [Tooltip("생성 버튼 목록과 상대 리소스 표시에 함께 쓰는 키 ↔ 프리팹 목록. 비워 두면 큐브만 생성")]
+        [SerializeField] ResourceCatalog catalog;
 
         MqttConnection _connection;
         MqttRoomSyncGateway _gateway;
@@ -74,6 +75,7 @@ namespace MqttEcho.Presentation
 
             if (remotePresenter == null && !TryGetComponent(out remotePresenter))
                 remotePresenter = gameObject.AddComponent<RemoteResourcePresenter>();
+            remotePresenter.Initialize(catalog);
 
             // ---- 조립: 바깥(Infra)에서 안쪽(UseCase)으로 구현을 끼워 넣는다 ----
             _connection = new MqttConnection(new MqttConnectionSettings { Host = ResolvedHost, Port = port, ClientId = _clientId });
@@ -92,7 +94,7 @@ namespace MqttEcho.Presentation
 
             _gateway.OnRemoteChange
                 .Where(c => c.Op != ResourceOp.Update)
-                .Subscribe(c => Log($"상대 {c.Op} {Short(c.ResourceId)}"))
+                .Subscribe(c => Log($"상대 {c.Op} {c.AssetKey} {Short(c.ResourceId)}"))
                 .AddTo(this);
 
             _sync.OnEcho
@@ -119,15 +121,17 @@ namespace MqttEcho.Presentation
             target.transform.Rotate(0f, 90f * Time.deltaTime, 0f);
         }
 
-        void Spawn()
+        void Spawn(string assetKey)
         {
-            var go = resourcePrefab != null ? Instantiate(resourcePrefab) : GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var go = catalog != null && catalog.TryGet(assetKey, out var prefab)
+                ? Instantiate(prefab)
+                : GameObject.CreatePrimitive(PrimitiveType.Cube);
             go.transform.position = UnityEngine.Random.insideUnitSphere * 2f + Vector3.forward * 5f;
 
             if (!go.TryGetComponent(out NetworkedResource resource)) resource = go.AddComponent<NetworkedResource>();
-            resource.Bind(_sync);
+            resource.Bind(_sync, assetKey);
             _spawned.Add(resource);
-            Log($"create 전송 {Short(resource.ResourceId)}");
+            Log($"create 전송 {assetKey} {Short(resource.ResourceId)}");
         }
 
         void DeleteLast()
@@ -153,7 +157,16 @@ namespace MqttEcho.Presentation
             GUILayout.Label($"방: {roomId}   내 리소스: {_spawned.Count}   상대 리소스: {(remotePresenter != null ? remotePresenter.Count : 0)}   RTT: {(_lastRttMs < 0 ? "-" : _lastRttMs + "ms")}");
 
             GUI.enabled = _sync != null;
-            if (GUILayout.Button("리소스 생성 (create)")) Spawn();
+            // 카탈로그 항목마다 생성 버튼, 비어 있으면 큐브 버튼 하나
+            if (catalog != null && catalog.Entries.Count > 0)
+            {
+                foreach (var entry in catalog.Entries)
+                    if (GUILayout.Button($"생성: {entry.key}")) Spawn(entry.key);
+            }
+            else if (GUILayout.Button("생성: cube (기본)"))
+            {
+                Spawn(NetworkedResource.DefaultAssetKey);
+            }
             if (GUILayout.Button("마지막 리소스 삭제 (delete)")) DeleteLast();
             _autoMove = GUILayout.Toggle(_autoMove, " 마지막 리소스 자동 이동 (update)");
             GUI.enabled = true;

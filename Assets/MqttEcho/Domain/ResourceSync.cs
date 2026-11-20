@@ -40,14 +40,16 @@ namespace MqttEcho.Domain
         public readonly ResourcePose Pose;
         public readonly int Seq;          // 보낸 순서 번호
         public readonly long SentAtMs;    // 클라이언트 시각 (RTT 계산용)
+        public readonly string AssetKey;  // 어떤 리소스인지 (예: "candles"). 받는 쪽이 이 키로 모양을 찾는다
 
-        public ResourceChange(string resourceId, ResourceOp op, ResourcePose pose, int seq, long sentAtMs)
+        public ResourceChange(string resourceId, ResourceOp op, ResourcePose pose, int seq, long sentAtMs, string assetKey = null)
         {
             ResourceId = resourceId;
             Op = op;
             Pose = pose;
             Seq = seq;
             SentAtMs = sentAtMs;
+            AssetKey = assetKey;
         }
     }
 
